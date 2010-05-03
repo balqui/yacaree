@@ -1,0 +1,46 @@
+0/ [20091127] Open the Yacaree project on SourceForge
+
+Aims: (a) implementing my association rules thing in a form that
+anyone can use; (b) explore sourceforge and compare to google code;
+(c) aim at an efficient system, both on the part of the user and
+on the part of the algorithmics.
+
+1/ [20100213] Open the wiki and start writing things on it.
+
+2/ [20100429] [and before] Think a lot about it. Main doubt: which 
+closure miner to use. Realization of the different goals of mining 
+closures versus mining the closure lattice. Note paper by Petko and 
+Jaume about the issue. Start studying lcm, at some point I am convinced
+that it is the best candidate. Then I realize that the paper of Day
+might have a better hidden algorithm. Start playing with Orange.
+Observe that it could be convenient to have the dataset, or its 
+transposed matrix, with one file per row/column (dblp, abstracts, 
+lucene-type things...)
+
+3/ [20100430] Decide to start with the class for sets of association 
+rules; single association rules are not treated separately but are
+simply singletons. The set of association rules is a dict mapping
+each consequent (expected closed and hence including all antecedents)
+into a dict mapping each antecedent to a dict mapping each property 
+of the rule to an interval containing its value. Properties: support,
+confidence, coverage, lift, upper width, level width (width=min upper 
+or level), confidence boost (think whether to reprogram it using upper 
+width). Start programming the interval class.
+
+4/ [20100501] Go for a statics file and iface replacement to verbosity.
+Finish all these three things. Then move back to slatt 0.2.2 to get
+a running version of cboost for both B* and RR, which I will later
+refactor into yee. Need to check that the outcomes of the programs
+coincide for the papers so far (tunez y version larga con adult y
+now y retail, papers for wapa, y las cosas con cris y marta).
+
+5/ [20100502] Back at Slatt to clarify a bit the starting point:
+merge the cboost computation for B* into brulattice.py itself,
+leave cboost.py for the RR. Redo all evaluations in EGC and in 
+the papersTr dataset for Wapa. All figures are consistent. Someday
+must remember to add progressbar dots to the cboost programs, they
+lack them now. Move allsubsets to the statics module in the form 
+of a generator to use as iterator.
+
+6/ [20100503] Start uploading files (to the wrong place) and code
+to the repository. Soon this very file will migrate to the wiki.
