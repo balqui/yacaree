@@ -9,18 +9,21 @@ scale: for writing ints as floats with controlled precision loss
 nrtr: dataset size (number of transactions)
 nrits: universe size (number of different items)
 nrocc: total number of item occurrences in dataset
+BUT THESE FOUR VALUES HAVE MOVED TO Dataset CLASS
 
 powset: iterator over all the subsets of the given set
 
+openfile: catch exception if not readable - MOVED TO iface
+
 """
 
-scale = 100000
-
-nrtr = 0
-
-nrits = 0
-
-nratt = 0
+##scale = 100000
+##
+##nrtr = 0
+##
+##nrits = 0
+##
+##nratt = 0
 
 def powset(aset):
     "iterator on the powerset of given aset"
@@ -36,4 +39,12 @@ def powset(aset):
 
 ## usage: for e in powset(set(range(5))): print e
 
+##def openfile(filename):
+##    try:
+##        f = open(filename)
+##        f.readline()
+##        f.close
+##        return open(filename)
+##    except (IOError, OSError):
+##        reporterror("nonexistent or unreadable file")
 
