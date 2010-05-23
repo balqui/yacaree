@@ -92,12 +92,13 @@ class iface:
 
     @classmethod
     def openfile(cls,filename):
-        cls.report("Attempting to read dataset from file "+filename)
+        cls.report("Attempting to read dataset from file "+filename+"...")
         try:
             f = open(filename)
             f.readline()
             f.close
+            cls.say("file is now open.")
             return open(filename)
         except (IOError, OSError):
-            cls.reporterror("nonexistent or unreadable file")
+            cls.reporterror("Nonexistent or unreadable file.")
 
