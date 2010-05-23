@@ -33,7 +33,6 @@ class Dataset:
 
     def __init__(self,filename=None):
         "find actual file, open, and read the dataset in"
-        iface.repong()
         if filename is None:
             iface.reportwarning("No dataset file specified.")
             filename = raw_input("Dataset File Name? ")
@@ -61,11 +60,15 @@ class Dataset:
             if not isempty:
                 self.nrtr += 1
         self.nrits = len(self.univ)
-        iface.say("... dataset read in. Consists of " +
+        iface.say("...dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
         iface.endreport()
 
+if __name__ == "__main__":
 
-
+    iface.repong()
+    iface.say(""); iface.endreport() # extra newline for PythonWin editor
+    d = Dataset("e13")
+    
