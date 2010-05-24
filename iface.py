@@ -91,14 +91,24 @@ class iface:
         sys.exit(m)
 
     @classmethod
-    def openfile(cls,filename):
-        cls.report("Attempting to read dataset from file "+filename+"...")
-        try:
-            f = open(filename)
-            f.readline()
-            f.close
-            cls.say("file is now open.")
-            return open(filename)
-        except (IOError, OSError):
-            cls.reporterror("Nonexistent or unreadable file.")
-
+    def openfile(cls,filename,mode="r"):
+        if mode == "r":
+            cls.report("Attempting to open file "+filename+" for reading...")
+            try:
+                f = open(filename)
+                f.readline()
+                f.close
+                cls.say("file is now open.")
+                return open(filename)
+            except (IOError, OSError):
+                cls.reporterror("Nonexistent or unreadable file.")
+        elif mode == "w":
+            cls.report("Attempting to open file "+filename+" for writing...")
+            try:
+                f = open(filename,"w")
+                cls.say("file is now open.")
+                return f
+            except (IOError, OSError):
+                cls.reporterror("Unable to open file.")
+        else:
+            cls.reporterror("Requested to open file in mode '"+mode+": no such mode available")
