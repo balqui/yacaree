@@ -66,9 +66,24 @@ class Dataset:
                      str(self.nrocc) + " item occurrences.")
         iface.endreport()
 
+    def inters(self,lstr):
+        "for an iterable of transactions lstr, return their intersection"
+        items = self.univ.copy()
+        for t in lstr:
+            items &= self.transcns[t]
+        return items
+
 if __name__ == "__main__":
 
     iface.repong()
     iface.say(""); iface.endreport() # extra newline for PythonWin editor
     d = Dataset("e13")
+    tr_a = d.occurncs['a']
+    tr_c = d.occurncs['c']
+    tr = tr_a & tr_c
+    print tr_a
+    print tr_c
+    print tr
+    print d.inters(tr)
+    
     

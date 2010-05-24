@@ -44,7 +44,7 @@ class interval:
  
 if __name__=="__main__":
 
-    import iface
+    from iface import iface
 
     iface.report("scale is:"+str(scale),0)
 
