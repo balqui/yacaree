@@ -111,4 +111,4 @@ class iface:
             except (IOError, OSError):
                 cls.reporterror("Unable to open file.")
         else:
-            cls.reporterror("Requested to open file in mode '"+mode+": no such mode available")
+            cls.reporterror("Requested to open file in mode '"+mode+"': no such mode available")

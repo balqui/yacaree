@@ -1,6 +1,4 @@
 """
-Project: yacaree - file copied verbatim from slatt 0.2.2, to be refactored
-Package: slanode
 Programmers: JLB
 
 Purpose: implementing lattice nodes and other itemset usages such as generators
@@ -120,5 +118,5 @@ if __name__=="__main__":
     "some little testing needed here"
     pass
 
-#    print "slatt module itset called as main and running as test..."
+##    print "slatt module itset called as main and running as test..."
 
