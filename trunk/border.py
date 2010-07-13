@@ -2,8 +2,7 @@ class Border:
     """
     to implement a couple of methods appropriate for the
     border algorithm to construct closure lattices
-    maybe should become a subclass of list when this
-    is doable
+    (should become a subclass of list when this is doable)
     """
 
     def __init__(self):
@@ -11,7 +10,6 @@ class Border:
         self.contents = []
 
     def append(self,e):
-        "append one more set"
         self.contents.append(e)
 
     def cover_update(self,e,latt):
@@ -20,9 +18,8 @@ class Border:
         distinguish candidates that were already in the border
         lattice needed to get intersection as a closure, maybe
         there is a better way
-        TO REDO URGENTLY: remove print and rethink as per my notes
+        TO DO: rethink as per my notes
         """
-##        print "cover-update for", e, "with border", self.contents
         candidates_in = []
         candidates_out = set([])
         cover = []
@@ -35,11 +32,8 @@ class Border:
                 "potential cover is proper subset intersection"
                 rr = set(ee.intersection(e))
                 r = latt.close(rr)
-##                print "inters", ee, e, rr, r
                 candidates_out.add(r)
                 newborder.append(ee)
-##        print "candidates in", candidates_in
-##        print "candidates out", candidates_out
         for ee in candidates_in:
             "pick maxima, return the others back to the border"
             for eee in list(candidates_out) + candidates_in:
@@ -59,8 +53,6 @@ class Border:
                 "no larger candidate"
                 cover.append(ee)
         self.contents = newborder
-##        print "cover:", cover
-##        print "new border:", newborder
         return cover
 
 if __name__=="__main__":
