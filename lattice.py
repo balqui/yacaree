@@ -14,8 +14,12 @@ Offers:
 
 ToDo:
 
+.handle negative border issues
 .read it in from XML file, edges included
 """
+
+from heapq import heapify, heappush, heappop
+from collections import defaultdict
 
 import statics
 from iface import iface
@@ -23,10 +27,6 @@ from itset import ItSet
 from dataset import Dataset
 from clminer import ClMiner
 from border import Border
-##from corr import corr
-
-from heapq import heapify, heappush, heappop
-from collections import defaultdict
 
 class Lattice:
     """
@@ -36,26 +36,24 @@ class Lattice:
     Also iterator on the basis of support and support ratio
     Closures expected ordered in the list by decreasing supports
     or increasing sizes
-    Compute also some minimal antecedents
     """
 
     def __init__(self,datasetfilename):
-        "float supp in [0,1], hardwired confidence thr"
+        self.dataset = Dataset(datasetfilename)
         self.closeds = []
         self.supps = {}
         self.suppratios = {}
-        self.allbasics = {}
         self.immpreds = defaultdict(list)
         self.ready = []
         self.freezer = []
-        self.dataset = Dataset(datasetfilename)
-        self.boosthr = 1.3
+        self.boosthr = statics.initialboost
 
     def candClosures(self,supp=0):
         """
         iterate over closures that reach support ratio
         above current value of boosthr
-        and support above supp, default no pruning
+        and support above supp in [0,1], default a handful of
+        transactions as indicated by statics.genabsupp
         keep in prevcands closures already considered to avoid dup
         lie on iterator from ClMiner
         """
@@ -90,7 +88,7 @@ class Lattice:
             while self.ready:
                 yield heappop(self.ready)[1]
         for st in bord.contents:
-            "there remain to yield the maximal sets"
+            "there remain to yield the maximal sets - wrong suppratio there"
             heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
         while self.ready:
             yield heappop(self.ready)[1]
@@ -140,13 +138,18 @@ class Lattice:
         return s
 
     def reviseboost(self,v):
-        self.boosthr = v
-        while self.freezer:
-            if -self.freezer[0][0] > self.boosthr:
-                (spp,st) = heappop(self.freezer)
-                heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
-            else:
-                break
+        "only to reduce it, and provided it does not get that low"
+        if v < statics.absoluteboost:
+            v = statics.absoluteboost
+        if v < self.boosthr:
+            self.boosthr = v
+            iface.report("Confidence boost bound reduced to %2.3f" % v)
+            while self.freezer:
+                if -self.freezer[0][0] > self.boosthr:
+                    (spp,st) = heappop(self.freezer)
+                    heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
+                else:
+                    break
 
 
 if __name__=="__main__":
@@ -169,13 +172,15 @@ if __name__=="__main__":
     la = Lattice(fnm)
 
     la.boosthr = 0
-    for a in la.candClosures():
+    for a in la.candClosures(0.1):
         print "\nClosures: ", a, la.supps[a]
         print "imm preds:"
         for e in la.immpreds[a]: print e, ",",
         print
         print "all preds:"
         for e in la.allpreds(a): print e, ",",
+##        print "supp ratio:", la.suppratios[a]
+        
 
     exit(2)
 
@@ -186,28 +191,5 @@ if __name__=="__main__":
 
     exit(1)
 
-    print "Closure of ac:", la.close(set2node(auxitset("a c")))
-    print "Closure of ab:", la.close(str2node("a b"))
-    print "Is ac closed?", la.isclosed(str2node("a c / 7777"))
-    print "Is ab closed?", la.isclosed(str2node("a b"))
 
     
-    (y,n) = la._cut(la.close(set2node("a")),int(0.1*statics.scale))
-    print "cutting at threshold", 0.1
-    print "pos cut at a:", y
-    print "neg cut at a:", n
-
-    print "cutting all nodes now at threshold", 0.75
-    for nd in la.candClosures():
-        print
-        print "At:", nd
-        print "  mxs:", nd.mxs, "mns:", nd.mns
-        (y,n) = la._cut(nd,int(0.75*statics.scale))
-        print "pos cut:",
-        for st in y: print st,
-        print
-        print "neg cut:",
-        for st in n: print st,
-        print
-
-

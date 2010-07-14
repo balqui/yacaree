@@ -60,6 +60,7 @@ class Dataset:
             if not isempty:
                 self.nrtr += 1
         self.nrits = len(self.univ)
+        self.datasetfile.close()
         iface.say("...dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " items, with a total of " +
