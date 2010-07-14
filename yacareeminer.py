@@ -82,7 +82,7 @@ if __name__=="__main__":
 
 ##    fnm = "pumsb_star" # add a safety support eg 0.6 to minerules
 ##    fnm = "adultrain"  # add a safety support eg 0.05 to minerules
-##    fnm = "cestas20"
+    fnm = "cestas20"
 ##    fnm = "cmc-recod2"
     
     ruleminer = yacareeMiner(fnm)
