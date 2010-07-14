@@ -12,7 +12,14 @@ data in Dataset: univ, nrtr, nrits, nrocc
 
 ToDo:
 
-xml must migrate from here to lattice and keep the Hasse edges (optionally maybe)
+handle the neg border:
+ gives max non support
+ allows us to set correct value to the
+ support ratios of the maximal sets
+ consider sending the neg border from this iterator
+ and handling these issues in lattice
+
+xml in lattice, keep the Hasse edges (optionally maybe)
 
 xml filename should include in the name not the supp but the maxnonsupp
 
@@ -24,54 +31,49 @@ is higher than in the file
 
 """
 
-import xml.etree.ElementTree
-import statics
-
-from itset import ItSet
-
 from math import floor
+from heapq import heapify, heappush, heappop
+
+import statics
+from itset import ItSet
 from iface import iface
 from dataset import Dataset
-##from slanode import slanode, str2node, set2node, auxitset
-from heapq import heapify, heappush, heappop
-##from glob import glob
 
 class ClMiner:
     """
-
     """
 
     def __init__(self,supp,dataset):
-        "float supp in [0,1] - read from clos file or create it from dataset"
-        self.supp = supp
+        """
+        float supp in [0,1]; except if 0, means use statics.genabsupp 
+        create closure space from dataset
+        ToDo: read it in from clos file
+        """
         self.dataset = dataset
-        self.supp_percent = self.topercent(supp)
+        if supp == 0:
+            "mild default bound"
+            supp = statics.genabsupp
+        self.intsupp = floor(supp * dataset.nrtr)
+        self.supp_percent = self.topercent(self.intsupp)
         self.xmlfilename = "%s_cl%2.3fs.xml" % (dataset.filename,self.supp_percent)
         self.card = 0
         self.negbordsize = 0
         self.maxnonsupp = 0
         self.maxitemsupp = 0
         self.minsupp = 0
-        self.intsupp = floor(supp * dataset.nrtr) # support bound into absolute int value
-        try:
-            clfile = open(self.xmlfilename)
-            self.mineclosures = self.readclosures
-        except IOError:
-            "xml stored closures not found, must run miner"
-            self.mineclosures = self.computeclosures
 
-    def computeclosures(self):
+    def mineclosures(self):
         "no closures file, iterator must mine closed sets"
         clos_singl = set([])
         self.negbordsize = 0
         iface.report("Computing closures at support %3.2f%%;" %
-                        self.topercent(self.supp)) 
+                        self.topercent(self.intsupp)) 
         iface.say("initializing singletons...") # reserve to only very verbose
         self.maxitemsupp = 0
         self.maxnonsupp = 0
         for item in self.dataset.univ:
             "initialize (min-)heap with closures of singletons"
-            iface.pong() # reserve to only verbose
+            iface.pong() # reserve to only verbose - no further pongs, take care of this upon using iterator
             supset = self.dataset.occurncs[item]
             supp = len(supset)
             if supp > self.maxitemsupp: self.maxitemsupp = supp
@@ -102,7 +104,6 @@ class ClMiner:
             for ext in clos_singl:
                 "try extending with freq closures of singletons"
                 if not ext[1] <= cl[1]:
-                    "no further pongs, take care of this upon using iterator"
                     supportset = cl[2] & ext[2]
                     spp = len(supportset)
                     if spp <= self.intsupp:
@@ -116,42 +117,18 @@ class ClMiner:
                         if next_clos not in [ cc[1] for cc in pend_clos ]:
                             heappush(pend_clos, (self.dataset.nrtr-len(supportset),
                                      next_clos, frozenset(supportset)))
-##        iface.endreport()
 
-    def readclosures(self):
+    def topercent(self,anyintsupp):
         """
-        ToDo: check support in xml file,
-        read/write further params there
-        (e.g. dataset params, negbordsize, max (non)supp, min supp abs/%)
-        """
-        iface.report("Loading closures from XML file %s;" %
-                     self.xmlfilename) 
-        xmldoc = xml.etree.ElementTree.parse(self.xmlfilename)
-        elemclos = xmldoc.find("closures")
-        for clo in elemclos.getchildren():
-            "handle a closed set"
-            iface.pong()
-            s = set()
-            for itelem in clo.getchildren():
-                "to do: check they are items"
-                it = itelem.get("value")
-                s.add(it)
-            clos = (ItSet(s),int(clo.get("support")))
-            self.card += 1
-            yield clos
-        iface.endreport()
-
-    def topercent(self,anysupp):
-        """
-        anysupp expected in [0,1], eg a support bound
+        anyintsupp expected absolute int support bound
         gets translated into percent and truncated according to scale
         (e.g. for scale 100000 means three decimal places)
         """
-        return 100.0*floor(statics.scale*anysupp)/statics.scale
+        return floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr)/statics.scale
 
 if __name__=="__main__":
 
-    support = 0.15    
+    support = 0.15
 ##    support = 0.5
 ##    fnm = "lenses_recoded"
     fnm = "e13"
@@ -159,17 +136,10 @@ if __name__=="__main__":
 ##    fnm = "pumsb_star"
     iface.report("Module clminer running as test on file " +
                  fnm + ".txt with support " + ("%2.3f%%" % support))
+    
     miner = ClMiner(support,Dataset(fnm+".txt"))
-    iface.report(str(miner.card)+" closures found.") 
-    iface.say("Additionally checked " + str(miner.negbordsize) +
-              " infrequent sets as negative border.")
-    iface.say("The max support is "+str(miner.maxitemsupp)+".")
-    iface.say("The max nonsupport is "+str(miner.maxnonsupp)+".")
-    iface.say("The effective absolute support threshold is "+str(miner.minsupp)+
-                  (", equivalent to %2.3f" % (float(miner.minsupp*100)/miner.dataset.nrtr)) +
-                   "% of " + str(miner.dataset.nrtr) + " transactions.")
-
-    iface.endreport()
 
     for e in miner.mineclosures():
         iface.say(str(e[0])+" ("+str(e[1])+")\n")
+
+
