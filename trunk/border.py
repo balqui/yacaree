@@ -1,8 +1,6 @@
 class Border:
     """
-    to implement a couple of methods appropriate for the
-    border algorithm to construct closure lattices
-    (should become a subclass of list when this is doable)
+    Implements the border algorithm to construct closure lattices
     """
 
     def __init__(self):
@@ -10,15 +8,14 @@ class Border:
         self.contents = []
 
     def append(self,e):
+        "should subclass list when upgrading to Python 3"
         self.contents.append(e)
 
     def cover_update(self,e,latt):
         """
         return all covers of e and take them out of the border
         distinguish candidates that were already in the border
-        lattice needed to get intersection as a closure, maybe
-        there is a better way
-        TO DO: rethink as per my notes
+        lattice needed to get intersection as a closure
         """
         candidates_in = []
         candidates_out = set([])
@@ -55,7 +52,7 @@ class Border:
         self.contents = newborder
         return cover
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     class pseudolatt():
         "stub to test Border with plain intersections"

@@ -26,8 +26,10 @@ also:
 
 """
 
-from iface import iface
 from collections import defaultdict
+
+import statics
+from iface import iface
 
 class Dataset:
 
@@ -35,20 +37,21 @@ class Dataset:
         "find actual file, open, and read the dataset in"
         if filename is None:
             iface.reportwarning("No dataset file specified.")
-            filename = raw_input("Dataset File Name? ")
+            filename = iface.ask_input("Dataset File Name? ")
         if len(filename)<=3 or filename[-4] != '.':
-            filename +=".txt"
-        self.datasetfile = iface.openfile(filename)
+            filenamelong = filename + statics.datafilext
+        else:
+            filenamelong = filename
+        self.datasetfile = iface.openfile(filenamelong)
         self.filename = filename
         iface.report("Reading in dataset from file " +
-                     filename + " and computing some parameters...")
+                     filenamelong) # + " and computing some parameters...")
         self.nrocc = 0
         self.nrtr = 0
         self.univ = set([])
         self.transcns = defaultdict(set)
         self.occurncs = defaultdict(set)
         for line in self.datasetfile:
-            iface.pong()
             isempty = True
             for el in line.strip().split():
                 if len(el)>0:
@@ -61,7 +64,7 @@ class Dataset:
                 self.nrtr += 1
         self.nrits = len(self.univ)
         self.datasetfile.close()
-        iface.say("...dataset read in. Consists of " +
+        iface.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
@@ -76,9 +79,12 @@ class Dataset:
 
 if __name__ == "__main__":
 
-    iface.repong()
-    iface.say(""); iface.endreport() # extra newline for PythonWin editor
-    d = Dataset("e13")
+    fnm = "e13"
+##    fnm = "pumsb_star"
+##    fnm = "adultrain"
+    d = Dataset(fnm)
+    if fnm != "e13":
+        exit(5)
     tr_a = d.occurncs['a']
     tr_c = d.occurncs['c']
     tr = tr_a & tr_c
