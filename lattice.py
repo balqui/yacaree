@@ -16,6 +16,11 @@ ToDo:
 
 .handle negative border issues
 .read it in from XML file, edges included
+ xml filename should include in the name not the supp but the maxnonsupp
+ get it from neg border and then glob files and pick the one with highest
+ maxnonsupp that is below supp, if it exists, o/w must mine
+ load only a part of the closures in the available file, if desired support
+ is higher than in the file
 """
 
 from heapq import heapify, heappush, heappop
@@ -47,20 +52,21 @@ class Lattice:
         self.ready = []
         self.freezer = []
         self.boosthr = statics.initialboost
+        self.miner = None
 
     def candClosures(self,supp=0):
         """
         iterate over closures that reach support ratio
         above current value of boosthr
-        and support above supp in [0,1], default a handful of
-        transactions as indicated by statics.genabsupp
+        and support above supp in [0,1],
+        default as indicated by statics.genabsupp
         keep in prevcands closures already considered to avoid dup
         lie on iterator from ClMiner
         """
         prevcands = set([])
-        miner = ClMiner(supp,self.dataset)
         bord = Border()
-        for (node,supp) in miner.mineclosures():
+        self.miner = ClMiner(supp,self.dataset)
+        for (node,supp) in self.miner.mineclosures():
             """
             set up preds and everything;
             closures come in either nonincreasing support or nondecreasing
@@ -70,7 +76,6 @@ class Lattice:
             closeds and use nodes instead
             suppratios undefined for maximal sets - do we need this?
             """
-            iface.pong()
             self.closeds.append(node)
             self.supps[node] = supp
             self.immpreds[node] = bord.cover_update(node,self)
@@ -87,9 +92,18 @@ class Lattice:
                     heappush(self.freezer,(-supprt,pr))
             while self.ready:
                 yield heappop(self.ready)[1]
+        iface.report("Closures exploration finished at support " +
+                     str(self.miner.intsupp) +
+                     ("(%2.3f%%)" % self.miner.to_percent(self.miner.intsupp)) + ".")
         for st in bord.contents:
-            "there remain to yield the maximal sets - wrong suppratio there"
-            heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
+            """
+            there remain to yield the positive border (maximal sets) 
+            wrong suppratio there, skip them for the time being
+            next version of yacaree should get their correct suppratio
+            out of the negative border
+            """
+            pass
+##            heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
         while self.ready:
             yield heappop(self.ready)[1]
 
@@ -137,21 +151,28 @@ class Lattice:
             s += str(e) + "\n"
         return s
 
-    def reviseboost(self,v):
-        "only to reduce it, and provided it does not get that low"
+    def reviseboost(self,s,n):
+        """
+        current value weights as boostab of the lifts added up
+        only to reduce it, and provided it does not get that low
+        """
+        s = s + statics.boostab*self.boosthr
+        n = n + statics.boostab
+        v = float(s)/n
         if v < statics.absoluteboost:
             v = statics.absoluteboost
         if v < self.boosthr:
             self.boosthr = v
-            iface.report("Confidence boost bound reduced to %2.3f" % v)
+            iface.report("Confidence boost bound reduced to %2.3f." % v)
             while self.freezer:
+                "fish back in closures that reach enough supp ratio now"
                 if -self.freezer[0][0] > self.boosthr:
                     (spp,st) = heappop(self.freezer)
                     heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
                 else:
                     break
 
-
+       
 if __name__=="__main__":
 
     
@@ -162,14 +183,19 @@ if __name__=="__main__":
 
 ##    exit(1)
     
-    fnm = "e13"
+##    fnm = "e13"
 ##    fnm = "exbordalg"
-##    fnm = "pumsb_star"
+    fnm = "pumsb_star"
     
 ##    la = lattice(0.01,fnm)
 ##    la = lattice(0.6,fnm)
 
     la = Lattice(fnm)
+
+    for a in la.candClosures():
+        print a
+         
+    exit(3)
 
     la.boosthr = 0
     for a in la.candClosures(0.1):

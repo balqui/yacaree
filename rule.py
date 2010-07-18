@@ -13,17 +13,32 @@ class Rule:
         self.cboo = 0
 
     def __str__(self):
-        res = ("[conf: %2.3f] " % self.conf)
-        res += " ".join(sorted(self.an))
-        res +=  " => "
+        sp4 = "    "
+        res = sp4 + " ".join(sorted(self.an))
+        res +=  "\n" + sp4 + sp4 + "=> \n" + sp4 + sp4 + sp4
         res += " ".join(sorted(self.rcn))
-        res += (" [supp: %2.3f; " % self.supp)
+        res += ("\n[conf: %2.3f;" % self.conf)
+        res += ("supp: %2.3f; " % self.supp)
         res += ("lift: %2.3f" % self.lift)
         if self.cboo == 0:
-            res += "]"
+            res += "]\n"
         else:
-            res += ("; conf boost: %2.3f] " % self.cboo)
+            res += ("; boost: %2.3f]\n" % self.cboo)
         return res
+
+
+##    def __str__(self):
+##        res = ("[conf: %2.3f] " % self.conf)
+##        res += " ".join(sorted(self.an))
+##        res +=  " => "
+##        res += " ".join(sorted(self.rcn))
+##        res += (" [supp: %2.3f; " % self.supp)
+##        res += ("lift: %2.3f" % self.lift)
+##        if self.cboo == 0:
+##            res += "]"
+##        else:
+##            res += ("; conf boost: %2.3f] " % self.cboo)
+##        return res
 
 
             
