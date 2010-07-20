@@ -9,10 +9,11 @@ from ruleminer import RuleMiner
 if __name__ == "__main__":
 
 ##    fnm = "adultrain"
-##    fnm = "markbaskclem"
-    fnm = "pumsb_star"
+    fnm = "markbaskclem"
+##    fnm = "pumsb_star"
 ##    fnm = "cmc-full"
 ##    fnm = "papersTr"
+##    fnm = "votesTr"
 ##    next to be tested
 ##    fnm = "chess"
 ##    fnm = "connect"
