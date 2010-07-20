@@ -68,7 +68,6 @@ class ClMiner:
         sorteduniv = sorted(sorteduniv,reverse=True)
         self.maxitemsupp = sorteduniv[0][0]
         cnt = 0
-        size_pend = 0
         clos_singl = set([])
         for (s,it) in sorteduniv:
             "to initialize minheap of closures of singletons"
@@ -81,7 +80,6 @@ class ClMiner:
             supset = self.dataset.occurncs[it]
             cl_node = (-s, frozenset(self.dataset.inters(supset)),
                        frozenset(supset))
-            size_pend += getsizeof(cl_node)
             clos_singl.add(cl_node)
 
         report_supp_period = self.maxitemsupp / statics.supp_rep_often
@@ -95,36 +93,35 @@ class ClMiner:
             yield (ItSet([]),self.dataset.nrtr)
             self.card += 1
 
-        suicide = 3
-        
         self.pend_clos = list(clos_singl.copy())
         heapify(self.pend_clos)
         self.minsupp = self.dataset.nrtr
+        size_pend = self.pend_clos_size()
         while self.pend_clos:
             "extract largest-support closure and find subsequent ones"
             if (cnt_pend > statics.pend_limit or
                 size_pend > statics.pend_mem_limit):
-                "if too large current pending heap, increase support"
+                "too large current pending heap, increase support"
                 self.halve_pend_clos()
                 cnt_pend = len(self.pend_clos)
                 size_pend = self.pend_clos_size()
             cl = heappop(self.pend_clos)
             cnt_pend -= 1
-            size_pend -= getsizeof(cl)
             spp = -cl[0]
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
                 break
+            if spp < self.minsupp:
+                self.minsupp = spp
             if spp < report_supp:
                 "time to report progress"
+                size_pend = self.pend_clos_size()
                 iface.report(str(self.card) + " closures computed so far; " +
                              "currently explored support: " + str(spp) +
                              "; pending heap length: " + str(len(self.pend_clos)) + 
                              "; pending heap size: " + str(size_pend) + 
                              "; neg border: " + str(self.negbordsize) + ".")
                 report_supp = report_supp - report_supp_period
-                suicide -= 1
-                if suicide == 0: exit(4)
             self.card += 1
             yield (ItSet(cl[1]),spp)
             for ext in clos_singl:
@@ -137,15 +134,12 @@ class ClMiner:
                         if spp > self.maxnonsupp:
                             self.maxnonsupp = spp
                     else:
-                        if spp < self.minsupp:
-                            self.minsupp = spp
                         next_clos = frozenset(self.dataset.inters(supportset))
                         if (next_clos not in
                             [ cc[1] for cc in self.pend_clos ]):
                             cnt_pend += 1
                             cl_node = (-len(supportset), next_clos,
                                        frozenset(supportset))
-                            size_pend += getsizeof(cl_node)
                             heappush(self.pend_clos, cl_node)
 
     def to_percent(self,anyintsupp):

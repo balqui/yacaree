@@ -49,9 +49,10 @@ scale = 100000
 
 epsilon = 100.0/scale
 
-pend_limit = 20000
+pend_limit = 16384 # 2 to power 14
 
-pend_mem_limit = 500000000 # half a GB devoted to the pending closures heap
+pend_mem_limit = 250000000
+## fourth of a GB devoted to the pending closures heap
 
 boostab = 5
 
