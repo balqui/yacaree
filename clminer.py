@@ -99,14 +99,15 @@ class ClMiner:
         size_pend = self.pend_clos_size()
         while self.pend_clos:
             "extract largest-support closure and find subsequent ones"
-            if (cnt_pend > statics.pend_limit or
-                size_pend > statics.pend_mem_limit):
+            if (cnt_pend > statics.pend_len_limit or
+                size_pend > statics.pend_total_limit):
                 "too large current pending heap, increase support"
                 self.halve_pend_clos()
                 cnt_pend = len(self.pend_clos)
                 size_pend = self.pend_clos_size()
             cl = heappop(self.pend_clos)
             cnt_pend -= 1
+            size_pend -= len(cl[1]) + len(cl[2]) + 1
             spp = -cl[0]
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
@@ -116,11 +117,9 @@ class ClMiner:
             if spp < report_supp:
                 "time to report progress"
                 size_pend = self.pend_clos_size()
-                iface.report(str(self.card) + " closures computed so far; " +
-                             "currently explored support: " + str(spp) +
-                             "; pending heap length: " + str(len(self.pend_clos)) + 
-                             "; pending heap size: " + str(size_pend) + 
-                             "; neg border: " + str(self.negbordsize) + ".")
+                iface.report(str(self.card) +
+                             " closures computed down to current support of " +
+                             str(spp) + ".")
                 report_supp = report_supp - report_supp_period
             self.card += 1
             yield (ItSet(cl[1]),spp)
@@ -141,6 +140,7 @@ class ClMiner:
                             cl_node = (-len(supportset), next_clos,
                                        frozenset(supportset))
                             heappush(self.pend_clos, cl_node)
+                            size_pend += (1 + len(cl_node[1]) + len(cl_node[2]))
 
     def to_percent(self,anyintsupp):
         """
@@ -151,12 +151,19 @@ class ClMiner:
         return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 statics.scale)
 
-    def pend_clos_size(self):
+    def pend_clos_size_in_memory(self):
+        "not used at present"
         m = sys.getsizeof(self.pend_clos)
         for b in self.pend_clos:
             m += (sys.getsizeof(b[0]) +
                   sys.getsizeof(b[1]) +
                   sys.getsizeof(b[2]))
+        return m
+
+    def pend_clos_size(self):
+        m = len(self.pend_clos)
+        for pend in self.pend_clos:
+            m += len(pend[1]) + len(pend[2])
         return m
 
     def halve_pend_clos(self):

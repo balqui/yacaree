@@ -13,9 +13,9 @@ scale: for writing ints as floats with controlled precision loss
 
 epsilon: to compare floats to zero, try to avoid using it
 
-pend_limit: limit on the size of the heap of closures pending for expansion
+pend_len_limit: limit on the size of the heap of closures pending for expansion
 
-pend_mem_limit: max amount of memory allowed for the pending closures
+pend_total_limit: max total length of info related to the pending closures
 
 boostab: stability of boost, weight of current value in front of lift values coming in
 
@@ -49,16 +49,15 @@ scale = 100000
 
 epsilon = 100.0/scale
 
-pend_limit = 16384 # 2 to power 14
+pend_len_limit = 16384 # 2 to power 14
 
-pend_mem_limit = 250000000
-## fourth of a GB devoted to the pending closures heap
+pend_total_limit = 250000000
 
 boostab = 5
 
 confthr = int((2.0/3) * scale)
 
-supp_rep_often = 25 # report current support at most 25 times
+supp_rep_often = 15 # report current support at most that many times
 
 maxrules = 0
 
@@ -66,7 +65,7 @@ initialboost = 1.15
 
 absoluteboost = 1.06
 
-genabsupp = 5 # absolute number of transactions
+genabsupp = 5 # absolute number of transactions imposed as support bound
 
 ##def never(n,s,t):
 ##    return False
