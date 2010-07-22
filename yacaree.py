@@ -20,7 +20,7 @@ class Yacaree:
         filenamerules = filenamenow + "rules.txt"
         statics.logfile = iface.openfile(filenamenow + ".log","w")
         results_file = iface.openfile(filenamerules,"w")
-        sleep(2)
+        iface.disable_finish()
         miner = RuleMiner(statics.filenamefull)
         rules = []
         for rul in miner.minerules():
@@ -36,10 +36,14 @@ class Yacaree:
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
         results_file.close()
         iface.report("Rules sorted according to confidence boost" +
-                     " and written to file " + filenamerules + 
-                     "; closing output and log files. End of process.")
+                     " and written to file " + filenamerules + ".")
+        iface.report("End of process of dataset in file " +
+                     statics.filenamefull + ".")
+        iface.report("Closing output and log files.")
         statics.logfile.close()
+        statics.logfile = None
         iface.enable_again()
+        iface.enable_finish()
 
     def generous_run(self):
         "unused for the time being"
