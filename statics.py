@@ -57,7 +57,7 @@ boostab = 5
 
 confthr = int((2.0/3) * scale)
 
-supp_rep_often = 15 # report current support at most that many times
+supp_rep_often = 5 # report current support at most that many times
 
 maxrules = 0
 
