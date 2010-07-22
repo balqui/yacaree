@@ -1,116 +1,118 @@
 """
-
-Project: yacaree
-Programmer: JLB
-
-Description:
-
-Interface 'static'-like class for provisional running of the
- tool, vt100-style
-To encapsulate all "print" statements so that migration
- to Python 3 is easier
-And to become a GUI some day
-
-openfile: checks readability
-
-Usage:
-say: outputs a string message, no line breaks,
- may add a verb level clearance to allow blocking it,
- default is only say it at verb level 3
-report: likewise, prepends a line break,
- variants for warnings and errors
-ask_input:
- user communication
-
-ToDo:
-verb: verbosity level
- 0:almost silent
- 1:progress rep
- 2:further info
- 3:a lot
-progress reporting
- pongs: a dot is written every that many pong calls
- pong ("dual to ping"): acts as progress bar advance
- repong: initializes it and admits a "speed" adjustment
-
+Alternative interface with a simple Tkinter-based GUI
 """
 
-from sys import stdout
+import Tkinter
+import tkFileDialog
 from datetime import datetime
+from time import sleep
 
 import statics
 
 class iface:
 
-    verb = 3 # ToDo: distinguish verbosity levels
-##    pongs = 250 # ToDo: handle some sort of progress reporting
-##    countpongs = 0
-    
-## ToDo: optionally several messages in the same line
+    @classmethod
+    def go(cls,mainprog):
+        cls.root = Tkinter.Tk()
+        left_frame = Tkinter.Frame(cls.root)
+        left_frame.pack(side=Tkinter.LEFT)
+        logo = Tkinter.BitmapImage(file="yac-v03.xbm")
+        logo_frame = Tkinter.Frame(left_frame)
+        logo_frame.pack(side = Tkinter.TOP)
+        logo_label = Tkinter.Label(logo_frame,image=logo) # text="y image here") # 
+        logo_label.pack(side=Tkinter.LEFT)
+        name = Tkinter.Label(logo_frame,text="yacaree")
+        name.pack(side=Tkinter.LEFT)
+        process_frame = Tkinter.LabelFrame(left_frame,text="Process")
+        process_frame.pack(side=Tkinter.BOTTOM)
+        
+        console_frame = Tkinter.LabelFrame(cls.root,text="Console")
+        console_frame.pack(side=Tkinter.LEFT)
+        cls.console = Tkinter.Text(console_frame)
+        cls.console.pack(side=Tkinter.LEFT)
+        scrollY = Tkinter.Scrollbar(console_frame,
+                                    orient = Tkinter.VERTICAL,
+                                    command = cls.console.yview)
+        scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
+        cls.console.configure(yscrollcommand = scrollY.set)
 
-##    pendinglinebreak = False
+        button_width = 30
+        button_height = 5
 
-##    @classmethod
-##    def say(cls,m,vb=3):
-##        if cls.verb >= vb:
-##            print m,
-##            if statics.logfile: statics.logfile.write(m)
-##            cls.pendinglinebreak = True
+        cls.filepick = Tkinter.Button(process_frame)
+        cls.filepick.configure(text = "Choose a \ndataset file",
+                               width = button_width,
+                               height = button_height,
+                               command = cls.choose_datafile)
+        cls.filepick.pack()
 
-# report methods exported to GUI should give opportunities of interaction
+        cls.run = Tkinter.Button(process_frame)
+        cls.run.configure(text = "Run yacaree\n(and be patient)",
+                          width = button_width,
+                          height = button_height,
+                          state = Tkinter.DISABLED,
+                          command = mainprog.standard_run)
+        cls.run.pack()
+
+        cls.finish_proc = Tkinter.Button(process_frame)
+        cls.finish_proc.configure(text = "Finish process",
+                                  width = button_width,
+                                  height = button_height,
+                                  command = cls.finish)
+        cls.finish_proc.pack()
+        cls.root.mainloop()
 
     @classmethod
-    def report(cls,m="",vb=3):
-        print "[yacaree]", m
-        if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
-        stdout.flush()
+    def choose_datafile(cls):
+        fnm = tkFileDialog.askopenfilename(
+            defaultextension=".txt",
+            filetypes = [("text files","*.txt"), ("all files","*.*")],
+            title = "Choose a dataset file")
+        if fnm:
+            cls.run.configure(state = Tkinter.NORMAL)
+            statics.filenamefull = fnm
+            statics.filename, statics.filenamext = fnm.rsplit('.',1)
+            cls.report("Selected dataset in file " + fnm)
 
-## ToDo: handle verbosity, handle line breaks
-##        "flush previous messages, write a starting message"
-##        if cls.verb >= vb:
-##            if cls.pendinglinebreak: 
-##                print
-##                if statics.logfile: statics.logfile.write("\n")
-##            cls.pendinglinebreak = True
+    @classmethod
+    def finish(cls):
+        if statics.logfile: statics.logfile = None
+        cls.root.destroy()
+        exit(0)
+
+    @classmethod
+    def enable_again(cls):
+        cls.run.configure(state = Tkinter.DISABLED)
+
+    @classmethod
+    def disable_again(cls):
+        pass
+
+    @classmethod
+    def report(cls,m):
+        cls.console.insert(Tkinter.END,"[yacaree] " + m)
+        cls.console.insert(Tkinter.END,"\n")
+        if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
 
     @classmethod
     def endreport(cls):
-        "flush - may become again necessary for line breaks"
         pass
-    
-##        if cls.pendinglinebreak: 
-##            print
-##            if statics.logfile: statics.logfile.write("\n")
-##        cls.pendinglinebreak = False
 
     @classmethod
-    def reportwarning(cls,m="",vb=1):
-        print "[yacaree warning]", m
+    def reportwarning(cls,m):
+        cls.console.insert(Tkinter.END,"[yacaree warning] " + m)
+        cls.console.insert(Tkinter.END,"\n")
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
-        stdout.flush()
-
-##        "flush, write warning message at low verbosity"
-##        if cls.verb >= vb:
-##            print
 
     @classmethod
-    def reporterror(cls,m="",vb=0):
-        print "[yacaree error] " + m
+    def reporterror(cls,m):
+        m += "\n"
+        cls.console.insert(Tkinter.END,"[yacaree error] " + m)
         m = "Error: " + m
-        if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
+        if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m)
+        sleep(10)
+        cls.root.destroy()
         exit(m)
-
-##        "flush, write verbosity-independent error message, exit"
-##        if cls.pendinglinebreak: 
-##            print
-##            if statics.logfile: statics.logfile.write("\n")
-
-    @classmethod
-    def ask_input(cls,prompt):
-        if statics.logfile: statics.logfile.write("Asked:" + prompt + "\n")
-        ans = raw_input(prompt)
-        if statics.logfile: statics.logfile.write("Answer:" + ans + "\n")
-        return ans
 
     @classmethod
     def openfile(cls,filename,mode="r"):
@@ -138,18 +140,9 @@ class iface:
             cls.reporterror("Requested to open file in mode '" +
                             mode + "': no such mode available.")
 
-## Progress reporting methods to be refactored
+if __name__ == "__main__":
 
-##    @classmethod
-##    def repong(cls,pn=0):
-##        cls.countpongs = 0
-##        if pn > 0:
-##            cls.pongs = pn
+    i = iface()
+    
 
-##    @classmethod
-##    def pong(cls):
-##        "not too successful attempt at progress reporting"
-##        cls.countpongs += 1
-##        if cls.countpongs == cls.pongs:
-##            cls.say(".",1)
-##            cls.countpongs = 0
+    
