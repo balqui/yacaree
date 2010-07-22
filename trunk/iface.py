@@ -3,6 +3,7 @@ Alternative interface with a simple Tkinter-based GUI
 """
 
 import Tkinter
+import tkFont
 import tkFileDialog
 from datetime import datetime
 from time import sleep
@@ -19,16 +20,21 @@ class iface:
         logo = Tkinter.BitmapImage(file="yac-v03.xbm")
         logo_frame = Tkinter.Frame(left_frame)
         logo_frame.pack(side = Tkinter.TOP)
-        logo_label = Tkinter.Label(logo_frame,image=logo) # text="y image here") # 
+        logo_label = Tkinter.Label(logo_frame,image=logo)  
         logo_label.pack(side=Tkinter.LEFT)
-        name = Tkinter.Label(logo_frame,text="yacaree")
+        namefont = tkFont.Font(family = "Helvetica",
+                               size = 18,
+                               weight = "bold")
+        name = Tkinter.Label(logo_frame, text="yacaree",
+                             font = namefont,
+                             anchor=Tkinter.W)
         name.pack(side=Tkinter.LEFT)
         process_frame = Tkinter.LabelFrame(left_frame,text="Process")
         process_frame.pack(side=Tkinter.BOTTOM)
         
         console_frame = Tkinter.LabelFrame(cls.root,text="Console")
         console_frame.pack(side=Tkinter.LEFT)
-        cls.console = Tkinter.Text(console_frame)
+        cls.console = Tkinter.Text(console_frame,undo=True)
         cls.console.pack(side=Tkinter.LEFT)
         scrollY = Tkinter.Scrollbar(console_frame,
                                     orient = Tkinter.VERTICAL,
@@ -76,7 +82,6 @@ class iface:
 
     @classmethod
     def finish(cls):
-        if statics.logfile: statics.logfile = None
         cls.root.destroy()
         exit(0)
 
@@ -89,9 +94,16 @@ class iface:
         pass
 
     @classmethod
+    def enable_finish(cls):
+        cls.finish_proc.configure(state = Tkinter.NORMAL)
+
+    @classmethod
+    def disable_finish(cls):
+        cls.finish_proc.configure(state = Tkinter.DISABLED)
+
+    @classmethod
     def report(cls,m):
-        cls.console.insert(Tkinter.END,"[yacaree] " + m)
-        cls.console.insert(Tkinter.END,"\n")
+        cls.console.insert(Tkinter.END,"[yacaree] " + m + "\n")
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
 
     @classmethod

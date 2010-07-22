@@ -82,7 +82,3 @@ genabsupp = 5 # absolute number of transactions imposed as support bound
 ##            s.discard(e)
 ##            yield s
 
-##closmemory = 1000000000 # 1GB for the Dell Latitude 4310 Win7
-##closmemory = 500000000 # half a GB for testing
-##closmemory = 100000000 # quite small for simple testing
-##closmemory = 20000000 # very small for very simple testing
