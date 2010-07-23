@@ -3,7 +3,6 @@ Using yacaree through the GUI
 """
 
 from datetime import datetime
-from time import sleep
 
 import statics
 from ruleminer import RuleMiner
@@ -36,8 +35,8 @@ class Yacaree:
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
         results_file.close()
         iface.report("Rules sorted according to confidence boost" +
-                     " and written to file " + filenamerules + ".")
-        iface.report("End of process of dataset in file " +
+                     " and written to file " + filenamerules + ".") 
+        iface.report("End of process of dataset in file " + 
                      statics.filenamefull + ".")
         iface.report("Closing output and log files.")
         statics.logfile.close()
