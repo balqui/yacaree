@@ -25,7 +25,7 @@ import sys
 
 from heapq import heapify, heappush, heappop
 from math import floor
-from sys import getsizeof
+##from sys import getsizeof
 
 import statics
 from itset import ItSet
@@ -151,14 +151,14 @@ class ClMiner:
         return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 statics.scale)
 
-    def pend_clos_size_in_memory(self):
-        "not used at present"
-        m = sys.getsizeof(self.pend_clos)
-        for b in self.pend_clos:
-            m += (sys.getsizeof(b[0]) +
-                  sys.getsizeof(b[1]) +
-                  sys.getsizeof(b[2]))
-        return m
+##    def pend_clos_size_in_memory(self):
+##        "not used at present"
+##        m = sys.getsizeof(self.pend_clos)
+##        for b in self.pend_clos:
+##            m += (sys.getsizeof(b[0]) +
+##                  sys.getsizeof(b[1]) +
+##                  sys.getsizeof(b[2]))
+##        return m
 
     def pend_clos_size(self):
         m = len(self.pend_clos)

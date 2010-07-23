@@ -1,12 +1,11 @@
 """
-Alternative interface with a simple Tkinter-based GUI
+A simple Tkinter-based GUI for yacaree
 """
 
 import Tkinter
-import tkFont
 import tkFileDialog
+import tkFont
 from datetime import datetime
-from time import sleep
 
 import statics
 
@@ -20,21 +19,21 @@ class iface:
         logo = Tkinter.BitmapImage(file="yac-v03.xbm")
         logo_frame = Tkinter.Frame(left_frame)
         logo_frame.pack(side = Tkinter.TOP)
-        logo_label = Tkinter.Label(logo_frame,image=logo)  
+        logo_label = Tkinter.Label(logo_frame,image=logo)
         logo_label.pack(side=Tkinter.LEFT)
         namefont = tkFont.Font(family = "Helvetica",
                                size = 18,
                                weight = "bold")
-        name = Tkinter.Label(logo_frame, text="yacaree",
+        name = Tkinter.Label(logo_frame,text="yacaree",
                              font = namefont,
-                             anchor=Tkinter.W)
+                             anchor = Tkinter.W)
         name.pack(side=Tkinter.LEFT)
         process_frame = Tkinter.LabelFrame(left_frame,text="Process")
         process_frame.pack(side=Tkinter.BOTTOM)
         
         console_frame = Tkinter.LabelFrame(cls.root,text="Console")
         console_frame.pack(side=Tkinter.LEFT)
-        cls.console = Tkinter.Text(console_frame,undo=True)
+        cls.console = Tkinter.Text(console_frame)
         cls.console.pack(side=Tkinter.LEFT)
         scrollY = Tkinter.Scrollbar(console_frame,
                                     orient = Tkinter.VERTICAL,
@@ -60,12 +59,12 @@ class iface:
                           command = mainprog.standard_run)
         cls.run.pack()
 
-        cls.finish_proc = Tkinter.Button(process_frame)
-        cls.finish_proc.configure(text = "Finish process",
+        cls.finish_button = Tkinter.Button(process_frame)
+        cls.finish_button.configure(text = "Finish process",
                                   width = button_width,
                                   height = button_height,
                                   command = cls.finish)
-        cls.finish_proc.pack()
+        cls.finish_button.pack()
         cls.root.mainloop()
 
     @classmethod
@@ -82,6 +81,7 @@ class iface:
 
     @classmethod
     def finish(cls):
+        if statics.logfile: statics.logfile = None
         cls.root.destroy()
         exit(0)
 
@@ -95,16 +95,21 @@ class iface:
 
     @classmethod
     def enable_finish(cls):
-        cls.finish_proc.configure(state = Tkinter.NORMAL)
+        cls.finish_button.configure(state = Tkinter.NORMAL)
 
     @classmethod
     def disable_finish(cls):
-        cls.finish_proc.configure(state = Tkinter.DISABLED)
+        cls.finish_button.configure(state = Tkinter.DISABLED)
+##        cls.finish_button.update()
 
     @classmethod
     def report(cls,m):
-        cls.console.insert(Tkinter.END,"[yacaree] " + m + "\n")
-        if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
+        m = " " + m + "\n"
+        cls.console.insert(Tkinter.END,"[yacaree]" + m)
+        cls.console.see(Tkinter.CURRENT)
+        cls.console.update()
+        if statics.logfile: 
+            statics.logfile.write(str(datetime.now()) + m)
 
     @classmethod
     def endreport(cls):
@@ -112,9 +117,12 @@ class iface:
 
     @classmethod
     def reportwarning(cls,m):
-        cls.console.insert(Tkinter.END,"[yacaree warning] " + m)
-        cls.console.insert(Tkinter.END,"\n")
-        if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
+        m = " " + m + "\n"
+        cls.console.insert(Tkinter.END,"[yacaree warning]" + m)
+        cls.console.see(Tkinter.CURRENT)
+        cls.console.update()
+        if statics.logfile: 
+            statics.logfile.write(str(datetime.now()) + m)
 
     @classmethod
     def reporterror(cls,m):
