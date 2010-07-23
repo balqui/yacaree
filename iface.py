@@ -35,11 +35,11 @@ class iface:
         console_frame.pack(side=Tkinter.LEFT)
         cls.console = Tkinter.Text(console_frame)
         cls.console.pack(side=Tkinter.LEFT)
-        scrollY = Tkinter.Scrollbar(console_frame,
+        cls.scrollY = Tkinter.Scrollbar(console_frame,
                                     orient = Tkinter.VERTICAL,
                                     command = cls.console.yview)
-        scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
-        cls.console.configure(yscrollcommand = scrollY.set)
+        cls.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
+        cls.console.configure(yscrollcommand = cls.scrollY.set)
 
         button_width = 30
         button_height = 5
@@ -108,6 +108,7 @@ class iface:
         cls.console.insert(Tkinter.END,"[yacaree]" + m)
         cls.console.see(Tkinter.CURRENT)
         cls.console.update()
+        cls.scrollY.update()
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m)
 

@@ -5,7 +5,7 @@ Programmer: JLB
 
 Module encompassing some static objects
 
-datafilext: extension assumed for dataset files if absent
+filenamext: extension assumed for dataset files if absent
 
 logfile: potential logging file
 
@@ -38,7 +38,7 @@ genabsupp: Do not consider closures with absolute support below this
 
 """
 
-datafilext = ".txt"
+filenamext = ".txt"
 logfile = None
 filename = None
 filenamefull = None

@@ -23,6 +23,9 @@ ask_input:
  user communication
 
 ToDo:
+CLEAN UP
+reorganize "choose data file"
+
 verb: verbosity level
  0:almost silent
  1:progress rep
