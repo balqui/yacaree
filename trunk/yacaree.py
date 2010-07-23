@@ -24,7 +24,7 @@ class Yacaree:
         rules = []
         for rul in miner.minerules():
             rules.append((-rul.cboo,rul))
-            if miner.count == statics.maxrules > 0: break
+            if miner.count == statics.findrules > 0: break
         iface.report(str(miner.count) + " rules obtained from " +
                      str(miner.miner.card) +
                      " closures of support at least " +
@@ -33,6 +33,7 @@ class Yacaree:
         for (b,r) in sorted(rules):
             cnt += 1
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
+            if cnt == statics.maxrules > 0: break
         results_file.close()
         iface.report("Rules sorted according to confidence boost" +
                      " and written to file " + filenamerules + ".") 
@@ -43,16 +44,6 @@ class Yacaree:
         statics.logfile = None
         iface.enable_again()
         iface.enable_finish()
-
-    def generous_run(self):
-        "unused for the time being"
-        statics.genabsupp = 1
-        statics.pend_limit *= 2
-        statics.pend_mem_limit *=4
-        statics.maxrules = 0
-        statics.absoluteboost = 1.02
-        self.standard_run()
-        iface.disable_again()
 
 if __name__ == "__main__":
 

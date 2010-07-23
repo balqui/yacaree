@@ -25,7 +25,7 @@ import sys
 
 from heapq import heapify, heappush, heappop
 from math import floor
-##from sys import getsizeof
+##from sys import getsizeof # not used at present
 
 import statics
 from itset import ItSet
@@ -87,7 +87,7 @@ class ClMiner:
         self.negbordsize = self.dataset.nrits - cnt # singletons in neg border
         sorteduniv = None # return memory space to garbage collector
         cnt_pend = len(clos_singl)
-        iface.report(str(cnt_pend) + " singleton-based closures.")
+##        iface.report(str(cnt_pend) + " singleton-based closures.")
         if self.maxitemsupp < self.dataset.nrtr:
             "largest support on empty closure"
             yield (ItSet([]),self.dataset.nrtr)
