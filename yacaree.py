@@ -35,8 +35,8 @@ class Yacaree:
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
             if cnt == statics.maxrules > 0: break
         results_file.close()
-        iface.report("Rules sorted according to confidence boost" +
-                     " and written to file " + filenamerules + ".") 
+        iface.report(str(cnt) + " rules chosen and sorted according to their " +
+                     "confidence boost written to file " + filenamerules + ".") 
         iface.report("End of process of dataset in file " + 
                      statics.filenamefull + ".")
         iface.report("Closing output and log files.")

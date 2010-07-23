@@ -24,7 +24,7 @@ handle the neg border:
 import sys
 
 from heapq import heapify, heappush, heappop
-from math import floor
+from math import floor, pow
 ##from sys import getsizeof # not used at present
 
 import statics
@@ -82,8 +82,9 @@ class ClMiner:
                        frozenset(supset))
             clos_singl.add(cl_node)
 
-        report_supp_period = self.maxitemsupp / statics.supp_rep_often
-        report_supp = self.maxitemsupp - report_supp_period
+        report_supp_factor = pow(1.0/self.maxitemsupp, 
+                                 1.0/statics.supp_rep_often)
+        report_supp = floor(self.maxitemsupp*report_supp_factor)
         self.negbordsize = self.dataset.nrits - cnt # singletons in neg border
         sorteduniv = None # return memory space to garbage collector
         cnt_pend = len(clos_singl)
@@ -120,7 +121,7 @@ class ClMiner:
                 iface.report(str(self.card) +
                              " closures computed down to current support of " +
                              str(spp) + ".")
-                report_supp = report_supp - report_supp_period
+                report_supp = floor(report_supp*report_supp_factor)
             self.card += 1
             yield (ItSet(cl[1]),spp)
             for ext in clos_singl:
