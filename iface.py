@@ -45,14 +45,14 @@ class iface:
         button_height = 5
 
         cls.filepick = Tkinter.Button(process_frame)
-        cls.filepick.configure(text = "Choose a \ndataset file",
+        cls.filepick.configure(text = "1/ Choose a \ndataset file",
                                width = button_width,
                                height = button_height,
                                command = cls.choose_datafile)
         cls.filepick.pack()
 
         cls.run = Tkinter.Button(process_frame)
-        cls.run.configure(text = "Run yacaree\n(and be patient)",
+        cls.run.configure(text = "2/ Run yacaree\n(and be patient)",
                           width = button_width,
                           height = button_height,
                           state = Tkinter.DISABLED,
@@ -60,7 +60,7 @@ class iface:
         cls.run.pack()
 
         cls.finish_button = Tkinter.Button(process_frame)
-        cls.finish_button.configure(text = "Finish process",
+        cls.finish_button.configure(text = "3/ Finish",
                                   width = button_width,
                                   height = button_height,
                                   command = cls.finish)

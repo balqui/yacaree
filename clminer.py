@@ -119,7 +119,7 @@ class ClMiner:
                 "time to report progress"
                 size_pend = self.pend_clos_size()
                 iface.report(str(self.card) +
-                             " closures computed down to current support of " +
+                             " closures found so far; current support " +
                              str(spp) + ".")
                 report_supp = floor(report_supp*report_supp_factor)
             self.card += 1

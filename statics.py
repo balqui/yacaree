@@ -51,22 +51,22 @@ supp_rep_often = 10 # report current support at most that many times
 ## standard process:
 
 pend_len_limit = 16384 # 2 to power 14
-pend_total_limit = 250000000
+pend_total_limit = 100000000
 confthr = int((2.0/3) * scale)
 findrules = 0
 maxrules = 50
 initialboost = 1.15
-absoluteboost = 1.06
+absoluteboost = 1.05
 genabsupp = 5 # absolute number of transactions
 
 def set_standard():
     "set to the same values as just indicated"
     pend_len_limit = 16384 
-    pend_total_limit = 250000000
+    pend_total_limit = 100000000
     confthr = int((2.0/3) * scale)
     findrules = 0
     maxrules = 50
     initialboost = 1.15
-    absoluteboost = 1.06
+    absoluteboost = 1.05
     genabsupp = 5 
 
