@@ -13,6 +13,8 @@ ToDo:
 
 check heapdict as alternative
 
+try to refactor a bit into cleaner code
+
 handle the neg border:
  find max non support
  allows us to set correct value to the support ratios of the maximal sets
@@ -51,6 +53,8 @@ class ClMiner:
             self.intsupp = statics.genabsupp
         self.supp_percent = self.to_percent(self.intsupp)
         self.pend_clos = []
+        self.size_pend = 0
+        self.cnt_pend = 0
         self.card = 0
         self.negbordsize = 0
         self.maxnonsupp = 0
@@ -70,7 +74,7 @@ class ClMiner:
         cnt = 0
         clos_singl = set([])
         for (s,it) in sorteduniv:
-            "to initialize minheap of closures of singletons"
+            "initialize minheap of closures of singletons"
             if s < self.intsupp:
                 "no items remain with supp at intsupp or more"
                 self.maxitemnonsupp = -s
@@ -87,28 +91,30 @@ class ClMiner:
         report_supp = floor(self.maxitemsupp*report_supp_factor)
         self.negbordsize = self.dataset.nrits - cnt # singletons in neg border
         sorteduniv = None # return memory space to garbage collector
-        cnt_pend = len(clos_singl)
+        self.cnt_pend = len(clos_singl)
 ##        iface.report(str(cnt_pend) + " singleton-based closures.")
         if self.maxitemsupp < self.dataset.nrtr:
             "largest support on empty closure"
             yield (ItSet([]),self.dataset.nrtr)
             self.card += 1
 
+        iface.report("Combining singletons.")
         self.pend_clos = list(clos_singl.copy())
         heapify(self.pend_clos)
         self.minsupp = self.dataset.nrtr
-        size_pend = self.pend_clos_size()
+        self.size_pend = self.pend_clos_size()
         while self.pend_clos:
             "extract largest-support closure and find subsequent ones"
-            if (cnt_pend > statics.pend_len_limit or
-                size_pend > statics.pend_total_limit):
-                "too large current pending heap, increase support"
+            if (self.cnt_pend > statics.pend_len_limit or
+                self.size_pend > statics.pend_total_limit or
+                self.pend_clos_size() > statics.pend_mem_limit):
+                "too large current pending heap, increase support - reconsider size_pend"
                 self.halve_pend_clos()
-                cnt_pend = len(self.pend_clos)
-                size_pend = self.pend_clos_size()
+                self.cnt_pend = len(self.pend_clos)
+                self.size_pend = self.pend_clos_size() # or bring from halve
             cl = heappop(self.pend_clos)
-            cnt_pend -= 1
-            size_pend -= len(cl[1]) + len(cl[2]) + 1
+            self.cnt_pend -= 1
+            self.size_pend -= len(cl[1]) + len(cl[2]) + 1
             spp = -cl[0]
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
@@ -117,7 +123,7 @@ class ClMiner:
                 self.minsupp = spp
             if spp < report_supp:
                 "time to report progress"
-                size_pend = self.pend_clos_size()
+##                self.size_pend = self.pend_clos_size()
                 iface.report(str(self.card) +
                              " closures found so far; current support " +
                              str(spp) + ".")
@@ -137,11 +143,12 @@ class ClMiner:
                         next_clos = frozenset(self.dataset.inters(supportset))
                         if (next_clos not in
                             [ cc[1] for cc in self.pend_clos ]):
-                            cnt_pend += 1
+                            self.cnt_pend += 1
                             cl_node = (-len(supportset), next_clos,
                                        frozenset(supportset))
                             heappush(self.pend_clos, cl_node)
-                            size_pend += (1 + len(cl_node[1]) + len(cl_node[2]))
+                            self.size_pend += (1 + len(cl_node[1]) +
+                                               len(cl_node[2]))
 
     def to_percent(self,anyintsupp):
         """
@@ -152,20 +159,21 @@ class ClMiner:
         return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 statics.scale)
 
-##    def pend_clos_size_in_memory(self):
-##        "not used at present"
-##        m = sys.getsizeof(self.pend_clos)
-##        for b in self.pend_clos:
-##            m += (sys.getsizeof(b[0]) +
-##                  sys.getsizeof(b[1]) +
-##                  sys.getsizeof(b[2]))
-##        return m
-
     def pend_clos_size(self):
-        m = len(self.pend_clos)
-        for pend in self.pend_clos:
-            m += len(pend[1]) + len(pend[2])
+        "by memory size, should try to spare recomputing it so often"
+        m = sys.getsizeof(self.pend_clos)
+        for b in self.pend_clos:
+            m += (sys.getsizeof(b[0]) +
+                  sys.getsizeof(b[1]) +
+                  sys.getsizeof(b[2]))
         return m
+
+##    def pend_clos_size(self):
+##        "by lengths, insufficient for dense or big datasets"
+##        m = len(self.pend_clos)
+##        for pend in self.pend_clos:
+##            m += len(pend[1]) + len(pend[2])
+##        return m
 
     def halve_pend_clos(self):
         """
@@ -173,16 +181,16 @@ class ClMiner:
         the support bound so that about half of the
         pend_clos heap becomes discarded
         """
-        cnt = 0
-        lim = len(self.pend_clos) / 2
+        lim = self.cnt_pend / 2
         current_supp = self.dataset.nrtr + 1
         current_supp_clos = []
         new_pend_clos = []
+        new_cnt = 0
         old_intsupp = self.intsupp
         while self.pend_clos:
             b = heappop(self.pend_clos)
-            cnt += 1
-            if cnt > lim: break
+            new_cnt += 1
+            if new_cnt > lim: break
             if -b[0] == current_supp:
                 current_supp_clos.append(b)
             else:

@@ -94,7 +94,7 @@ class Lattice:
                 yield heappop(self.ready)[1]
         iface.report("Closures exploration finished at support " +
                      str(self.miner.intsupp) +
-                     ("(%2.3f%%)" % self.miner.to_percent(self.miner.intsupp)) + ".")
+                     (" (%2.3f%%)" % self.miner.to_percent(self.miner.intsupp)) + ".")
         for st in bord.contents:
             """
             there remain to yield the positive border (maximal sets) 

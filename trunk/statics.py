@@ -52,9 +52,10 @@ supp_rep_often = 10 # report current support at most that many times
 
 pend_len_limit = 16384 # 2 to power 14
 pend_total_limit = 100000000
+pend_mem_limit = 1000000000 # 1GB
 confthr = int((2.0/3) * scale)
 findrules = 0
-maxrules = 50
+maxrules = 50 # set this to zero if all the rules are to be written out
 initialboost = 1.15
 absoluteboost = 1.05
 genabsupp = 5 # absolute number of transactions
@@ -63,6 +64,7 @@ def set_standard():
     "set to the same values as just indicated"
     pend_len_limit = 16384 
     pend_total_limit = 100000000
+    pend_mem_limit = 1000000000
     confthr = int((2.0/3) * scale)
     findrules = 0
     maxrules = 50
