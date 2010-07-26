@@ -19,6 +19,10 @@ class iface:
         logo = Tkinter.BitmapImage(file="yac-v03.xbm")
         logo_frame = Tkinter.Frame(left_frame)
         logo_frame.pack(side = Tkinter.TOP)
+        slogan_label = Tkinter.Label(left_frame, text =
+                                     "yet another closure-based association " +
+                                     "rules\nexperimentation environment")
+        slogan_label.pack(side=Tkinter.TOP)
         logo_label = Tkinter.Label(logo_frame,image=logo)
         namefont = tkFont.Font(family = "Helvetica",
                                size = 18,
@@ -30,7 +34,7 @@ class iface:
         name.pack(side=Tkinter.LEFT)
         process_frame = Tkinter.LabelFrame(left_frame,text="Process")
         process_frame.pack(side=Tkinter.BOTTOM)
-        
+
         console_frame = Tkinter.LabelFrame(cls.root,text="Console")
         console_frame.pack(side=Tkinter.LEFT)
         cls.console = Tkinter.Text(console_frame)
@@ -106,7 +110,7 @@ class iface:
     def report(cls,m):
         m = " " + m + "\n"
         cls.console.insert(Tkinter.END,"[yacaree]" + m)
-        cls.console.see(Tkinter.CURRENT)
+        cls.console.see("end-2c")
         cls.console.update()
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m)
@@ -119,7 +123,7 @@ class iface:
     def reportwarning(cls,m):
         m = " " + m + "\n"
         cls.console.insert(Tkinter.END,"[yacaree warning]" + m)
-        cls.console.see(Tkinter.CURRENT)
+        cls.console.see("end-2c")
         cls.console.update()
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m)

@@ -1,5 +1,5 @@
 """
-Using yacaree through the GUI
+Using yacaree through the GUI 
 """
 
 from datetime import datetime
@@ -28,7 +28,8 @@ class Yacaree:
         iface.report(str(miner.count) + " rules obtained from " +
                      str(miner.miner.card) +
                      " closures of support at least " +
-                     str(miner.miner.minsupp) + ".")
+                     str(miner.miner.minsupp) + " (" +
+                     str(miner.miner.to_percent(miner.miner.minsupp)) + "%).")
         cnt = 0
         for (b,r) in sorted(rules):
             cnt += 1
@@ -44,6 +45,7 @@ class Yacaree:
         statics.logfile = None
         iface.enable_again()
         iface.enable_finish()
+        iface.console.bell()
 
 if __name__ == "__main__":
 
