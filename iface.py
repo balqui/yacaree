@@ -26,6 +26,7 @@ class iface:
         logo_label = Tkinter.Label(logo_frame,image=logo)
         namefont = tkFont.Font(family = "Helvetica",
                                size = 18,
+                               slant = "italic",
                                weight = "bold")
         name = Tkinter.Label(logo_frame,text="yacaree",
                              font = namefont,
