@@ -15,16 +15,17 @@ handle the neg border:
 
 ##import sys
 ##
-##from math import floor, pow
+from math import floor ##, pow
 
 import statics
 from itset import ItSet
-from iface import iface
+##from iface import iface
+from choose_iface import iface
 from dataset import Dataset
 
 class ClMiner:
 
-    def __init__(self,supp=0,dataset):
+    def __init__(self,dataset,supp=0):
         """
         may receive an external support bound in (0,1]
         otherwise, resort to statics.genabsupp - most often this is used
@@ -189,19 +190,21 @@ class ClMiner:
         
 if __name__ == "__main__":
     
-    fnm = "data/e13" 
+    fnm = "data/e13b" 
 
     iface.report("Module clminer running as test on file " + fnm + ".txt")
     
-    miner = ClMiner(statics.genabsupp,Dataset(fnm+".txt"))
+    miner = ClMiner(Dataset(fnm+".txt"),0.01)
 
     cnt = 0
-    for e in miner.mineclosures():
+    for e in miner.clos_singl:
         cnt += 1
-        print e
+        print cnt, "/", str(e[1]), "with support", e[0]
 
-    iface.report("Found " + str(cnt) + " closures.")
+    iface.report("Found " + str(cnt) + " closures of singletons.")
     iface.endreport()
 
+##    for e in miner.mineclosures():
+##    iface.report("Found " + str(cnt) + " closures.")
 
 
