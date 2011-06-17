@@ -2,10 +2,10 @@
 A somewhat more flexible heap (priority queue) where the
 priority of each element is computed by a custom function.
 
-The priority function defaults to sign change of projection
-on 0th component. To use the default, elements must be tuples
-or lists and their 0th component must allow sign change and
-comparison according to a total order; likewise, the outcomes
+Keeps length and, if a size function for elements is
+available, also total size sum.
+
+The priority function defaults to identity. The outcomes
 of the custom priority function must allow comparison according
 to a total order.
 
@@ -21,36 +21,54 @@ of calling h.more().
 
 from heapq import heappush, heappop
 
+def _FlHeap__defaultpriority(elem):
+        "default for how to compute the priority of an element"
+        return elem
+
+def _FlHeap__defaultelemsize(elem):
+        "default for how to compute the size of an element"
+        return 0
+
 class FlHeap:
 
-    def __defaultpriority(elem):
-        return -elem[0]
-
-    def __init__(self, custompriority = __defaultpriority):
+    def __init__(self,
+                 custompriority = __defaultpriority,
+                 elemsize = __defaultelemsize):
         self.storage = []
+        self.count = 0
+        self.totalsize = 0
         self.pr = custompriority
+        self.elemsize = elemsize
 
     def push(self,elemslist):
-        "push an iterable of elems into the heap"
+        "push an iterable of elems into the heap, each paired up with its pr"
         for e in elemslist:
+            self.count += 1
+            self.totalsize += self.elemsize(e)
             heappush(self.storage,(self.pr(e),e))
 
     def pop(self):
-        return heappop(self.storage)[1]
+        "discard component [0] as it is the pr"
+        nextel = heappop(self.storage)[1]
+        self.count -= 1
+        self.totalsize -= self.elemsize(nextel)
+        return nextel
 
     def more(self):
-        "boolean from list"
+        "boolean from list - this should become deprecated at some point"
         return self.storage
 
 if __name__ == "__main__":
+    "MUST ADD TESTS FOR THE SIZES AND COUNTS AND THAT"
 
     def hashprio(e):
         return hash(e)
 
-    def idprio(e):
-        return e
+    def negcompprio(e):
+        "like the one used in the subclass in yaFlHeap"
+        return -e[0]
 
-    numheapmin = FlHeap(idprio)
+    numheapmin = FlHeap()
 
     numheapmin.push([6,1,5,5,4,6,2,1,2])
 
@@ -64,7 +82,7 @@ if __name__ == "__main__":
     else:
         print "expected [1,1,2,2,4,5,5,6,6], obtained", test
 
-    numheapmax = FlHeap()
+    numheapmax = FlHeap(negcompprio)
 
     listsingletons = [ [e] for e in [6,1,5,5,4,6,2,1,2] ]
 
