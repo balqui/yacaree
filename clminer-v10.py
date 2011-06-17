@@ -1,9 +1,19 @@
 """
-Project: yacaree
+Project: yacaree - based on evolutions of slatt's clattice
 Programmers: JLB
 
 Its main method is the iterator that provides, one by one, in order of 
  decreasing support, all the closures for a given dataset and support bound
+
+min heapq from std lib requires sign change of supp
+
+data in Dataset: univ, nrtr, nrits, nrocc
+
+ToDo:
+
+check heapdict as alternative
+
+try to refactor a bit into cleaner code
 
 handle the neg border:
  find max non support
@@ -13,9 +23,11 @@ handle the neg border:
 
 """
 
-##import sys
-##
-##from math import floor, pow
+import sys
+
+from heapq import heapify, heappush, heappop
+from math import floor, pow
+##from sys import getsizeof # not used at present
 
 import statics
 from itset import ItSet
@@ -23,13 +35,16 @@ from iface import iface
 from dataset import Dataset
 
 class ClMiner:
+    """
+    mine closures above support
+    adjust support upwards if too low for available memory
+    """
 
-    def __init__(self,supp=0,dataset):
+    def __init__(self,supp,dataset):
         """
-        may receive an external support bound in (0,1]
-        otherwise, resort to statics.genabsupp - most often this is used
-        self.intsupp is support scaled into int in (0,dataset.nrtr]
-        initializes other quantities and finds closures of singletons
+        create closure space from dataset
+        supp float in [0,1], except that zero indicates to
+        resort to statics.genabsupp 
         """
         self.dataset = dataset
         if supp > 0:
@@ -37,42 +52,45 @@ class ClMiner:
         else:
             self.intsupp = statics.genabsupp
         self.supp_percent = self.to_percent(self.intsupp)
+        self.pend_clos = []
+        self.size_pend = 0
+        self.cnt_pend = 0
         self.card = 0
         self.negbordsize = 0
         self.maxnonsupp = 0
+        self.maxitemsupp = 0
         self.maxitemnonsupp = 0
         self.minsupp = 0
-        iface.report("Initializing singletons.")
 
-        "pair up items with their support and sort them"
+    def mineclosures(self):
+        "iterator to mine closed sets"
+        iface.report("Initializing singletons.")
+        self.maxitemsupp = 0
+        self.maxnonsupp = 0
         sorteduniv = [ (len(self.dataset.occurncs[item]),item)
                        for item in self.dataset.univ ]
         sorteduniv = sorted(sorteduniv,reverse=True)
         self.maxitemsupp = sorteduniv[0][0]
-
-        """find closures of singletons: each has
-        support, contents, and set of supporting transactions
-        """
-        self.clos_singl = set([])
+        cnt = 0
+        clos_singl = set([])
         for (s,it) in sorteduniv:
+            "initialize minheap of closures of singletons"
             if s < self.intsupp:
                 "no items remain with supp at intsupp or more"
-                self.maxitemnonsupp = s
-                self.maxnonsupp = s
+                self.maxitemnonsupp = -s
+                self.maxnonsupp = -s
                 break
-            supportingset = self.dataset.occurncs[it]
-            cl_node = (s, frozenset(self.dataset.inters(supportingset)),
-                       frozenset(supportingset))
-            self.clos_singl.add(cl_node)
-        sorteduniv = None # return memory space to garbage collector
+            cnt += 1
+            supset = self.dataset.occurncs[it]
+            cl_node = (-s, frozenset(self.dataset.inters(supset)),
+                       frozenset(supset))
+            clos_singl.add(cl_node)
 
-
-    def mineclosures(self):
-        "iterator to mine closed sets"
         report_supp_factor = pow(1.0/self.maxitemsupp, 
                                  1.0/statics.supp_rep_often)
         report_supp = floor(self.maxitemsupp*report_supp_factor)
         self.negbordsize = self.dataset.nrits - cnt # singletons in neg border
+        sorteduniv = None # return memory space to garbage collector
         self.cnt_pend = len(clos_singl)
 ##        iface.report(str(cnt_pend) + " singleton-based closures.")
         if self.maxitemsupp < self.dataset.nrtr:
@@ -137,7 +155,6 @@ class ClMiner:
         anyintsupp expected absolute int support bound
         gets translated into percent and truncated according to scale
         (e.g. for scale 100000 means three decimal places)
-        role is only human communication
         """
         return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 statics.scale)
@@ -189,7 +206,7 @@ class ClMiner:
         
 if __name__ == "__main__":
     
-    fnm = "data/e13" 
+    fnm = "pumsb_star" # big, dense dataset, slow test
 
     iface.report("Module clminer running as test on file " + fnm + ".txt")
     
@@ -198,7 +215,6 @@ if __name__ == "__main__":
     cnt = 0
     for e in miner.mineclosures():
         cnt += 1
-        print e
 
     iface.report("Found " + str(cnt) + " closures.")
     iface.endreport()
