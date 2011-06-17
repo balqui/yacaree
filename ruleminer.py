@@ -1,6 +1,6 @@
 
 import statics
-from iface import iface
+from choose_iface import iface
 from itset import ItSet
 from lattice import Lattice
 from rule import Rule

@@ -31,7 +31,7 @@ from math import floor, pow
 
 import statics
 from itset import ItSet
-from iface import iface
+from choose_iface import iface
 from dataset import Dataset
 
 class ClMiner:
