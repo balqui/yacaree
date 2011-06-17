@@ -22,6 +22,7 @@ from itset import ItSet
 ##from iface import iface
 from choose_iface import iface
 from dataset import Dataset
+from yaflheap import FlHeap
 
 class ClMiner:
 
@@ -67,38 +68,48 @@ class ClMiner:
             self.clos_singl.add(cl_node)
         sorteduniv = None # return memory space to garbage collector
 
-
     def mineclosures(self):
-        "iterator to mine closed sets"
+        """
+        iterator to mine closed sets
+        report progress at report_supp, update it with report_supp_factor
+        """
         report_supp_factor = pow(1.0/self.maxitemsupp, 
                                  1.0/statics.supp_rep_often)
         report_supp = floor(self.maxitemsupp*report_supp_factor)
-        self.negbordsize = self.dataset.nrits - cnt # singletons in neg border
-        self.cnt_pend = len(clos_singl)
-##        iface.report(str(cnt_pend) + " singleton-based closures.")
+##        not sure negbordsize is correctly computed this way - CHECK
+##        self.negbordsize = self.dataset.nrits - cnt # singletons in neg border
+
+        cnt_pend = len(self.clos_singl)
+        iface.report(str(cnt_pend) + " singleton-based closures.")
+
         if self.maxitemsupp < self.dataset.nrtr:
-            "largest support on empty closure"
+            "empty set is closed, yield it"
             yield (ItSet([]),self.dataset.nrtr)
             self.card += 1
 
-        iface.report("Combining singletons.")
-        self.pend_clos = list(clos_singl.copy())
-        heapify(self.pend_clos)
+##        iface.report("Combining singletons.")
+
+        pend_clos = FlHeap() # will use default scheme for priority
+        pend_clos.push(self.clos_singl)
         self.minsupp = self.dataset.nrtr
-        self.size_pend = self.pend_clos_size()
-        while self.pend_clos:
+##        self.size_pend = self.pend_clos_size(pend_clos)
+        while pend_clos.more():
             "extract largest-support closure and find subsequent ones"
-            if (self.cnt_pend > statics.pend_len_limit or
-                self.size_pend > statics.pend_total_limit or
-                self.pend_clos_size() > statics.pend_mem_limit):
-                "too large current pending heap, increase support - reconsider size_pend"
-                self.halve_pend_clos()
-                self.cnt_pend = len(self.pend_clos)
-                self.size_pend = self.pend_clos_size() # or bring from halve
-            cl = heappop(self.pend_clos)
-            self.cnt_pend -= 1
-            self.size_pend -= len(cl[1]) + len(cl[2]) + 1
-            spp = -cl[0]
+## size tests moved to yaflheap.FlHeap.test_size()
+##            if (self.cnt_pend > statics.pend_len_limit or
+##                self.size_pend > statics.pend_total_limit or
+##                self.pend_clos_size(pend_clos) > statics.pend_mem_limit):
+##                "too large current pending heap, increase support - reconsider size_pend"
+##                self.halve_pend_clos(pend_clos)
+####                pend_clos.halve()
+##                self.cnt_pend = len(self.pend_clos)
+##                self.size_pend = self.pend_clos_size() # or bring from halve
+            self.intsupp = pend_clos.test_size(self.intsupp)
+            cl = pend_clos.pop()
+##            self.cnt_pend -= 1
+##            self.size_pend -= len(cl[1]) + len(cl[2]) + 1
+##            spp = -cl[0]
+            spp = cl[0]
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
                 break
@@ -113,7 +124,7 @@ class ClMiner:
                 report_supp = floor(report_supp*report_supp_factor)
             self.card += 1
             yield (ItSet(cl[1]),spp)
-            for ext in clos_singl:
+            for ext in self.clos_singl:
                 "try extending with freq closures of singletons"
                 if not ext[1] <= cl[1]:
                     supportset = cl[2] & ext[2]
@@ -125,13 +136,13 @@ class ClMiner:
                     else:
                         next_clos = frozenset(self.dataset.inters(supportset))
                         if (next_clos not in
-                            [ cc[1] for cc in self.pend_clos ]):
-                            self.cnt_pend += 1
-                            cl_node = (-len(supportset), next_clos,
+                            [ cc[1] for cc in pend_clos.storage ]):
+##                            self.cnt_pend += 1
+                            cl_node = (len(supportset), next_clos,
                                        frozenset(supportset))
-                            heappush(self.pend_clos, cl_node)
-                            self.size_pend += (1 + len(cl_node[1]) +
-                                               len(cl_node[2]))
+                            pend_clos.push([cl_node])
+##                            self.size_pend += (1 + len(cl_node[1]) +
+##                                               len(cl_node[2]))
 
     def to_percent(self,anyintsupp):
         """
@@ -143,14 +154,14 @@ class ClMiner:
         return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 statics.scale)
 
-    def pend_clos_size(self):
-        "by memory size, should try to spare recomputing it so often"
-        m = sys.getsizeof(self.pend_clos)
-        for b in self.pend_clos:
-            m += (sys.getsizeof(b[0]) +
-                  sys.getsizeof(b[1]) +
-                  sys.getsizeof(b[2]))
-        return m
+##    def pend_clos_size(self,pend_clos):
+##        "by memory size, should try to spare recomputing it so often"
+##        m = sys.getsizeof(pend_clos)
+##        for b in pend_clos:
+##            m += (sys.getsizeof(b[0]) +
+##                  sys.getsizeof(b[1]) +
+##                  sys.getsizeof(b[2]))
+##        return m
 
 ##    def pend_clos_size(self):
 ##        "by lengths, insufficient for dense or big datasets"
@@ -159,38 +170,38 @@ class ClMiner:
 ##            m += len(pend[1]) + len(pend[2])
 ##        return m
 
-    def halve_pend_clos(self):
-        """
-        too many closures pending expansion: raise
-        the support bound so that about half of the
-        pend_clos heap becomes discarded
-        """
-        lim = self.cnt_pend / 2
-        current_supp = self.dataset.nrtr + 1
-        current_supp_clos = []
-        new_pend_clos = []
-        new_cnt = 0
-        old_intsupp = self.intsupp
-        while self.pend_clos:
-            b = heappop(self.pend_clos)
-            new_cnt += 1
-            if new_cnt > lim: break
-            if -b[0] == current_supp:
-                current_supp_clos.append(b)
-            else:
-                self.intsupp = current_supp
-                current_supp = -b[0]
-                new_pend_clos.extend(current_supp_clos)
-                current_supp_clos = [b]
-        self.pend_clos = new_pend_clos
-        iface.report("Increased min support from " + str(old_intsupp) +
-                     (" (%2.3f%%) up to " % self.to_percent(old_intsupp)) + 
-                     str(self.intsupp) +
-                     (" (%2.3f%%)" % self.to_percent(self.intsupp)) + ".")
+##    def halve_pend_clos(self):
+##        """
+##        too many closures pending expansion: raise
+##        the support bound so that about half of the
+##        pend_clos heap becomes discarded
+##        """
+##        lim = self.cnt_pend / 2
+##        current_supp = self.dataset.nrtr + 1
+##        current_supp_clos = []
+##        new_pend_clos = []
+##        new_cnt = 0
+##        old_intsupp = self.intsupp
+##        while self.pend_clos:
+##            b = heappop(self.pend_clos)
+##            new_cnt += 1
+##            if new_cnt > lim: break
+##            if -b[0] == current_supp:
+##                current_supp_clos.append(b)
+##            else:
+##                self.intsupp = current_supp
+##                current_supp = -b[0]
+##                new_pend_clos.extend(current_supp_clos)
+##                current_supp_clos = [b]
+##        self.pend_clos = new_pend_clos
+##        iface.report("Increased min support from " + str(old_intsupp) +
+##                     (" (%2.3f%%) up to " % self.to_percent(old_intsupp)) + 
+##                     str(self.intsupp) +
+##                     (" (%2.3f%%)" % self.to_percent(self.intsupp)) + ".")
         
 if __name__ == "__main__":
     
-    fnm = "data/e13b" 
+    fnm = "data/markbask" 
 
     iface.report("Module clminer running as test on file " + fnm + ".txt")
     
@@ -199,12 +210,16 @@ if __name__ == "__main__":
     cnt = 0
     for e in miner.clos_singl:
         cnt += 1
-        print cnt, "/", str(e[1]), "with support", e[0]
+        print cnt, "/", ItSet(e[1]), "with support", e[0]
 
     iface.report("Found " + str(cnt) + " closures of singletons.")
     iface.endreport()
 
-##    for e in miner.mineclosures():
+    cnt = 0
+    for e in miner.mineclosures():
+        cnt += 1
+        print cnt, "/", e[0], "with support", e[1]
+
 ##    iface.report("Found " + str(cnt) + " closures.")
 
 
