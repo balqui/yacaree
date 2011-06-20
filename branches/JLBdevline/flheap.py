@@ -1,13 +1,15 @@
 """
 A somewhat more flexible heap (priority queue) where the
-priority of each element is computed by a custom function.
+priority of each element is computed by a member function.
+This priority function defaults to identity. 
 
-Keeps length and, if a size function for elements is
-available, also total size sum.
+Additionally exhibits a stub function for element size.
+Keeps length and "total size sum" according to it.
+Member functions .pr() (for priority) and .elemsize()
+are expected to be overriden by FlHeap subclasses.
 
-The priority function defaults to identity. The outcomes
-of the custom priority function must allow comparison according
-to a total order.
+The outcomes of the .pr() overriding function must allow 
+comparison according to a total order.
 
 This implementation uses heapq operations from the standard
 library; an alternative implementation may use in the future
@@ -21,35 +23,41 @@ of calling h.more().
 
 from heapq import heappush, heappop
 
-def _FlHeap__defaultpriority(elem):
-        "default for how to compute the priority of an element"
-        return elem
-
-def _FlHeap__defaultelemsize(elem):
-        "default for how to compute the size of an element"
-        return 0
-
 class FlHeap:
 
-    def __init__(self,
-                 custompriority = __defaultpriority,
-                 elemsize = __defaultelemsize):
+    def __init__(self):
         self.storage = []
         self.count = 0
         self.totalsize = 0
-        self.pr = custompriority
-        self.elemsize = elemsize
 
-    def push(self,elemslist):
-        "push an iterable of elems into the heap, each paired up with its pr"
+    def pr(self,elem):
+        return elem
+
+    def elemsize(self,elem):
+        return 0
+
+    def push(self,elem):
+        "push an elem into the heap, paired up with its pr"
+        self.count += 1
+        self.totalsize += self.elemsize(elem)
+        heappush(self.storage,(self.pr(elem),elem))
+
+    def mpush(self,elemslist):
+        """
+        multipush: push all elems from an iterable
+        into the heap, each paired up with its pr
+        (might be convenient instead to program this and
+        call from push with a singleton list?)
+        """
         for e in elemslist:
-            self.count += 1
-            self.totalsize += self.elemsize(e)
-            heappush(self.storage,(self.pr(e),e))
+            self.push(e)
 
     def pop(self):
         "discard component [0] as it is the pr"
-        nextel = heappop(self.storage)[1]
+        nextel = heappop(self.storage)
+        if len(nextel) < 2:
+            print nextel
+        nextel = nextel[1]
         self.count -= 1
         self.totalsize -= self.elemsize(nextel)
         return nextel
@@ -59,18 +67,29 @@ class FlHeap:
         return self.storage
 
 if __name__ == "__main__":
-    "MUST ADD TESTS FOR THE SIZES AND COUNTS AND THAT"
+    "MUST ADD TESTS FOR THE SIZES AND COUNTS"
 
-    def hashprio(e):
-        return hash(e)
+    class FlHeapA(FlHeap):
 
-    def negcompprio(e):
-        "like the one used in the subclass in yaFlHeap"
-        return -e[0]
+        def __init__(self):
+            FlHeap.__init__(self)
 
-    numheapmin = FlHeap()
+        def pr(self,elem):
+            "priority overriding by hash"
+            return hash(elem)
 
-    numheapmin.push([6,1,5,5,4,6,2,1,2])
+    class FlHeapB(FlHeap):
+
+        def __init__(self):
+            FlHeap.__init__(self)
+
+        def pr(self,elem):
+            "overriding by sign change on first component as in yaFlHeap"
+            return -elem[0]
+
+    numheapmin = FlHeapA()
+
+    numheapmin.mpush([6,1,5,5,4,6,2,1,2])
 
     test = []
 
@@ -82,11 +101,10 @@ if __name__ == "__main__":
     else:
         print "expected [1,1,2,2,4,5,5,6,6], obtained", test
 
-    numheapmax = FlHeap(negcompprio)
+    numheapmax = FlHeapB()
 
-    listsingletons = [ [e] for e in [6,1,5,5,4,6,2,1,2] ]
-
-    numheapmax.push(listsingletons)
+    for e in [6,1,5,5,4,6,2,1,2]:
+        numheapmax.push([e])
 
     test = []
 
@@ -98,9 +116,9 @@ if __name__ == "__main__":
     else:
         print "expected singletons from [6,6,5,5,4,2,2,1,1], obtained", test
 
-    h = FlHeap(hashprio)
+    h = FlHeapA()
 
-    h.push("all the letters of this sentence")
+    h.mpush("all the letters of this sentence")
 
     test = ""
 
