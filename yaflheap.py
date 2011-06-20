@@ -1,12 +1,11 @@
 """
 yacaree particular subclass of FlHeap
 
-We have our custom priority: sign change of projection
-on 0th component, which will be the support of the closure.
+Overrides priority with sign change of projection on 0th
+component, which will be the support of the closure.
 
 We also have an extra operation test_size() that halves
-the heap if it has grown too much
-
+the heap if it has grown too much.
 """
 
 import statics
@@ -15,67 +14,62 @@ import flheap
 
 from heapq import heappop, heapify
 
-def _FlHeap__ourpriority(elem):
-        return -elem[0]
-
-def _FlHeap__ourelemsize(elem):
-        return 1 + len(elem[1]) + len(elem[2])
-
-
 class FlHeap(flheap.FlHeap):
 
     def __init__(self):
-        flheap.FlHeap.__init__(self,
-                               custompriority = __ourpriority,
-                               elemsize = __ourelemsize)
+        flheap.FlHeap.__init__(self)
 
-    def test_size(self,current_supp):
+    def pr(self,elem):
+        "overriding by sign change on first component"
+        return -elem[0]
+
+    def elemsize(self,elem):
+        return 1 + len(elem[1]) + len(elem[2])
+
+    def test_size(self):
         """
         this initialization of current_supp is an ugly hack,
         uses that actually current_supp along will be negative
         to keep and transmit intsupp unchanged if heap unmodified
         """
-        intsupp = current_supp
+        intsupp = 0
         if (self.count > statics.pend_len_limit or
             self.totalsize > statics.pend_total_limit or
             self.pend_clos_size(self.storage) > statics.pend_mem_limit):
-##            "too large current pending heap, increase support - reconsider size_pend"
-##            self.halve_pend_clos(pend_clos)
-##    def halve_pend_clos(self):
             """
             too many closures pending expansion: raise
             the support bound so that about half of the
             pend_clos heap becomes discarded
             """
             lim = self.count / 2
-            print "HALVING STORAGE IN HEAP FROM", self.count
-##            current_supp = self.dataset.nrtr + 1
+            current_supp = self.storage[0][0]
             current_supp_clos = []
             new_pend_clos = []
-            new_cnt = 0
-##            old_intsupp = self.intsupp
+            new_total_size = 0
+            new_count = 0
+            popped_count = 0
             while self.storage:
                 b = heappop(self.storage)
-                new_cnt += 1
-                if new_cnt > lim: break
+                popped_count += 1
+                if popped_count > lim: break
                 if b[0] == current_supp:
                     current_supp_clos.append(b)
                 else:
-                    intsupp = current_supp # do something with it!
                     current_supp = b[0]
+                    intsupp = -current_supp
+                    for e in current_supp_clos:
+                        new_count += 1
+                        new_total_size += self.elemsize(e[1])
                     new_pend_clos.extend(current_supp_clos)
                     current_supp_clos = [b]
             self.storage = new_pend_clos
-            heapify(self.storage)
-## see below for further code here
-            self.count = len(self.storage)
-##            self.size_pend = self.pend_clos_size()
-            print "DOWN TO", self.count
-            print "CURRENT SUPPORT BOUND AFTER SIGN SWITCH", -current_supp
+            self.count = new_count
+            self.totalsize = new_total_size
+## see below for further code that I had here
         return intsupp
 
     def pend_clos_size(self,pend_clos):
-        "for the time being"
+        "for the time being - just deactivates one of the 3 tests"
         return 0
 
 ##    def pend_clos_size(self,pend_clos):
@@ -133,6 +127,7 @@ class FlHeap(flheap.FlHeap):
 
 
 if __name__ == "__main__":
+    "must create a true test set here"
 
     clheap = FlHeap()
 
@@ -145,6 +140,8 @@ if __name__ == "__main__":
     print clheap.totalsize
     print clheap.count
     print clheap.pop()
+    print clheap.totalsize
+    print clheap.count
     print clheap.pop()
     print clheap.pop()
 

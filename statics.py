@@ -50,8 +50,8 @@ supp_rep_often = 10 # report current support at most that many times
 
 ## standard process:
 
-pend_len_limit = 200 # 16384 # 2 to power 14
-pend_total_limit = 100000000
+pend_len_limit = 16384 # 1000 # 16384 # 2 to power 14
+pend_total_limit = 100000 # 100000000
 pend_mem_limit = 1000000000 # 1GB
 confthr = int((2.0/3) * scale)
 findrules = 0
