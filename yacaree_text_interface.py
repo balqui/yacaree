@@ -7,7 +7,7 @@ from datetime import datetime
 import statics
 
 from choose_iface import iface
-from ruleminer import RuleMiner
+from ruleminerB import RuleMiner
 
 if __name__ == "__main__":
 
@@ -21,7 +21,8 @@ if __name__ == "__main__":
 ##    fnm = "chess"
 ##    fnm = "connect"
 
-    fnm = "data/e13b"
+##    fnm = "data/e13b"
+    fnm = "data/cmc-full"
     
     now = datetime.today().strftime("%Y%m%d%H%M%S")
     statics.logfile = iface.openfile(fnm + now + ".log","w")

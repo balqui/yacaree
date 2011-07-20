@@ -65,7 +65,7 @@ class Lattice:
         """
         prevcands = set([])
         bord = Border()
-        self.miner = ClMiner(supp,self.dataset)
+        self.miner = ClMiner(self.dataset)
         for (node,supp) in self.miner.mineclosures():
             """
             set up preds and everything;
