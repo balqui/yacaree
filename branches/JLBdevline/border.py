@@ -1,11 +1,22 @@
 class Border:
     """
-    Implements the border algorithm to construct closure lattices
+    Implements the iPred variant of the
+    border algorithm to construct FCA closure lattices
     """
 
     def __init__(self):
-        "list of sets, initially empty"
+        """
+        it receives now the lattice (version 1.0 did not)
+        contents: list of sets in the current cover
+        emptyclos: closure of the empty set in the lattice
+        lowcovun, auxiliary dict: for x, union of lower covers of x seen so far
+        """
         self.contents = []
+        self.lowcovun = {}
+        self.emptyclos = None
+
+    def record_clos_empty(self,emptyclos):
+        self.emptyclos = emptyclos
 
     def append(self,e):
         "should subclass list when upgrading to Python 3"
@@ -14,9 +25,10 @@ class Border:
     def cover_update(self,e,latt):
         """
         return all covers of e and take them out of the border
-        distinguish candidates that were already in the border
+        do not distinguish anymore candidates that were already in the border
         lattice needed to get intersection as a closure
         """
+        self.lowcovun[e] = self.emptyclos
         candidates_in = []
         candidates_out = set([])
         cover = []

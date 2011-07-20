@@ -177,7 +177,7 @@ if __name__ == "__main__":
     for e in miner.mineclosures():
         cnt += 1
         last = e
-##        iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))
+        iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))
 
     iface.report("Found " + str(cnt) + " closures.")
     iface.report("Last closure generated was " +
