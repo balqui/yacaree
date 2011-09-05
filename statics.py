@@ -20,7 +20,7 @@ pend_total_limit: max total length of info related to the pending closures
 boostab: stability of boost, weight of current value 
  in front of lift values coming in
 
-confthr: about 2/3 for the moment, scaled
+confthr: was about 2/3 for long, scaled; these days set at 0.6
 (natural alternatives to consider: 3/4 and 4/5)
 
 supp_rep_often: how often to report about the ongoing support
@@ -38,6 +38,8 @@ genabsupp: Do not consider closures with absolute support below this
 
 """
 
+version = "version 1.1"
+
 filenamext = ".txt"
 logfile = None
 filename = None
@@ -53,19 +55,22 @@ supp_rep_often = 10 # report current support at most that many times
 pend_len_limit = 16384 # 1000 # 16384 # 2 to power 14
 pend_total_limit = 100000000 # 100000 # 100000000
 pend_mem_limit = 1000000000 # 1GB
-confthr = int((2.0/3) * scale)
+##confthr = int((2.0/3) * scale)
+confthr = int(0.6 * scale)
 findrules = 0
 maxrules = 50 # set this to zero if all the rules are to be written out
 initialboost = 1.15
 absoluteboost = 1.05
 genabsupp = 1 # 5 # absolute number of transactions
+boostdecr = 0.001 # minimal boost decrease allowed
 
 def set_standard():
     "set to the same values as just indicated"
     pend_len_limit = 16384 
     pend_total_limit = 100000000
     pend_mem_limit = 1000000000
-    confthr = int((2.0/3) * scale)
+##    confthr = int((2.0/3) * scale)
+    confthr = int(0.6 * scale)
     findrules = 0
     maxrules = 50
     initialboost = 1.15

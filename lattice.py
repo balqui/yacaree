@@ -55,8 +55,8 @@ class Lattice:
         self.boosthr = statics.initialboost
         self.miner = None
 
-##    def candidate_closures(self):
-    def candClosures(self):
+    def candidate_closures(self):
+##    def candClosures(self):
         """
         (supp extra arg default 0? Think!)
         iterate over closures that reach support ratio
@@ -181,7 +181,7 @@ class Lattice:
         v = float(s)/n
         if v < statics.absoluteboost:
             v = statics.absoluteboost
-        if v < self.boosthr:
+        if v <= self.boosthr - statics.boostdecr:
             self.boosthr = v
             iface.report("Confidence boost bound reduced to %2.3f." % v)
             while self.freezer:

@@ -21,7 +21,8 @@ class iface:
         logo_frame.pack(side = Tkinter.TOP)
         slogan_label = Tkinter.Label(left_frame, text =
                                      "yet another closure-based association " +
-                                     "rules\nexperimentation environment")
+                                     "rules\nexperimentation environment - " +
+                                     statics.version)
         slogan_label.pack(side=Tkinter.TOP)
         logo_label = Tkinter.Label(logo_frame,image=logo)
         namefont = tkFont.Font(family = "Helvetica",
@@ -45,6 +46,7 @@ class iface:
                                     command = cls.console.yview)
         cls.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
         cls.console.configure(yscrollcommand = cls.scrollY.set)
+        cls.report("This is yacaree " + statics.version) 
 
         button_width = 30
         button_height = 5
@@ -93,6 +95,7 @@ class iface:
     @classmethod
     def enable_again(cls):
         cls.run.configure(state = Tkinter.DISABLED)
+        cls.filepick.configure(state = Tkinter.NORMAL)
 
     @classmethod
     def disable_again(cls):
@@ -106,6 +109,14 @@ class iface:
     def disable_finish(cls):
         cls.finish_button.configure(state = Tkinter.DISABLED)
 ##        cls.finish_button.update()
+
+    @classmethod
+    def disable_filepick(cls):
+        cls.filepick.configure(state = Tkinter.DISABLED)
+
+    @classmethod
+    def disable_run(cls):
+        cls.run.configure(state = Tkinter.DISABLED)
 
     @classmethod
     def report(cls,m):

@@ -19,7 +19,9 @@ class Yacaree:
         filenamerules = filenamenow + "rules.txt"
         statics.logfile = iface.openfile(filenamenow + ".log","w")
         results_file = iface.openfile(filenamerules,"w")
+        iface.disable_filepick()
         iface.disable_finish()
+        iface.disable_run()
         miner = RuleMiner(statics.filenamefull)
         rules = []
         for rul in miner.minerules():
@@ -36,11 +38,14 @@ class Yacaree:
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
             if cnt == statics.maxrules > 0: break
         results_file.close()
+        iface.report("Confidence threshold was %2.3f."
+                     % (float(statics.confthr)/statics.scale))
         iface.report(str(cnt) + " rules chosen according to their " +
                      "confidence boost written to file " + filenamerules + ".") 
         iface.report("End of process of dataset in file " + 
                      statics.filenamefull + ".")
-        iface.report("Closing output and log files.")
+        iface.report("Closing output and log files; run of yacaree " + 
+                     statics.version + " finished.")
         statics.logfile.close()
         statics.logfile = None
         iface.enable_again()
