@@ -55,8 +55,8 @@ class Lattice:
         self.boosthr = statics.initialboost
         self.miner = None
 
-##    def candidate_closures(self):
-    def candClosures(self):
+    def candidate_closures(self):
+##    def candClosures(self):
         """
         (supp extra arg default 0? Think!)
         iterate over closures that reach support ratio
