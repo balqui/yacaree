@@ -1,3 +1,10 @@
+THIS BRANCH NOT TO GO ON. EVERYTHING MOVED MANUALLY INTO THE TRUNK
+
+The branch experience was not really very successful. Did not find 
+a decent way of using merge.
+
+Most of what comes next added to the blog-like wiki story.
+
 This branch, june 2011:
 
 choose_iface added:
