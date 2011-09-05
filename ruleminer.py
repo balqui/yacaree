@@ -43,7 +43,7 @@ class RuleMiner(Lattice):
 
     def minerules(self,safetysupp=0):
         "check boost wrt smaller antecedents only"
-        for cn in self.candClosures(safetysupp):
+        for cn in self.candClosures(): #### safetysupp):
             for an in self.allpreds(cn,(self.supps[cn]*statics.scale)/statics.confthr):
                 rul = Rule(an,cn,self)
                 if len(an) == 1: # and len(cn) == 2:
