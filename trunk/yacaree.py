@@ -6,7 +6,7 @@ from datetime import datetime
 
 import statics
 from ruleminer import RuleMiner
-from iface import iface
+from choose_iface import iface
 
 class Yacaree:
 

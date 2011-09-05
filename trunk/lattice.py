@@ -27,20 +27,20 @@ from heapq import heapify, heappush, heappop
 from collections import defaultdict
 
 import statics
-from iface import iface
+from choose_iface import iface
 from itset import ItSet
 from dataset import Dataset
 from clminer import ClMiner
-from border import Border
+##from border_v10 import Border
 
 class Lattice:
     """
     Lattice implemented as explicit list of closures from clminer
-    with a dict of closed immediate predecessors for each closure
-    from border
-    Also iterator on the basis of support and support ratio
+    with a dict of closed immediate predecessors for each closure.
+    Also iterator on the basis of support and support ratio.
     Closures expected ordered in the list by decreasing supports
     or increasing sizes
+    union_cover is the union of all immediate successors seen so far
     """
 
     def __init__(self,datasetfilename):
@@ -48,39 +48,58 @@ class Lattice:
         self.closeds = []
         self.supps = {}
         self.suppratios = {}
+        self.union_cover = defaultdict(set)
         self.immpreds = defaultdict(list)
         self.ready = []
         self.freezer = []
         self.boosthr = statics.initialboost
         self.miner = None
 
-    def candClosures(self,supp=0):
+##    def candidate_closures(self):
+    def candClosures(self):
         """
+        (supp extra arg default 0? Think!)
         iterate over closures that reach support ratio
         above current value of boosthr
-        and support above supp in [0,1],
-        default as indicated by statics.genabsupp
+        and support above supp in [0,1] (?),
+        default as indicated by statics.genabsupp (?)
         keep in prevcands closures already considered to avoid dup
         lie on iterator from ClMiner
         """
         prevcands = set([])
-        bord = Border()
-        self.miner = ClMiner(supp,self.dataset)
+##        bord = Border()
+        bord = set([])
+        self.miner = ClMiner(self.dataset) # supp extra?
         for (node,supp) in self.miner.mineclosures():
             """
-            set up preds and everything;
             closures come in either nonincreasing support or nondecreasing
             size, hence all subsets of each closure come before it - needed
             for the closure op
             if dict could be iterated in order of arrival, can dispose of
             closeds and use nodes instead
             suppratios undefined for maximal sets - do we need this?
+            first node in list is closure of empty set
+            union_cover init is always empty
             """
-            self.closeds.append(node)
+##            if bord.emptyclose is None:
+##                bord.record_clos_empty(node)
+
+            self.closeds.append(node) # WRONG IF candClosures IS CALLED TWICE
             self.supps[node] = supp
-            self.immpreds[node] = bord.cover_update(node,self)
-            bord.append(node)
+            for pot_cover in [ node.intersection(bord_elem) 
+                               for bord_elem in bord ]:
+                if node.intersection(self.union_cover[pot_cover]) <= pot_cover:
+                    self.immpreds[node].append(pot_cover)
+                    self.union_cover[pot_cover].update(node) # hope node is set
+                    bord.discard(pot_cover)
+            bord.add(node)
+
+##            self.immpreds[node] = bord.cover_update(node,self)
+##            bord.append(node)
+
+
             for pr in self.immpreds[node]:
+                "check out whether this still works"
                 if pr in prevcands:
                     continue
                 prevcands.add(pr)
@@ -90,12 +109,13 @@ class Lattice:
                     heappush(self.ready,(self.dataset.nrtr-self.supps[pr],pr))
                 else:
                     heappush(self.freezer,(-supprt,pr))
+##                    print "FREEZING:", pr
             while self.ready:
                 yield heappop(self.ready)[1]
-        iface.report("Closures exploration finished at support " +
-                     str(self.miner.intsupp) +
-                     (" (%2.3f%%)" % self.miner.to_percent(self.miner.intsupp)) + ".")
-        for st in bord.contents:
+##        iface.report("Closures exploration finished at support " +
+##                     str(self.miner.intsupp) +
+##                     (" (%2.3f%%)" % self.miner.to_percent(self.miner.intsupp)) + ".")
+        for st in bord:
             """
             there remain to yield the positive border (maximal sets) 
             wrong suppratio there, skip them for the time being
@@ -177,45 +197,39 @@ if __name__=="__main__":
 
     
 ##    fnm = "lenses_recoded.txt"
-##    but cuts testing assumes fnm e13
 
-##    laa = clattice(0.003,"cestas20")
+    fnm = "data/e13"
 
-##    exit(1)
-    
-##    fnm = "e13"
 ##    fnm = "exbordalg"
-    fnm = "pumsb_star"
+##    fnm = "pumsb_star"
     
-##    la = lattice(0.01,fnm)
-##    la = lattice(0.6,fnm)
+    la = Lattice(fnm+".txt")
 
-    la = Lattice(fnm)
-
-    for a in la.candClosures():
-        print a
-         
-    exit(3)
-
+##    for a in la.candidate_closures():
+##        print " ===== enum en lattice:", a
+##
+##    exit(2)
+    
     la.boosthr = 0
-    for a in la.candClosures(0.1):
-        print "\nClosures: ", a, la.supps[a]
+    for a in la.candidate_closures():
+        "This had a 0.1 arg"
+        print "\nClosure: ", a, la.supps[a]
         print "imm preds:"
         for e in la.immpreds[a]: print e, ",",
         print
         print "all preds:"
         for e in la.allpreds(a): print e, ",",
-##        print "supp ratio:", la.suppratios[a]
+        if a in la.suppratios:
+            print "supp ratio:", la.suppratios[a]
+        else:
+            print "no supp ratio for", a
         
 
-    exit(2)
+##    la.boosthr = 1.25
+##    for e in la.candClosures():
+##        print e, la.supps[e]
+##        la.reviseboost(la.boosthr-0.03,1)
 
-    la.boosthr = 1.25
-    for e in la.candClosures():
-        print e, la.supps[e]
-        la.reviseboost(la.boosthr-0.03)
-
-    exit(1)
 
 
     

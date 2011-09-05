@@ -29,7 +29,9 @@ also:
 from collections import defaultdict
 
 import statics
-from iface import iface
+##from iface import iface
+from choose_iface import iface
+
 
 class Dataset:
 
