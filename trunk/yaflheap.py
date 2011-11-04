@@ -131,11 +131,11 @@ if __name__ == "__main__":
 
     clheap = FlHeap()
 
-    clheap.push([[3,[3,5],[6,7]]])
+    clheap.push([3,[3,5],[6,7]])
 
-    clheap.push([[2,[2,4,5],[6,7]]])
+    clheap.push([2,[2,4,5],[6,7]])
 
-    clheap.push([[4,[4,5],[6,7]]])
+    clheap.push([4,[4,5],[6,7]])
 
     print clheap.totalsize
     print clheap.count

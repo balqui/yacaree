@@ -75,14 +75,11 @@ class ClMiner:
         iface.report(str(len(self.clos_singl)) +
                      " singleton-based closures.")
 
-    def mineclosures(self):
+    def mine_closures(self):
         """
         iterator to mine closed sets
-        report progress at report_supp, update it with report_supp_factor
+        reporting progress made possible at each yield
         """
-        report_supp_factor = pow(1.0/self.maxitemsupp, 
-                                 1.0/statics.supp_rep_often)
-        report_supp = floor(self.maxitemsupp*report_supp_factor)
 
         if self.maxitemsupp < self.dataset.nrtr:
             "empty set is closed, yield it"
@@ -116,12 +113,9 @@ class ClMiner:
                 break
             if spp < self.minsupp:
                 self.minsupp = spp
-            if spp < report_supp:
-                "time to report progress and set next report_supp"
-                iface.report(str(self.card) +
-                             " closures found so far; current support " +
-                             str(spp) + ".")
-                report_supp = floor(report_supp*report_supp_factor)
+            iface.possibly_report(str(self.card) +
+                         " closures found so far; current support " +
+                         str(spp) + ".")
             self.card += 1
             yield (ItSet(cl[1]),spp)
             for ext in self.clos_singl:
@@ -134,6 +128,7 @@ class ClMiner:
                         if spp > self.maxnonsupp:
                             self.maxnonsupp = spp
                     else:
+                        "find closure and test duplicateness"
                         next_clos = frozenset(self.dataset.inters(supportset))
                         if (next_clos not in
                             [ cc[1][1] for cc in pend_clos.storage ]):
@@ -152,7 +147,9 @@ class ClMiner:
                 statics.scale)
         
 if __name__ == "__main__":
-    
+
+## This testing only works for iface_TEXT in choose_iface
+
 ##    fnm = "data/markbask"
 ##    supp = 0.0005 # half a transaction, that is, supp > 0: all
     
@@ -174,7 +171,7 @@ if __name__ == "__main__":
     iface.report("Now computing all affordable closures.")
 
     cnt = 0
-    for e in miner.mineclosures():
+    for e in miner.mine_closures():
         cnt += 1
         last = e
         iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))

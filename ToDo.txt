@@ -1,32 +1,12 @@
-** ToDo for 1.1:
 
-after icde submission:
-
-changes already made to rule.py, version 1.0 conserved separately
-- add one space near support at the output
-- report the leverage of the rules as well
-
-small corrections to do: 
-- mention actual confidence threshold upon reporting at the end (done)
-- mention yacaree version in the main screen (done)
-- disable the dataset load button while computing (done)
-- set at 0.6 the default confidence threshold (done, not sure good idea)
-
-running yaflheap alone raises exception
-
-reduce the cboost only if the weighted average with lifts is _clearly_ lower, say by 0.001 (done)
-
-rename mineclosures to mine_closures in ClMiner
-
-clarify the support ratio of the positive border
-
-make it report a bit more often along the way (done, I think, but not yet clear how) - get periodic reporting as a function of time (say once per minute at least)
-
-support sorting may make more sense!,
-
-report confidence boost reached all along and also that of the 50 rules (or whatever) reported
 
 ** ToDo for 1.2:
+
+report minimum confidence boost of the 50 rules (or whatever) reported
+
+support sorting may make more sense!
+
+enable a graceful finish if Finish button clicked
 
 use the processing of singletons to get full implications with antec size 1 and implement their cboost
 
@@ -53,6 +33,37 @@ transform and check cover type
 
 check elearning datasets
 
+
+===
+
+** ToDo for 1.1:
+
+after icde submission:
+
+changes already made to rule.py, version 1.0 conserved separately
+- add one space near support at the output
+- report the leverage of the rules as well
+
+small corrections to do: 
+- mention actual confidence threshold upon reporting at the end (done)
+- mention yacaree version in the main screen (done)
+- disable the dataset load button while computing (done)
+- set at 0.6 the default confidence threshold (not sure good idea - left at 0.65)
+
+make it report a bit more often along the way (done, I think, but not yet clear how)
+finally: get periodic reporting as a function of time (say once per minute at least) (done, twice a minute)
+
+running yaflheap alone raises exception - solved
+
+reduce the cboost only if the weighted average with lifts is _clearly_ lower, say by 0.001 (done)
+
+rename mineclosures to mine_closures in ClMiner (done)
+
+clarify the support ratio of the positive border (done: using the minsupp reached as proxy)
+
+report confidence boost reached all along (done)
+
+[Upload 1.1 on nov 4th, 2011]
 
 
 

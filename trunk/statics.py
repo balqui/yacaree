@@ -20,7 +20,8 @@ pend_total_limit: max total length of info related to the pending closures
 boostab: stability of boost, weight of current value 
  in front of lift values coming in
 
-confthr: was about 2/3 for long, scaled; these days set at 0.6
+confthr: was about 2/3 for long, scaled; set at 0.6 for some
+days, not convincing, settling for 0.65 for v1.1
 (natural alternatives to consider: 3/4 and 4/5)
 
 supp_rep_often: how often to report about the ongoing support
@@ -61,8 +62,9 @@ findrules = 0
 maxrules = 50 # set this to zero if all the rules are to be written out
 initialboost = 1.15
 absoluteboost = 1.05
-genabsupp = 1 # 5 # absolute number of transactions
+genabsupp = 0 # 5 # absolute number of transactions
 boostdecr = 0.001 # minimal boost decrease allowed
+report_period = 30 # try to show program is alive every that many seconds
 
 def set_standard():
     "set to the same values as just indicated"

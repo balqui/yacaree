@@ -14,7 +14,8 @@ Major differences with version 1.0 are as follows:
 a/ The iPred algorithm is used to construct the lattice, instead
 of the border algorithm (see the discussion in Balcazar and 
 Tirnauca 2011); it is clearly faster although the savings are not 
-too impressive. 
+too impressive. It also saves a bit of work at the time of pushing
+the confidence boost constraint through support ratios.
 
 b/ The closure miner has been deeply refactored. A new variant of 
 special-purpose heap has been employed, and the tests that control 
@@ -27,6 +28,10 @@ c/ The absolute confidence threshold is now at 0.6 to see how well this goes.
 d/ Rule lift and other quantities are reported (and a tiny typo fixed).
 
 e/ Confidence boost decreases will be always noticeable, even if slight.
+
+f/ Some minor details (such as method names inconsistent with standard
+Python coding policies, or a slightly better reporting along the way) 
+were adjusted.
 
 You may wish to check whether a version of yacaree is included in the
 KNIME Open Source Data Mining Suite. We are working at it and will be

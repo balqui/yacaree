@@ -6,6 +6,7 @@ import Tkinter
 import tkFileDialog
 import tkFont
 from datetime import datetime
+from time import clock
 
 import statics
 
@@ -72,6 +73,7 @@ class iface:
                                   height = button_height,
                                   command = cls.finish)
         cls.finish_button.pack()
+        cls.clock_at_report = clock()
         cls.root.mainloop()
 
     @classmethod
@@ -120,6 +122,7 @@ class iface:
 
     @classmethod
     def report(cls,m):
+        cls.clock_at_report = clock()
         m = " " + m + "\n"
         cls.console.insert(Tkinter.END,"[yacaree]" + m)
         cls.console.see("end-2c")
@@ -128,11 +131,19 @@ class iface:
             statics.logfile.write(str(datetime.now()) + m)
 
     @classmethod
+    def possibly_report(cls,m):
+        "report only if too long time elapsed since last reporting"
+        clock_now = clock()
+        if clock_now - cls.clock_at_report > statics.report_period:
+            cls.report(m)
+
+    @classmethod
     def endreport(cls):
         pass
 
     @classmethod
     def reportwarning(cls,m):
+        cls.clock_at_report = clock()
         m = " " + m + "\n"
         cls.console.insert(Tkinter.END,"[yacaree warning]" + m)
         cls.console.see("end-2c")
@@ -142,6 +153,7 @@ class iface:
 
     @classmethod
     def reporterror(cls,m):
+        cls.clock_at_report = clock()
         m += "\n"
         cls.console.insert(Tkinter.END,"[yacaree error] " + m)
         m = "Error: " + m
