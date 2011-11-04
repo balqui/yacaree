@@ -9,6 +9,8 @@ whether explicit or implicit, are made about this software, and,
 if you download and run it, the authors claim to have no responsibility 
 whatsoever on the outcome of the run.
 
+See the major features in the "Readme" text for version 1.0 below.
+
 Major differences with version 1.0 are as follows:
 
 a/ The iPred algorithm is used to construct the lattice, instead
@@ -23,7 +25,7 @@ its size have been reduced a bit and accelerated.
 
 Some minor additional changes include:
 
-c/ The absolute confidence threshold is now at 0.6 to see how well this goes.
+c/ The absolute confidence threshold is now at 0.65.
 
 d/ Rule lift and other quantities are reported (and a tiny typo fixed).
 
@@ -31,7 +33,7 @@ e/ Confidence boost decreases will be always noticeable, even if slight.
 
 f/ Some minor details (such as method names inconsistent with standard
 Python coding policies, or a slightly better reporting along the way) 
-were adjusted.
+were further adjusted.
 
 You may wish to check whether a version of yacaree is included in the
 KNIME Open Source Data Mining Suite. We are working at it and will be
