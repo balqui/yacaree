@@ -22,14 +22,15 @@ class Yacaree:
         iface.disable_filepick()
         iface.disable_finish()
         iface.disable_run()
-        miner = RuleMiner(statics.filenamefull)
+        miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
             rules.append((-rul.cboo,rul))
             if miner.count == statics.findrules > 0: break
-        iface.report(str(miner.count) + " rules obtained from " +
-                     str(miner.miner.card) +
-                     " closures of support at least " +
+        iface.report("Mining process terminated; searched for rules " + 
+                     ("of confidence boost at least %1.3f." % miner.boosthr)) 
+        iface.report(("Total of %d Rules obtained from " % miner.count) +
+                     ("%d closures of support at least " % miner.miner.card) +
                      str(miner.miner.minsupp) + " (" +
                      str(miner.miner.to_percent(miner.miner.minsupp)) + "%).")
         cnt = 0

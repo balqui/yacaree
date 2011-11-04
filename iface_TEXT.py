@@ -68,6 +68,10 @@ class iface:
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
+    @classmethod
+    def possibly_report(cls,m="",vb=3):
+        cls.report(m,vb)
+
 ## ToDo: handle verbosity, handle line breaks
 ##        "flush previous messages, write a starting message"
 ##        if cls.verb >= vb:

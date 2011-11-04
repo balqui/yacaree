@@ -15,6 +15,7 @@ Offers:
 ToDo:
 
 .handle negative border issues
+.migrate the heaps into flheaps
 .read it in from XML file, edges included
  xml filename should include in the name not the supp but the maxnonsupp
  get it from neg border and then glob files and pick the one with highest
@@ -33,6 +34,10 @@ from dataset import Dataset
 from clminer import ClMiner
 ##from border_v10 import Border
 
+def inffloat():
+    "infinite float for the suppratios defaultdict factory"
+    return float("inf")
+
 class Lattice:
     """
     Lattice implemented as explicit list of closures from clminer
@@ -47,7 +52,7 @@ class Lattice:
         self.dataset = Dataset(datasetfilename)
         self.closeds = []
         self.supps = {}
-        self.suppratios = {}
+        self.suppratios = defaultdict(inffloat)
         self.union_cover = defaultdict(set)
         self.immpreds = defaultdict(list)
         self.ready = []
@@ -56,21 +61,18 @@ class Lattice:
         self.miner = None
 
     def candidate_closures(self):
-##    def candClosures(self):
         """
+        DO NOT CALL THIS METHOD TWICE
         (supp extra arg default 0? Think!)
         iterate over closures that reach support ratio
         above current value of boosthr
         and support above supp in [0,1] (?),
         default as indicated by statics.genabsupp (?)
-        keep in prevcands closures already considered to avoid dup
         lie on iterator from ClMiner
         """
-        prevcands = set([])
-##        bord = Border()
         bord = set([])
         self.miner = ClMiner(self.dataset) # supp extra?
-        for (node,supp) in self.miner.mineclosures():
+        for (node,supp) in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing
             size, hence all subsets of each closure come before it - needed
@@ -81,49 +83,44 @@ class Lattice:
             first node in list is closure of empty set
             union_cover init is always empty
             """
-##            if bord.emptyclose is None:
-##                bord.record_clos_empty(node)
-
-            self.closeds.append(node) # WRONG IF candClosures IS CALLED TWICE
+            self.closeds.append(node) # WRONG IF CALLED TWICE
             self.supps[node] = supp
             for pot_cover in [ node.intersection(bord_elem) 
                                for bord_elem in bord ]:
                 if node.intersection(self.union_cover[pot_cover]) <= pot_cover:
                     self.immpreds[node].append(pot_cover)
-                    self.union_cover[pot_cover].update(node) # hope node is set
+                    if not self.union_cover[pot_cover]:
+                        "first successor of pot_cover: gives supprt"
+                        supprt = float(self.supps[pot_cover])/supp
+                        self.suppratios[pot_cover] = supprt
+                        if supprt > self.boosthr:
+                            heappush(self.ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
+                        else:
+                            heappush(self.freezer,(-supprt,pot_cover))
+                    self.union_cover[pot_cover].update(node)
                     bord.discard(pot_cover)
             bord.add(node)
 
-##            self.immpreds[node] = bord.cover_update(node,self)
-##            bord.append(node)
-
-
-            for pr in self.immpreds[node]:
-                "check out whether this still works"
-                if pr in prevcands:
-                    continue
-                prevcands.add(pr)
-                supprt = float(self.supps[pr])/supp
-                self.suppratios[pr] = supprt
-                if supprt > self.boosthr:
-                    heappush(self.ready,(self.dataset.nrtr-self.supps[pr],pr))
-                else:
-                    heappush(self.freezer,(-supprt,pr))
-##                    print "FREEZING:", pr
             while self.ready:
                 yield heappop(self.ready)[1]
-##        iface.report("Closures exploration finished at support " +
-##                     str(self.miner.intsupp) +
-##                     (" (%2.3f%%)" % self.miner.to_percent(self.miner.intsupp)) + ".")
+
         for st in bord:
             """
             there remain to yield the positive border (maximal sets) 
-            wrong suppratio there, skip them for the time being
+            wrong suppratio there, skipped at v1.0
             next version of yacaree should get their correct suppratio
-            out of the negative border
+            out of the negative border - NOT THAT EASY!
+            this v1.1 approximates it assuming supp thr for closures
+            that fall below it upon computing suppratios
             """
-            pass
-##            heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
+            supprt = float(self.supps[st])/self.miner.minsupp
+            self.suppratios[st] = supprt
+            if supprt > self.boosthr:
+                print "fishing back in", st
+                heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
+            else:
+                heappush(self.freezer,(-supprt,st))
+            
         while self.ready:
             yield heappop(self.ready)[1]
 
@@ -198,7 +195,7 @@ if __name__=="__main__":
     
 ##    fnm = "lenses_recoded.txt"
 
-    fnm = "data/e13"
+    fnm = "data/e14"
 
 ##    fnm = "exbordalg"
 ##    fnm = "pumsb_star"
