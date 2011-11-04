@@ -57,12 +57,12 @@ pend_len_limit = 16384 # 1000 # 16384 # 2 to power 14
 pend_total_limit = 100000000 # 100000 # 100000000
 pend_mem_limit = 1000000000 # 1GB
 ##confthr = int((2.0/3) * scale)
-confthr = int(0.6 * scale)
+confthr = int(0.65 * scale)
 findrules = 0
 maxrules = 50 # set this to zero if all the rules are to be written out
 initialboost = 1.15
 absoluteboost = 1.05
-genabsupp = 0 # 5 # absolute number of transactions
+genabsupp = 5 # absolute number of transactions
 boostdecr = 0.001 # minimal boost decrease allowed
 report_period = 30 # try to show program is alive every that many seconds
 
@@ -72,7 +72,7 @@ def set_standard():
     pend_total_limit = 100000000
     pend_mem_limit = 1000000000
 ##    confthr = int((2.0/3) * scale)
-    confthr = int(0.6 * scale)
+    confthr = int(0.65 * scale)
     findrules = 0
     maxrules = 50
     initialboost = 1.15
