@@ -116,7 +116,6 @@ class Lattice:
             supprt = float(self.supps[st])/self.miner.minsupp
             self.suppratios[st] = supprt
             if supprt > self.boosthr:
-                print "fishing back in", st
                 heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
             else:
                 heappush(self.freezer,(-supprt,st))
