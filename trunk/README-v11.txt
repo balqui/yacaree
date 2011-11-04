@@ -1,5 +1,5 @@
 
-Readme file for yacaree version 1.1 - September ??, 2011 - JL Balcazar - Uni Cantabria
+Readme file for yacaree version 1.1 - November 4, 2011 - JL Balcazar - Uni Cantabria
 
 Thanks for downloading yacaree. Current version 1.1 is offered under 
 the MIT X11 open source license, sometimes called MIT License, that 
