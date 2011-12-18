@@ -1,7 +1,3 @@
-"""
-To make this main work rename first iface_TEXT.py to iface.py
-"""
-
 from datetime import datetime
 
 import statics

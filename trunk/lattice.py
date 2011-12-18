@@ -93,7 +93,7 @@ class Lattice:
                         "first successor of pot_cover: gives supprt"
                         supprt = float(self.supps[pot_cover])/supp
                         self.suppratios[pot_cover] = supprt
-                        if supprt > self.boosthr:
+                        if supprt >= self.boosthr:
                             heappush(self.ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
                         else:
                             heappush(self.freezer,(-supprt,pot_cover))
@@ -107,15 +107,19 @@ class Lattice:
         for st in bord:
             """
             there remain to yield the positive border (maximal sets) 
-            wrong suppratio there, skipped at v1.0
-            next version of yacaree should get their correct suppratio
-            out of the negative border - NOT THAT EASY!
-            this v1.1 approximates it assuming supp thr for closures
-            that fall below it upon computing suppratios
-            """
+            wrong suppratio there, skipped at v1.0, v1.1 approximates it 
+            assuming minsupp for closures below thr but then supprt==1 too often
             supprt = float(self.supps[st])/self.miner.minsupp
+            next version of yacaree should get their correct suppratio
+            out of the negative border - NOT THAT EASY! 
+            (and what if no neg border exists?)
+            tried 2 (a sort of infinity), unconvincing
+            now trying the absolute boost threshold so that only relevant
+            in case the boost threshold really drops to the limit
+            """
+            supprt = statics.absoluteboost
             self.suppratios[st] = supprt
-            if supprt > self.boosthr:
+            if supprt >= self.boosthr:
                 heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
             else:
                 heappush(self.freezer,(-supprt,st))

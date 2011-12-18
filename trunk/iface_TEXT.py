@@ -62,6 +62,12 @@ class iface:
 
 # report methods exported to GUI should give opportunities of interaction
 
+
+
+    @classmethod
+    def go(a,b):
+        pass
+
     @classmethod
     def report(cls,m="",vb=3):
         print "[yacaree]", m
