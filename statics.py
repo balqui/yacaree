@@ -39,7 +39,7 @@ genabsupp: Do not consider closures with absolute support below this
 
 """
 
-version = "version 1.1"
+version = "version 1.2.0"
 
 filenamext = ".txt"
 logfile = None
@@ -59,7 +59,7 @@ pend_mem_limit = 1000000000 # 1GB
 ##confthr = int((2.0/3) * scale)
 confthr = int(0.65 * scale)
 findrules = 0
-maxrules = 50 # set this to zero if all the rules are to be written out
+maxrules = 0 # 50 # set this to zero if all the rules are to be written out
 initialboost = 1.15
 absoluteboost = 1.05
 genabsupp = 5 # absolute number of transactions

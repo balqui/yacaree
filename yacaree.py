@@ -28,11 +28,11 @@ class Yacaree:
             rules.append((-rul.cboo,rul))
             if miner.count == statics.findrules > 0: break
         iface.report("Mining process terminated; searched for rules " + 
-                     ("of confidence boost at least %1.3f." % miner.boosthr)) 
+                     ("of confidence boost at least %1.3f." % miner.latt.boosthr)) 
         iface.report(("Total of %d Rules obtained from " % miner.count) +
-                     ("%d closures of support at least " % miner.miner.card) +
-                     str(miner.miner.minsupp) + " (" +
-                     str(miner.miner.to_percent(miner.miner.minsupp)) + "%).")
+                     ("%d closures of support at least " % miner.latt.miner.card) +
+                     str(miner.latt.miner.minsupp) + " (" +
+                     str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
         cnt = 0
         for (b,r) in sorted(rules):
             cnt += 1

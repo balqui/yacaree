@@ -22,7 +22,10 @@ class Rule:
                       float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
         self.p_s = ( self.supp -
                      float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
-        self.s_s = float(self.suppboth) / (self.suppant - self.suppboth)
+        if self.suppant - self.suppboth > 0:
+            self.s_s = float(self.suppboth) / (self.suppant - self.suppboth)
+        else:
+            self.s_s = -1
         self.cboo = 0
 
     def __str__(self):
@@ -37,10 +40,11 @@ class Rule:
 ##		res += ("suppant: %d; " % self.suppant)
 ##		res += ("supprcn: %d; " % self.supprcn)
         res += ("leverage: %2.3f; " % self.levg)
-        res += ("PS: %2.3f; " % self.p_s)
-        res += ("S-S: %2.3f" % self.s_s)
+        res += ("PS: %2.3f" % self.p_s)
+        if self.s_s >= 0:
+            res += ("; S-S: %2.3f" % self.s_s)
         if self.cboo == 0:
-            res += "]\n"
+            res += "; ]\n"
         else:
             res += ("; boost: %2.3f]\n" % self.cboo)
         return res
