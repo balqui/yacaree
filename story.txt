@@ -46,5 +46,8 @@ of a generator to use as iterator.
 to the repository. Soon this very file will migrate to the wiki.
 
 7/ [Long time later] Using this line to check user/passwd and such.
+And again.
+
+
 
 
