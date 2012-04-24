@@ -44,3 +44,7 @@ of a generator to use as iterator.
 
 6/ [20100503] Start uploading files (to the wrong place) and code
 to the repository. Soon this very file will migrate to the wiki.
+
+7/ [Long time later] Using this line to check user/passwd and such.
+
+
