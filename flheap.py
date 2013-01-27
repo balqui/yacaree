@@ -55,8 +55,6 @@ class FlHeap:
     def pop(self):
         "discard component [0] as it is the pr"
         nextel = heappop(self.storage)
-        if len(nextel) < 2:
-            print nextel
         nextel = nextel[1]
         self.count -= 1
         self.totalsize -= self.elemsize(nextel)

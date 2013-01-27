@@ -53,6 +53,12 @@ class Yacaree:
         iface.enable_finish()
         iface.console.bell()
 
+    def standard_run_all(self):
+        mmm = statics.maxrules 
+        statics.maxrules = 0
+        self.standard_run()
+        statics.maxrules = mmm
+
 if __name__ == "__main__":
 
     y = Yacaree()

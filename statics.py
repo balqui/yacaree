@@ -39,7 +39,7 @@ genabsupp: Do not consider closures with absolute support below this
 
 """
 
-version = "version 1.2.0"
+version = "version 1.2.1"
 
 filenamext = ".txt"
 logfile = None

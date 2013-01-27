@@ -15,15 +15,23 @@ class iface:
     @classmethod
     def go(cls,mainprog):
         cls.root = Tkinter.Tk()
+
+        button_width = 25
+        button_height = 4
+        text_width = 92
+        text_height = 28
+
         left_frame = Tkinter.Frame(cls.root)
         left_frame.pack(side=Tkinter.LEFT)
         logo = Tkinter.BitmapImage(file="yac-v03.xbm")
         logo_frame = Tkinter.Frame(left_frame)
+        logo_frame.configure(width = button_width)
         logo_frame.pack(side = Tkinter.TOP)
         slogan_label = Tkinter.Label(left_frame, text =
-                                     "yet another closure-based association " +
-                                     "rules\nexperimentation environment - " +
-                                     statics.version)
+                                     "yet another\nclosure-based association " +
+                                     "rules\nexperimentation environment\n(" +
+                                     statics.version + ")")
+        slogan_label.configure(width = button_width)
         slogan_label.pack(side=Tkinter.TOP)
         logo_label = Tkinter.Label(logo_frame,image=logo)
         namefont = tkFont.Font(family = "Helvetica",
@@ -41,6 +49,7 @@ class iface:
         console_frame = Tkinter.LabelFrame(cls.root,text="Console")
         console_frame.pack(side=Tkinter.LEFT)
         cls.console = Tkinter.Text(console_frame)
+        cls.console.configure(width = text_width, height = text_height)
         cls.console.pack(side=Tkinter.LEFT)
         cls.scrollY = Tkinter.Scrollbar(console_frame,
                                     orient = Tkinter.VERTICAL,
@@ -49,26 +58,31 @@ class iface:
         cls.console.configure(yscrollcommand = cls.scrollY.set)
         cls.report("This is yacaree " + statics.version) 
 
-        button_width = 30
-        button_height = 5
-
         cls.filepick = Tkinter.Button(process_frame)
-        cls.filepick.configure(text = "1/ Choose a \ndataset file",
+        cls.filepick.configure(text = "Choose a dataset file",
                                width = button_width,
                                height = button_height,
                                command = cls.choose_datafile)
         cls.filepick.pack()
 
         cls.run = Tkinter.Button(process_frame)
-        cls.run.configure(text = "2/ Run yacaree\n(and be patient)",
+        cls.run.configure(text = "Run yacaree for all rules\n(and be patient), or...",
+                          width = button_width,
+                          height = button_height,
+                          state = Tkinter.DISABLED,
+                          command = mainprog.standard_run_all)
+        cls.run.pack()
+
+        cls.run50 = Tkinter.Button(process_frame)
+        cls.run50.configure(text = "...Run yacaree for at most 50 rules\n(but be equally patient)",
                           width = button_width,
                           height = button_height,
                           state = Tkinter.DISABLED,
                           command = mainprog.standard_run)
-        cls.run.pack()
+        cls.run50.pack()
 
         cls.finish_button = Tkinter.Button(process_frame)
-        cls.finish_button.configure(text = "3/ Finish",
+        cls.finish_button.configure(text = "Finish",
                                   width = button_width,
                                   height = button_height,
                                   command = cls.finish)
@@ -84,6 +98,7 @@ class iface:
             title = "Choose a dataset file")
         if fnm:
             cls.run.configure(state = Tkinter.NORMAL)
+            cls.run50.configure(state = Tkinter.NORMAL)
             statics.filenamefull = fnm
             statics.filename, statics.filenamext = fnm.rsplit('.',1)
             cls.report("Selected dataset in file " + fnm)
@@ -97,6 +112,7 @@ class iface:
     @classmethod
     def enable_again(cls):
         cls.run.configure(state = Tkinter.DISABLED)
+        cls.run50.configure(state = Tkinter.DISABLED)
         cls.filepick.configure(state = Tkinter.NORMAL)
 
     @classmethod
@@ -119,6 +135,7 @@ class iface:
     @classmethod
     def disable_run(cls):
         cls.run.configure(state = Tkinter.DISABLED)
+        cls.run50.configure(state = Tkinter.DISABLED)
 
     @classmethod
     def report(cls,m):

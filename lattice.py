@@ -113,11 +113,13 @@ class Lattice:
             next version of yacaree should get their correct suppratio
             out of the negative border - NOT THAT EASY! 
             (and what if no neg border exists?)
-            tried 2 (a sort of infinity), unconvincing
-            now trying the absolute boost threshold so that only relevant
-            in case the boost threshold really drops to the limit
+            tried 2 (a sort of infinity), then tried the absolute 
+            boost threshold supprt = statics.absoluteboost
+            so that only relevant in case the boost threshold really 
+            drops to the limit - both unconvincing
+            now getting back for 1.2.1 to the same strategy as in 1.1
             """
-            supprt = statics.absoluteboost
+            supprt = float(self.supps[st])/self.miner.minsupp
             self.suppratios[st] = supprt
             if supprt >= self.boosthr:
                 heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
