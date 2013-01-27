@@ -71,7 +71,6 @@ class ClMiner:
                        frozenset(self.dataset.inters(supportingset)),
                        frozenset(supportingset))
             self.clos_singl.add(cl_node)
-##        sorteduniv = None # return memory space to garbage collector
         iface.report(str(len(self.clos_singl)) +
                      " singleton-based closures.")
 
@@ -114,7 +113,9 @@ class ClMiner:
             if spp < self.minsupp:
                 self.minsupp = spp
             iface.possibly_report(str(self.card) +
-                         " closures found so far; current support " +
+                         " closures traversed, " +
+                         str(pend_clos.count) + 
+                         " further closures found so far; current support " +
                          str(spp) + ".")
             self.card += 1
             yield (ItSet(cl[1]),spp)

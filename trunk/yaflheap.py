@@ -65,7 +65,6 @@ class FlHeap(flheap.FlHeap):
             self.storage = new_pend_clos
             self.count = new_count
             self.totalsize = new_total_size
-## see below for further code that I had here
         return intsupp
 
     def pend_clos_size(self,pend_clos):
@@ -89,41 +88,6 @@ class FlHeap(flheap.FlHeap):
 ##        return m
 
 
-##    def pend_clos_size(self):
-##        "by lengths, insufficient for dense or big datasets"
-##        m = len(self.pend_clos)
-##        for pend in self.pend_clos:
-##            m += len(pend[1]) + len(pend[2])
-##        return m
-
-##    def halve_pend_clos(self):
-##        """
-##        too many closures pending expansion: raise
-##        the support bound so that about half of the
-##        pend_clos heap becomes discarded
-##        """
-##        lim = self.cnt_pend / 2
-##        current_supp = self.dataset.nrtr + 1
-##        current_supp_clos = []
-##        new_pend_clos = []
-##        new_cnt = 0
-##        old_intsupp = self.intsupp
-##        while self.pend_clos:
-##            b = heappop(self.pend_clos)
-##            new_cnt += 1
-##            if new_cnt > lim: break
-##            if -b[0] == current_supp:
-##                current_supp_clos.append(b)
-##            else:
-##                self.intsupp = current_supp
-##                current_supp = -b[0]
-##                new_pend_clos.extend(current_supp_clos)
-##                current_supp_clos = [b]
-##        self.pend_clos = new_pend_clos
-##        iface.report("Increased min support from " + str(old_intsupp) +
-##                     (" (%2.3f%%) up to " % self.to_percent(old_intsupp)) + 
-##                     str(self.intsupp) +
-##                     (" (%2.3f%%)" % self.to_percent(self.intsupp)) + ".")
 
 
 if __name__ == "__main__":
