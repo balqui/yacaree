@@ -1,0 +1,82 @@
+
+Real ToDo: migrate _correctly_ to Python 3, that is, itsets must
+inherit from sets, and all that jazz, paying attention to find out
+where I had hacked in a workaround due to not being able to inherit 
+from existing classes.
+
+Should I get a separate repo for the flexible heap?
+
+Should I get a separate repo for the transversals? (on halp?)
+
+Also, check out from the ToDo's below, maybe some of them were actually
+implemented already.
+
+NEXT COMES TODO FILE FROM SOURCEFORGE AS OF AUGUST 20, 2019
+
+** ToDo for 1.2:
+
+report minimum confidence boost of the 50 rules (or whatever) reported
+
+support sorting may make more sense!
+
+enable a graceful finish if Finish button clicked
+
+use the processing of singletons to get full implications with antec size 1 and implement their cboost
+
+** ToDo for 1.2 or 1.3:
+
+get the whole GD basis
+
+allow rules with negated items
+
+enable a "retry" button leading to options such as
+- choose either 50 rules or all of them
+- demanding / loose settings (of what?, conf 0.51 maybe, cboost 1 absolute and initial maybe...)
+
+** Further issues to work on and/or clarify:
+
+I set for a test both abs and initial boost at 1 and got exactly one rule of boost 1, can this be? think!
+
+solve the issue of the "two borders" and the support ratio near the threshold
+(I am not getting principal => component and component => analysis due to that)
+
+transform and check the eprints 2009 dataset
+
+transform and check cover type
+
+check elearning datasets
+
+
+===
+
+** ToDo for 1.1:
+
+after icde submission:
+
+changes already made to rule.py, version 1.0 conserved separately
+- add one space near support at the output
+- report the leverage of the rules as well
+
+small corrections to do: 
+- mention actual confidence threshold upon reporting at the end (done)
+- mention yacaree version in the main screen (done)
+- disable the dataset load button while computing (done)
+- set at 0.6 the default confidence threshold (not sure good idea - left at 0.65)
+
+make it report a bit more often along the way (done, I think, but not yet clear how)
+finally: get periodic reporting as a function of time (say once per minute at least) (done, twice a minute)
+
+running yaflheap alone raises exception - solved
+
+reduce the cboost only if the weighted average with lifts is _clearly_ lower, say by 0.001 (done)
+
+rename mineclosures to mine_closures in ClMiner (done)
+
+clarify the support ratio of the positive border (done: using the minsupp reached as proxy)
+
+report confidence boost reached all along (done)
+
+[Upload 1.1 on nov 4th, 2011]
+
+
+

@@ -1,3 +1,8 @@
+# yacaree
+Python3 future version of the now somewhat old yacaree association miner (far from ready yet).
+
+Based on SourceForge's revision 65 (probably its last).
+
 Readme file for yacaree version 1.2.1 - January 27, 2011
 
 JL Balcazar - UPC
