@@ -94,9 +94,9 @@ if __name__ == "__main__":
     tr_a = d.occurncs['a']
     tr_c = d.occurncs['c']
     tr = tr_a & tr_c
-    print tr_a
-    print tr_c
-    print tr
-    print d.inters(tr)
+    print(tr_a)
+    print(tr_c)
+    print(tr)
+    print(d.inters(tr))
     
     

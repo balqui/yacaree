@@ -97,7 +97,7 @@ if __name__ == "__main__":
     if test == [1,1,2,2,4,5,5,6,6]:
         pass
     else:
-        print "expected [1,1,2,2,4,5,5,6,6], obtained", test
+        print("expected [1,1,2,2,4,5,5,6,6], obtained", test)
 
     numheapmax = FlHeapB()
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
     if test == [ [e] for e in [6,6,5,5,4,2,2,1,1] ]:
         pass
     else:
-        print "expected singletons from [6,6,5,5,4,2,2,1,1], obtained", test
+        print("expected singletons from [6,6,5,5,4,2,2,1,1], obtained", test)
 
     h = FlHeapA()
 
@@ -126,5 +126,5 @@ if __name__ == "__main__":
     if test == "ac     eeeeeefhhilllnnorsssttttt":
         pass
     else:
-        print "expected 'ac     eeeeeefhhilllnnorsssttttt', obtained", test
+        print("expected 'ac     eeeeeefhhilllnnorsssttttt', obtained", test)
     

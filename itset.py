@@ -17,6 +17,7 @@ class ItSet(frozenset):
         prettyprint of itemset: support omitted if zero
         ToDo: handle optional element translator trad
         """
+        sep = ""
         s = ""
         for el in sorted(self):
             if  el in trad.keys():
@@ -24,14 +25,15 @@ class ItSet(frozenset):
             if s=="":
                 s = str(el)
             else:
-                s += "," + str(el)
+                s += sep + str(el)
+            sep = ", "
         s = "{ " + s + " }"
         return s
 
 if __name__=="__main__":
 
-    st = itset(range(5))
-    print st
+    st = ItSet(range(5))
+    print(st)
 
     
 

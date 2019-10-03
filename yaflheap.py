@@ -101,12 +101,12 @@ if __name__ == "__main__":
 
     clheap.push([4,[4,5],[6,7]])
 
-    print clheap.totalsize
-    print clheap.count
-    print clheap.pop()
-    print clheap.totalsize
-    print clheap.count
-    print clheap.pop()
-    print clheap.pop()
+    print(clheap.totalsize)
+    print(clheap.count)
+    print(clheap.pop())
+    print(clheap.totalsize)
+    print(clheap.count)
+    print(clheap.pop())
+    print(clheap.pop())
 
     

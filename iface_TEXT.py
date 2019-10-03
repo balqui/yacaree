@@ -31,7 +31,7 @@ verb: verbosity level
  1:progress rep
  2:further info
  3:a lot
-progress reporting
+progress reporting (COMMENTED OUT!)
  pongs: a dot is written every that many pong calls
  pong ("dual to ping"): acts as progress bar advance
  repong: initializes it and admits a "speed" adjustment
@@ -70,10 +70,11 @@ class iface:
 
     @classmethod
     def report(cls,m="",vb=3):
-        print "[yacaree]", m
+        print("[yacaree]", m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
+## WHY DO I HAVE THE NEXT METHOD?
     @classmethod
     def possibly_report(cls,m="",vb=3):
         cls.report(m,vb)
@@ -98,7 +99,7 @@ class iface:
 
     @classmethod
     def reportwarning(cls,m="",vb=1):
-        print "[yacaree warning]", m
+        print("[yacaree warning]", m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
@@ -108,7 +109,7 @@ class iface:
 
     @classmethod
     def reporterror(cls,m="",vb=0):
-        print "[yacaree error] " + m
+        print("[yacaree error]", m)
         m = "Error: " + m
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         exit(m)

@@ -6,10 +6,27 @@ from existing classes.
 
 Should I get a separate repo for the flexible heap?
 
-Should I get a separate repo for the transversals? (on halp?)
+Should I get a separate repo for the transversals?  (on halp?)
 
 Also, check out from the ToDo's below, maybe some of them were actually
 implemented already.
+
+In ItSet: added parentheses to a print and refactored the sep string,
+but must review the inherited init, check out further functionality
+and decide about the potential translator from items to something else
+(I think I did that inspired by the good practice in Borgelt's over
+the C implementation where items are ints, but here is Python, they
+can be any sorts of objects by the same price as ints, in particular
+strings work well enough, so most likely I will drop all mentions to
+the hypothetical translator)
+
+[Oct 3: adding parenthesis to all prints in some of the unit tests 
+even if not running them, so as to be able to run clminer: touched
+itset, dataset, yaflheap, flheap]
+
+In ClMIner: the possibly_report in line 115 misses one closure,
+namely the one just popped: not yet counted as yielded but not
+anymore in pend_clos
 
 NEXT COMES TODO FILE FROM SOURCEFORGE AS OF AUGUST 20, 2019
 
