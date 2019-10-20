@@ -2,13 +2,15 @@ class ItSet(frozenset):
     """
     itemsets are frozensets so that they can index dicts
     earlier they had supp, but now moved off to a dict in Lattice
+    Tried several things and also followed up this, but to no avail:
+    http://infamousheelfilcher.blogspot.com/2012/09/subclassing-immutable-types-in-python-3.html
     """
 
     def __init__(self,contents=[]):
         """
-        tried
         frozenset.__init__(self,contents)
-        but seems inappropriate
+        did not work with Python 2, did instead
+        self = frozenset(contents)
         """
         self = frozenset(contents)
 
