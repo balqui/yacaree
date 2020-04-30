@@ -1,3 +1,14 @@
+'''
+Current usage of heappush might compare Rule's if supports coincide
+On the CPython version of Python2 this was harmless
+Python 3 does not allow comparing Rule's until proper comparison is added
+Quick and dirty solution is adding a global counter of things entering
+the heap through heappush so that comparison never arrives to the
+Rule's themselves
+Probably a decent solution would come from using my own heaps
+See also implminer.py
+'''
+
 
 import statics
 ##from choose_iface import iface
@@ -7,6 +18,9 @@ from rule import Rule
 
 from heapq import heapify, heappush, heappop
 ##from collections import defaultdict
+
+
+heappushcnt = 0 # see above
 
 def checkrule(rul,rm):
     belowconf = 0
@@ -32,6 +46,7 @@ def checkrule(rul,rm):
 
 def mine_partial_rules(rminer,cn):
     "check boost wrt smaller antecedents only"
+    global heappushcnt
     for an in rminer.latt.allpreds(cn,(rminer.latt.supps[cn]*statics.scale)/statics.confthr):
         rul = Rule(an,cn,rminer.latt)
         if len(an) == 1: # and len(cn) == 2:
@@ -41,9 +56,10 @@ def mine_partial_rules(rminer,cn):
                 rminer.latt.reviseboost(rminer.sumlifts,rminer.numlifts)
                 rereserved = []
                 while rminer.reserved:
-                    (negs,rul2) = heappop(rminer.reserved)
+                    (negs,_,rul2) = heappop(rminer.reserved) # for _ see implminer
                     if rul2.cboo < rminer.latt.boosthr:
-                        heappush(rereserved,(negs,rul2))
+                        heappushcnt -= 1
+                        heappush(rereserved,(negs,heappushcnt,rul2))
                     else:
                         rminer.count += 1
                         yield rul2
@@ -52,7 +68,8 @@ def mine_partial_rules(rminer,cn):
         if ch == rminer.DISCARD:
             pass
         elif ch < rminer.latt.boosthr:
-            heappush(rminer.reserved,(-rul.supp,rul))
+            heappushcnt -= 1
+            heappush(rminer.reserved,(-rul.supp,heappushcnt,rul))
         else:
             rminer.count += 1
             yield rul

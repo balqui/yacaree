@@ -40,7 +40,7 @@ progress reporting (COMMENTED OUT!)
 
 from sys import stdout
 from datetime import datetime
-
+from six.moves import input as raw_input
 import statics
 
 class iface:
@@ -66,7 +66,7 @@ class iface:
 
     @classmethod
     def go(a,b):
-        pass
+        b.standard_run()
 
     @classmethod
     def report(cls,m="",vb=3):
@@ -121,6 +121,7 @@ class iface:
 
     @classmethod
     def ask_input(cls,prompt):
+        "See import from six.moves above"
         if statics.logfile: statics.logfile.write("Asked:" + prompt + "\n")
         ans = raw_input(prompt)
         if statics.logfile: statics.logfile.write("Answer:" + ans + "\n")

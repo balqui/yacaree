@@ -2,9 +2,19 @@
 A simple Tkinter-based GUI for yacaree
 """
 
-import Tkinter
-import tkFileDialog
-import tkFont
+try:
+    "Python 2 version"
+    import Tkinter
+    import tkFileDialog
+    import tkFont
+except ModuleNotFoundError:
+    "Python 3 (or beyond?) version"
+    import tkinter as Tkinter
+    from tkinter import filedialog as tkFileDialog
+    from tkinter import font as tkFont
+
+
+
 from datetime import datetime
 from time import clock
 

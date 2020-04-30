@@ -215,16 +215,16 @@ if __name__=="__main__":
     la.boosthr = 0
     for a in la.candidate_closures():
         "This had a 0.1 arg"
-        print "\nClosure: ", a, la.supps[a]
-        print "imm preds:"
-        for e in la.immpreds[a]: print e, ",",
-        print
-        print "all preds:"
-        for e in la.allpreds(a): print e, ",",
+        print("\nClosure: ", a, la.supps[a])
+        print("imm preds:")
+        for e in la.immpreds[a]: print(e, ",") #,
+        print()
+        print("all preds:")
+        for e in la.allpreds(a): print(e, ",") #,
         if a in la.suppratios:
-            print "supp ratio:", la.suppratios[a]
+            print("supp ratio:", la.suppratios[a])
         else:
-            print "no supp ratio for", a
+            print("no supp ratio for", a)
         
 
 ##    la.boosthr = 1.25
