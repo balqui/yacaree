@@ -1,4 +1,6 @@
 syntax: glob
 
 *.pyc
+data/*.log
+data/*rules.txt
 scaff/*
