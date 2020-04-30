@@ -8,6 +8,8 @@ Should I get a separate repo for the flexible heap?
 
 Should I get a separate repo for the transversals?  (on halp?)
 
+MOST URGENT: THE TEXT iface WAS NOT FULLY COMPLETED EVER
+
 Also, check out from the ToDo's below, maybe some of them were actually
 implemented already.
 

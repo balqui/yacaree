@@ -10,6 +10,9 @@ from time import clock
 
 import statics
 
+# Supports directly a call to iface.console.bell()
+# But that call failed on text iface, check out there how to do it better
+
 class iface:
 
     @classmethod

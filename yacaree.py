@@ -51,7 +51,7 @@ class Yacaree:
         statics.logfile = None
         iface.enable_again()
         iface.enable_finish()
-        iface.console.bell()
+#        iface.console.bell() # fails on text iface
 
     def standard_run_all(self):
         mmm = statics.maxrules 

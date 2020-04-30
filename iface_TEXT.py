@@ -167,3 +167,23 @@ class iface:
 ##        if cls.countpongs == cls.pongs:
 ##            cls.say(".",1)
 ##            cls.countpongs = 0
+
+    @classmethod
+    def disable_filepick(a):
+        pass
+
+    @classmethod
+    def disable_finish(a):
+        pass
+
+    @classmethod
+    def disable_run(a):
+        pass
+
+    @classmethod
+    def enable_again(a):
+        pass
+
+    @classmethod
+    def enable_finish(a):
+        pass
