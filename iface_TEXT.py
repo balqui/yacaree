@@ -77,7 +77,7 @@ class iface:
 
     @classmethod
     def report(cls,m="",vb=3):
-        print("[yacaree]", m)
+        print("[yacaree] " + m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
@@ -106,7 +106,7 @@ class iface:
 
     @classmethod
     def reportwarning(cls,m="",vb=1):
-        print("[yacaree warning]", m)
+        print("[yacaree warning] " + m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
@@ -116,7 +116,7 @@ class iface:
 
     @classmethod
     def reporterror(cls,m="",vb=0):
-        print("[yacaree error]", m)
+        print("[yacaree error] " + m)
         m = "Error: " + m
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         exit(m)
@@ -175,10 +175,6 @@ class iface:
 ##        if cls.countpongs == cls.pongs:
 ##            cls.say(".",1)
 ##            cls.countpongs = 0
-
-    @classmethod
-    def setup_filename(cls, filename = None):
-        pass
 
 ## Temporary catchers for GUI-related calls
 
