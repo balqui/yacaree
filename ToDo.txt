@@ -16,6 +16,7 @@ Delete the sf project
 Also, check out from the ToDo's below, maybe some of them were actually
 implemented already.
 
+[Not sure of date or of why this is still here:]
 In ItSet: added parentheses to a print and refactored the sep string,
 but must review the inherited init, check out further functionality
 and decide about the potential translator from items to something else
