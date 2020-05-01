@@ -14,6 +14,7 @@ class Yacaree:
         iface.go(self)
 
     def standard_run(self):
+        rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         now = datetime.today().strftime("%Y%m%d%H%M%S")
         filenamenow = statics.filename + now
         filenamerules = filenamenow + "_rules.txt"
@@ -25,7 +26,9 @@ class Yacaree:
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
-            rules.append((-rul.cboo,rul))
+            "if someday Rule has comparison, remove all mentions to rulecnt"
+            rulecnt += 1
+            rules.append((-rul.cboo, rulecnt, rul))
             if miner.count == statics.findrules > 0: break
         iface.report("Mining process terminated; searched for rules " + 
                      ("of confidence boost at least %1.3f." % miner.latt.boosthr)) 
@@ -34,7 +37,8 @@ class Yacaree:
                      str(miner.latt.miner.minsupp) + " (" +
                      str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
         cnt = 0
-        for (b,r) in sorted(rules):
+        for (b, c, r) in sorted(rules):
+            "remove c in case rulecnt is removed"
             cnt += 1
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
             if cnt == statics.maxrules > 0: break
