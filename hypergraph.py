@@ -160,6 +160,7 @@ class hypergraph:
 
 if __name__ == "__main__":
 	"TOO MANY print TO CORRECT THEM ALL, TESTS JUST HIDDEN"
+	pass
 	
     # ~ print "slatt module hypergraph called as main and running as test"
 
