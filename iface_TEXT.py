@@ -62,11 +62,18 @@ class iface:
 
 # report methods exported to GUI should give opportunities of interaction
 
-
-
     @classmethod
-    def go(a,b):
-        b.standard_run()
+    def go(cls, yacaree):
+        if statics.filenamefull is None:
+            iface.reportwarning("No dataset file specified.")
+            filename = iface.ask_input("Dataset File Name? ")
+            if len(filename)<=3 or filename[-4] != '.':
+                statics.filename = filename
+                statics.filenamefull = filename + statics.filenamext
+            else:
+                statics.filename, statics.filenamext = filename.rsplit('.',1)
+                statics.filenamefull = filename
+        yacaree.standard_run()
 
     @classmethod
     def report(cls,m="",vb=3):
@@ -168,6 +175,12 @@ class iface:
 ##        if cls.countpongs == cls.pongs:
 ##            cls.say(".",1)
 ##            cls.countpongs = 0
+
+    @classmethod
+    def setup_filename(cls, filename = None):
+        pass
+
+## Temporary catchers for GUI-related calls
 
     @classmethod
     def disable_filepick(a):

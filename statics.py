@@ -43,9 +43,8 @@ version = "version 1.2.1"
 
 filenamext = ".txt"
 logfile = None
-#filename = None # right now fails upon creating log in current text iface
-# temporary hack:
-filename = 'DummyName'
+filename = None # right now may fails upon creating log in current text iface
+# temporary hack: filename = 'DummyName'
 filenamefull = None
 
 scale = 100000

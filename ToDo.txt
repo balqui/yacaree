@@ -9,9 +9,11 @@ Should I get a separate repo for the flexible heap?
 Should I get a separate repo for the transversals?  (on halp?)
 
 MOST URGENT: THE TEXT iface WAS NOT FULLY COMPLETED EVER, AND ALONG
-THE WAY I ADDED SOME UGLY HACKS TO implminer.py AND partialruleminer.py
+THE WAY I AM ADDING SOME UGLY HACKS TO implminer.py AND partialruleminer.py
 
 DATASET FILENAME HANDLED IN A VERY WRONG PLACE wrt Lattice
+
+Delete the sf project
 
 Also, check out from the ToDo's below, maybe some of them were actually
 implemented already.

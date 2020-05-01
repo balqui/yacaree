@@ -36,7 +36,7 @@ from choose_iface import iface
 class Dataset:
 
     def __init__(self,filename=None):
-        "find actual file, open, and read the dataset in"
+        "find actual file, open, and read the dataset in - redundancies left"
         if filename is None:
             "filename handling must move to iface_TEXT - solved for GUI"
             filename = statics.filenamefull
