@@ -1,5 +1,6 @@
 """
 Using yacaree through the GUI 
+Idea is that it must be usable from either GUI or CLI but does not work yet
 """
 
 from datetime import datetime
@@ -65,7 +66,29 @@ class Yacaree:
 
 if __name__ == "__main__":
 
+    from sys import argv
+
+    gui = False
+    others = []
+
+    for i in range(1, len(argv)):
+        if argv[i] == "-g": 
+            gui = True
+        else:
+            others.append(argv[i])
+        # ~ if argv[i] == "-d" and i+1 < len(argv):
+            # ~ print("Dataset requested: " + argv[i+1])
+
+    if gui:
+        from iface import iface
+    else:
+        from iface_TEXT import iface
+
     y = Yacaree()
+
+    if others:
+        iface.report('Command line args "' + '", "'.join(others) + '" unknown, ignored.')
+
     
 
     

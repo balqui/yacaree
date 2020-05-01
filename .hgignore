@@ -4,3 +4,4 @@ syntax: glob
 data/*.log
 data/*rules.txt
 scaff/*
+test/*

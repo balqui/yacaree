@@ -1,11 +1,12 @@
 # yacaree
 On our way to a decent, revamped Python3 future version of the now somewhat old yacaree association miner (far from ready yet).
 
-Currently recommended version 1.2.2, the FIRST (and probably the LAST) to work
-under either Python 2 or Python 3. Edit file choose_iface to decide
-whether you want a GUI or command-line interaction and run either
-python2 yacaree.py or python3 yacaree.py (then follow up). Keep reading
-for further info.
+Currently recommended version 1.2.3, one of the first 
+(and probably the LAST) to work under both Python 2 and 
+Python 3. Edit file choose_iface to decide whether you 
+want a GUI or command-line interaction and run either
+python2 yacaree.py or python3 yacaree.py (then follow up). 
+Keep reading for further info.
 
 Based on SourceForge's revision 65 (probably its last).
 
