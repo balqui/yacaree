@@ -4,9 +4,14 @@ inherit from sets, and all that jazz, paying attention to find out
 where I had hacked in a workaround due to not being able to inherit 
 from existing classes.
 
-Should I get a separate repo for the flexible heap?
+Redo all the ToDo into Git issues.
+
+Should I get a separate repo for the flexible heap? Make sure
+objects inside heap never get compared.
 
 Should I get a separate repo for the transversals?  (on halp?)
+
+Delete the sf project
 
 Also, check out from the ToDo's below, maybe some of them were actually
 implemented already.
@@ -27,6 +32,12 @@ itset, dataset, yaflheap, flheap]
 In ClMIner: the possibly_report in line 115 misses one closure,
 namely the one just popped: not yet counted as yielded but not
 anymore in pend_clos
+
+Reworked handling the filename and completing the TEXT iface for
+a single Py2+Py3 shot, risks of errors there. Major Py2-Py3 conflict 
+upon using a heapq in implminer and partialruleminer, solved so far
+with a hack involving a global counter. This within coronavirus time.
+
 
 NEXT COMES TODO FILE FROM SOURCEFORGE AS OF AUGUST 20, 2019
 

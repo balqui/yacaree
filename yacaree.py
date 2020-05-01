@@ -16,7 +16,7 @@ class Yacaree:
     def standard_run(self):
         now = datetime.today().strftime("%Y%m%d%H%M%S")
         filenamenow = statics.filename + now
-        filenamerules = filenamenow + "rules.txt"
+        filenamerules = filenamenow + "_rules.txt"
         statics.logfile = iface.openfile(filenamenow + ".log","w")
         results_file = iface.openfile(filenamerules,"w")
         iface.disable_filepick()
@@ -51,7 +51,7 @@ class Yacaree:
         statics.logfile = None
         iface.enable_again()
         iface.enable_finish()
-        iface.console.bell()
+        iface.sound_bell()
 
     def standard_run_all(self):
         mmm = statics.maxrules 

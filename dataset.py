@@ -36,19 +36,7 @@ from choose_iface import iface
 class Dataset:
 
     def __init__(self,filename=None):
-        "find actual file, open, and read the dataset in"
-        if filename is None:
-            "filename handling must move to iface_TEXT - solved for GUI"
-            filename = statics.filenamefull
-        if filename is None:
-            iface.reportwarning("No dataset file specified.")
-            filename = iface.ask_input("Dataset File Name? ")
-        if len(filename)<=3 or filename[-4] != '.':
-            statics.filename = filename
-            statics.filenamefull = filename + statics.filenamext
-        else:
-            statics.filename, statics.filenamext = filename.rsplit('.',1)
-            statics.filenamefull = filename
+        "find actual file, open, and read the dataset in - redundancies left"
         self.datasetfile = iface.openfile(statics.filenamefull)
         iface.report("Reading in dataset from file " +
                      statics.filenamefull)

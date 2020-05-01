@@ -75,10 +75,6 @@ class ClMiner:
                      " singleton-based closures.")
 
     def mine_closures(self):
-        """
-        iterator to mine closed sets
-        reporting progress made possible at each yield
-        """
 
         if self.maxitemsupp < self.dataset.nrtr:
             "empty set is closed, yield it"
@@ -112,7 +108,7 @@ class ClMiner:
                 break
             if spp < self.minsupp:
                 self.minsupp = spp
-            iface.possibly_report(str(self.card) +
+            iface.report(str(self.card) +
                          " closures traversed, " +
                          str(pend_clos.count) + 
                          " further closures found so far; current support " +

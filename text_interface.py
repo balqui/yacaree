@@ -1,14 +1,17 @@
+"WARNING. Likely to be obsolete."
+
 from datetime import datetime
 
 import statics
 
-from iface import iface
+from iface_TEXT import iface
 from ruleminer import RuleMiner
 
 if __name__ == "__main__":
 
 ##    fnm = "adultrain"
-    fnm = "markbaskclem"
+##    fnm = "markbaskclem"
+    fnm = "data/markbask"
 ##    fnm = "pumsb_star"
 ##    fnm = "cmc-full"
 ##    fnm = "papersTr"
@@ -18,8 +21,9 @@ if __name__ == "__main__":
 ##    fnm = "connect"
 
     now = datetime.today().strftime("%Y%m%d%H%M%S")
+    statics.filenamefull = fnm + ".txt"
     statics.logfile = iface.openfile(fnm + now + ".log","w")
-    results_file = iface.openfile(fnm + now + "rules.txt","w")
+    results_file = iface.openfile(fnm + now + "_rules.txt","w")
     miner = RuleMiner(fnm)
     iface.endreport()
     rules = []

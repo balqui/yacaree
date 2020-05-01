@@ -1,3 +1,14 @@
+'''
+Current usage of heappush might compare Rule's if supports coincide
+On the CPython version of Python2 this was harmless
+Python 3 does not allow comparing Rule's until proper comparison is added
+Quick and dirty solution is adding a global counter of things entering
+the heap through heappush so that comparison never arrives to the
+Rule's themselves
+Probably a decent solution would come from using my own heaps
+See also partialruleminer.py
+'''
+
 
 import statics
 ##from choose_iface import iface
@@ -11,6 +22,8 @@ from heapq import heappush
 
 from iter_subsets import all_proper_subsets
 from hypergraph import hypergraph
+
+heappushcnt = 0 # see above
 
 def _faces(itst,listpred):
         "listpred immediate preds of itst - make hypergraph of differences"
@@ -40,6 +53,7 @@ def checkrule(rul,rminer):
 
 def mine_implications(rminer,cn):
     "cn closure of sufficient suppratio, find implications there"
+    global heappushcnt
     mingens = []
     for m in _faces(cn,rminer.latt.immpreds[cn]).transv().hyedges:
         mingens.append(ItSet(m))
@@ -49,8 +63,8 @@ def mine_implications(rminer,cn):
     else:
         for an in mingens:
             if an in rminer.latt.supps:
-                print "ALREADY IN SUPPS", 
-                print an, rminer.latt.supps[cn], rminer.latt.supps[an]
+                print("ALREADY IN SUPPS") #, 
+                print(an, rminer.latt.supps[cn], rminer.latt.supps[an])
             else: 
                 rminer.latt.supps[an] = rminer.latt.supps[cn]
                 rul = Rule(an,cn,rminer.latt)
@@ -58,7 +72,8 @@ def mine_implications(rminer,cn):
                 if ch == rminer.DISCARD:
                     pass
                 elif ch < rminer.latt.boosthr:
-                    heappush(rminer.reserved,(-rul.supp,rul))
+                    heappushcnt += 1
+                    heappush(rminer.reserved,(-rul.supp,heappushcnt,rul))
                 else:
                     rminer.count += 1
                     yield rul

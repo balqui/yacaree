@@ -38,7 +38,7 @@ def all_proper_subsets(aset):
 if __name__ == "__main__":
     t = set([0,1,2,3,4])
     for s in all_proper_subsets(t):
-        print s
+        print(s)
 
 
 

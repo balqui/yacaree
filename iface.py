@@ -2,13 +2,26 @@
 A simple Tkinter-based GUI for yacaree
 """
 
-import Tkinter
-import tkFileDialog
-import tkFont
+try:
+    "Python 2 version"
+    import Tkinter
+    import tkFileDialog
+    import tkFont
+except ModuleNotFoundError:
+    "Python 3 (or beyond?) version"
+    import tkinter as Tkinter
+    from tkinter import filedialog as tkFileDialog
+    from tkinter import font as tkFont
+
+
+
 from datetime import datetime
 from time import clock
 
 import statics
+
+# Supports directly a call to iface.console.bell()
+# But that call failed on text iface, check out there how to do it better
 
 class iface:
 
@@ -204,6 +217,10 @@ class iface:
         else:
             cls.reporterror("Requested to open file in mode '" +
                             mode + "': no such mode available.")
+
+    @classmethod
+    def sound_bell(cls):
+        cls.console.bell()
 
 if __name__ == "__main__":
 
