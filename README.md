@@ -9,7 +9,7 @@ for further info.
 
 Based on SourceForge's revision 65 (probably its last).
 
-(earlier text follows)
+(earlier text follows next)
 
 Readme file for yacaree version 1.2.1 - January 27, 2011
 
