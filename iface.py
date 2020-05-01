@@ -218,6 +218,10 @@ class iface:
             cls.reporterror("Requested to open file in mode '" +
                             mode + "': no such mode available.")
 
+    @classmethod
+    def sound_bell(cls):
+        cls.console.bell()
+
 if __name__ == "__main__":
 
     i = iface()
