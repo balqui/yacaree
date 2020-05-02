@@ -19,7 +19,7 @@ from math import floor
 
 import statics
 from itset import ItSet
-from choose_iface import iface
+##from choose_iface import iface
 from dataset import Dataset
 from yaflheap import FlHeap
 
@@ -47,7 +47,7 @@ class ClMiner:
         self.maxnonsupp = 0
         self.maxitemnonsupp = 0
         self.minsupp = 0
-        iface.report("Initializing singletons.")
+        statics.iface.report("Initializing singletons.")
 
         "pair up items with their support and sort them"
         sorteduniv = [ (len(self.dataset.occurncs[item]),item)
@@ -71,7 +71,7 @@ class ClMiner:
                        frozenset(self.dataset.inters(supportingset)),
                        frozenset(supportingset))
             self.clos_singl.add(cl_node)
-        iface.report(str(len(self.clos_singl)) +
+        statics.iface.report(str(len(self.clos_singl)) +
                      " singleton-based closures.")
 
     def mine_closures(self):
@@ -93,7 +93,7 @@ class ClMiner:
             new_supp = pend_clos.test_size()
             if new_supp > self.intsupp:
                 "support bound grows, heap halved, report"
-                iface.report("Increasing min support from " +
+                statics.iface.report("Increasing min support from " +
                              str(self.intsupp) +
                              (" (%2.3f%%) up to " %
                               self.to_percent(self.intsupp)) +
@@ -108,7 +108,7 @@ class ClMiner:
                 break
             if spp < self.minsupp:
                 self.minsupp = spp
-            iface.report(str(self.card) +
+            statics.iface.report(str(self.card) +
                          " closures traversed, " +
                          str(pend_clos.count) + 
                          " further closures found so far; current support " +
@@ -145,7 +145,8 @@ class ClMiner:
         
 if __name__ == "__main__":
 
-## This testing only works for iface_TEXT in choose_iface
+## This testing only worked for iface_TEXT in choose_iface
+## Now that is being done differently and I must check it out
 
 ##    fnm = "data/markbask"
 ##    supp = 0.0005 # half a transaction, that is, supp > 0: all
@@ -155,7 +156,7 @@ if __name__ == "__main__":
 
 ##    fnm = "data/adultrain"
 
-    iface.report("Module clminer running as test on file " + fnm + ".txt")
+    statics.iface.report("Module clminer running as test on file " + fnm + ".txt")
 
 ##    miner = ClMiner(Dataset(fnm+".txt"),supp)
     miner = ClMiner(Dataset(fnm+".txt"))
@@ -163,20 +164,20 @@ if __name__ == "__main__":
     cnt = 0
     for e in miner.clos_singl:
         cnt += 1
-        iface.report(str(cnt) + "/ " + str(ItSet(e[1])) + "  s: " + str(e[0]))
+        statics.iface.report(str(cnt) + "/ " + str(ItSet(e[1])) + "  s: " + str(e[0]))
 
-    iface.report("Now computing all affordable closures.")
+    statics.iface.report("Now computing all affordable closures.")
 
     cnt = 0
     for e in miner.mine_closures():
         cnt += 1
         last = e
-        iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))
+        statics.iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))
 
-    iface.report("Found " + str(cnt) + " closures.")
-    iface.report("Last closure generated was " +
+    statics.iface.report("Found " + str(cnt) + " closures.")
+    statics.iface.report("Last closure generated was " +
                  str(last[0]) + "  s: " +
                  str(last[1]) + ".")
-    iface.endreport()
+    statics.iface.endreport()
 
 

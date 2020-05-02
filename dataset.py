@@ -30,15 +30,15 @@ from collections import defaultdict
 
 import statics
 ##from iface import iface
-from choose_iface import iface
+##from choose_iface import iface
 
 
 class Dataset:
 
     def __init__(self,filename=None):
         "find actual file, open, and read the dataset in - redundancies left"
-        self.datasetfile = iface.openfile(statics.filenamefull)
-        iface.report("Reading in dataset from file " +
+        self.datasetfile = statics.iface.openfile(statics.filenamefull)
+        statics.iface.report("Reading in dataset from file " +
                      statics.filenamefull)
         self.nrocc = 0
         self.nrtr = 0
@@ -58,11 +58,11 @@ class Dataset:
                 self.nrtr += 1
         self.nrits = len(self.univ)
         self.datasetfile.close()
-        iface.report("Dataset read in. Consists of " +
+        statics.iface.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
-        iface.endreport()
+        statics.iface.endreport()
 
     def inters(self,lstr):
         "for an iterable of transactions lstr, return their intersection"

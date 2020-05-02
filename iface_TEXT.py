@@ -43,8 +43,8 @@ class iface:
     @classmethod
     def go(cls, yacaree):
         if statics.filenamefull is None:
-            iface.reportwarning("No dataset file specified.")
-            filename = iface.ask_input("Dataset File Name? ")
+            cls.reportwarning("No dataset file specified.")
+            filename = cls.ask_input("Dataset File Name? ")
             if len(filename)<=3 or filename[-4] != '.':
                 statics.filename = filename
                 statics.filenamefull = filename + statics.filenamext

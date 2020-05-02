@@ -3,7 +3,9 @@
 Project: yacaree
 Programmer: JLB
 
-Module encompassing some static objects
+Module encompassing some static objects accessed from everywhere
+
+iface: the actual interface, which can be textual CLI or GUI
 
 filenamext: extension assumed for dataset files if absent
 
@@ -41,6 +43,7 @@ genabsupp: Do not consider closures with absolute support below this
 
 version = "version 1.2.2"
 
+iface = None
 filenamext = ".txt"
 logfile = None
 filename = None 

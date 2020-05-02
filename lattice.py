@@ -28,7 +28,7 @@ from heapq import heapify, heappush, heappop
 from collections import defaultdict
 
 import statics
-from choose_iface import iface
+##from choose_iface import iface
 from itset import ItSet
 from dataset import Dataset
 from clminer import ClMiner
@@ -185,7 +185,7 @@ class Lattice:
             v = statics.absoluteboost
         if v <= self.boosthr - statics.boostdecr:
             self.boosthr = v
-            iface.report("Confidence boost bound reduced to %2.3f." % v)
+            statics.iface.report("Confidence boost bound reduced to %2.3f." % v)
             while self.freezer:
                 "fish back in closures that reach enough supp ratio now"
                 if -self.freezer[0][0] > self.boosthr:

@@ -7,7 +7,7 @@ from datetime import datetime
 
 import statics
 from ruleminer import RuleMiner
-from choose_iface import iface
+##from choose_iface import iface
 
 class Yacaree:
 
@@ -84,6 +84,8 @@ if __name__ == "__main__":
     else:
         from iface_TEXT import iface
 
+    statics.iface = iface
+    
     y = Yacaree()
 
     if others:

@@ -12,5 +12,5 @@ but as of today it does not run at all by double-clicking
 
 ##from iface_TEXT import * ## for text output through Python console
 
-from iface import * ## for the Tk GUI, only for launching yacaree.py
+##from iface import * ## for the Tk GUI, only for launching yacaree.py
 
