@@ -82,8 +82,6 @@ if __name__ == "__main__":
     
     args = argp.parse_args()
 
-    print(args); _ = input('(Go?)')
-
     if args.gui:
         from iface import iface
     else:
@@ -92,36 +90,11 @@ if __name__ == "__main__":
     statics.iface = iface
     
     if args.dataset:
-        statics.iface.storefilename(args.dataset)
-
-    # ~ from sys import argv
-
-    # ~ gui = False
-    # ~ fnm = None
-    # ~ others = []
-
-    # ~ for i in range(1, len(argv)):
-        # ~ if argv[i] == "-g": 
-            # ~ gui = True
-        # ~ elif argv[i] == "-d" and i+1 < len(argv):
-            # ~ fnm = argv[i+1]
-        # ~ else:
-            # ~ others.append(argv[i])
-
-    # ~ if gui:
-        # ~ from iface import iface
-    # ~ else:
-        # ~ from iface_TEXT import iface
-
-    # ~ statics.iface = iface
-    
-    # ~ if fnm:
-        # ~ statics.filenamefull = fnm
-        # ~ statics.filename, statics.filenamext = fnm.rsplit('.',1)
-
-    # ~ if others:
-        # ~ "fails: the dataset name goes here and GUI not ready yet"
-        # ~ statics.iface.report('Command line args "' + '", "'.join(others) + '" ignored.')
+        if args.gui:
+            "GUI won't work as it has not been really set up yet, to be corrected"
+            print("Sorry. In this version, using a GUI leads to forgetting the dataset. Load it again on the GUI please.")
+        else:
+            statics.iface.storefilename(args.dataset)
 
     y = Yacaree()
 
