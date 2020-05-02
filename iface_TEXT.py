@@ -45,13 +45,22 @@ class iface:
         if statics.filenamefull is None:
             cls.reportwarning("No dataset file specified.")
             filename = cls.ask_input("Dataset File Name? ")
-            if len(filename)<=3 or filename[-4] != '.':
-                statics.filename = filename
-                statics.filenamefull = filename + statics.filenamext
-            else:
-                statics.filename, statics.filenamext = filename.rsplit('.',1)
-                statics.filenamefull = filename
+            cls.storefilename(filename)
         yacaree.standard_run()
+
+    @classmethod
+    def storefilename(cls, filename):
+        if len(filename)<=3 or filename[-4] != '.':
+            statics.filename = filename
+            statics.filenamefull = filename + statics.filenamext
+        else:
+            '''statics.filenamext should not be modified:
+            o/w if a new dataset is loaded, the default extension no longer applies
+            '''
+            # ~ statics.filename, statics.filenamext = filename.rsplit('.',1)
+            statics.filename, _ = filename.rsplit('.',1)
+            statics.filenamefull = filename
+        cls.report("Selected dataset in file " + statics.filenamefull)
 
     @classmethod
     def report(cls,m=""):

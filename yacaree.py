@@ -1,6 +1,6 @@
 """
-Using yacaree through the GUI 
-Idea is that it must be usable from either GUI or CLI but does not work yet
+Using yacaree through either the text CLI or the GUI. 
+Current default is text CLI but this is likely to change.
 """
 
 from datetime import datetime
@@ -12,18 +12,18 @@ from ruleminer import RuleMiner
 class Yacaree:
 
     def __init__(self):
-        iface.go(self)
+        statics.iface.go(self)
 
     def standard_run(self):
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         now = datetime.today().strftime("%Y%m%d%H%M%S")
         filenamenow = statics.filename + now
         filenamerules = filenamenow + "_rules.txt"
-        statics.logfile = iface.openfile(filenamenow + ".log","w")
-        results_file = iface.openfile(filenamerules,"w")
-        iface.disable_filepick()
-        iface.disable_finish()
-        iface.disable_run()
+        statics.logfile = statics.iface.openfile(filenamenow + ".log","w")
+        results_file = statics.iface.openfile(filenamerules,"w")
+        statics.iface.disable_filepick()
+        statics.iface.disable_finish()
+        statics.iface.disable_run()
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
@@ -31,9 +31,9 @@ class Yacaree:
             rulecnt += 1
             rules.append((-rul.cboo, rulecnt, rul))
             if miner.count == statics.findrules > 0: break
-        iface.report("Mining process terminated; searched for rules " + 
+        statics.iface.report("Mining process terminated; searched for rules " + 
                      ("of confidence boost at least %1.3f." % miner.latt.boosthr)) 
-        iface.report(("Total of %d Rules obtained from " % miner.count) +
+        statics.iface.report(("Total of %d Rules obtained from " % miner.count) +
                      ("%d closures of support at least " % miner.latt.miner.card) +
                      str(miner.latt.miner.minsupp) + " (" +
                      str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
@@ -44,19 +44,19 @@ class Yacaree:
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
             if cnt == statics.maxrules > 0: break
         results_file.close()
-        iface.report("Confidence threshold was %2.3f."
+        statics.iface.report("Confidence threshold was %2.3f."
                      % (float(statics.confthr)/statics.scale))
-        iface.report(str(cnt) + " rules chosen according to their " +
+        statics.iface.report(str(cnt) + " rules chosen according to their " +
                      "confidence boost written to file " + filenamerules + ".") 
-        iface.report("End of process of dataset in file " + 
+        statics.iface.report("End of process of dataset in file " + 
                      statics.filenamefull + ".")
-        iface.report("Closing output and log files; run of yacaree " + 
+        statics.iface.report("Closing output and log files; run of yacaree " + 
                      statics.version + " finished.")
         statics.logfile.close()
         statics.logfile = None
-        iface.enable_again()
-        iface.enable_finish()
-        iface.sound_bell()
+        statics.iface.enable_again()
+        statics.iface.enable_finish()
+        statics.iface.sound_bell()
 
     def standard_run_all(self):
         mmm = statics.maxrules 
@@ -69,15 +69,16 @@ if __name__ == "__main__":
     from sys import argv
 
     gui = False
+    fnm = None
     others = []
 
     for i in range(1, len(argv)):
         if argv[i] == "-g": 
             gui = True
+        elif argv[i] == "-d" and i+1 < len(argv):
+            fnm = argv[i+1]
         else:
             others.append(argv[i])
-        # ~ if argv[i] == "-d" and i+1 < len(argv):
-            # ~ print("Dataset requested: " + argv[i+1])
 
     if gui:
         from iface import iface
@@ -86,11 +87,17 @@ if __name__ == "__main__":
 
     statics.iface = iface
     
+    if fnm:
+        statics.filenamefull = fnm
+        statics.filename, statics.filenamext = fnm.rsplit('.',1)
+
+    # ~ if others:
+        # ~ "fails: the dataset name goes here and GUI not ready yet"
+        # ~ statics.iface.report('Command line args "' + '", "'.join(others) + '" ignored.')
+
     y = Yacaree()
 
-    if others:
-        iface.report('Command line args "' + '", "'.join(others) + '" unknown, ignored.')
-
+    
     
 
     

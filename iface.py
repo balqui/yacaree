@@ -97,6 +97,10 @@ class iface:
                                   height = button_height,
                                   command = cls.finish)
         cls.finish_button.pack()
+        if statics.filenamefull:
+            cls.report("Selected dataset in file " + statics.filenamefull)
+            cls.run.configure(state = Tkinter.NORMAL)
+            cls.run50.configure(state = Tkinter.NORMAL)
         cls.clock_at_report = clock()
         cls.root.mainloop()
 
@@ -106,12 +110,9 @@ class iface:
             defaultextension=".txt",
             filetypes = [("text files","*.txt"), ("all files","*.*")],
             title = "Choose a dataset file")
-        if fnm:
-            cls.run.configure(state = Tkinter.NORMAL)
-            cls.run50.configure(state = Tkinter.NORMAL)
-            statics.filenamefull = fnm
-            statics.filename, statics.filenamext = fnm.rsplit('.',1)
-            cls.report("Selected dataset in file " + fnm)
+        cls.storefilename(fnm)
+        cls.run.configure(state = Tkinter.NORMAL)
+        cls.run50.configure(state = Tkinter.NORMAL)
 
     @classmethod
     def finish(cls):
@@ -188,6 +189,20 @@ class iface:
         sleep(10)
         cls.root.destroy()
         exit(m)
+
+    @classmethod
+    def storefilename(cls, filename):
+        if len(filename)<=3 or filename[-4] != '.':
+            statics.filename = filename
+            statics.filenamefull = filename + statics.filenamext
+        else:
+            '''statics.filenamext should not be modified:
+            o/w if a new dataset is loaded, the default extension no longer applies
+            '''
+            # ~ statics.filename, statics.filenamext = filename.rsplit('.',1)
+            statics.filename, _ = filename.rsplit('.',1)
+            statics.filenamefull = filename
+        cls.report("Selected dataset in file " + statics.filenamefull)
 
     @classmethod
     def openfile(cls,filename,mode="r"):
