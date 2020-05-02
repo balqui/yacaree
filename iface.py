@@ -24,6 +24,7 @@ class iface:
 
     @classmethod
     def go(cls,mainprog):
+        "Parts of this must go into a regular __init__()"
         cls.root = Tkinter.Tk()
 
         button_width = 25
@@ -39,7 +40,7 @@ class iface:
         logo_frame.pack(side = Tkinter.TOP)
         slogan_label = Tkinter.Label(left_frame, text =
                                      "yet another\nclosure-based association " +
-                                     "rules\nexperimentation environment\n(" +
+                                     "rules\nexperimentation environment\n(version " +
                                      statics.version + ")")
         slogan_label.configure(width = button_width)
         slogan_label.pack(side=Tkinter.TOP)
@@ -66,7 +67,7 @@ class iface:
                                     command = cls.console.yview)
         cls.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
         cls.console.configure(yscrollcommand = cls.scrollY.set)
-        cls.report("This is yacaree " + statics.version) 
+        cls.report("This is yacaree, version " + statics.version + ".") 
 
         cls.filepick = Tkinter.Button(process_frame)
         cls.filepick.configure(text = "Choose a dataset file",
@@ -202,7 +203,7 @@ class iface:
             # ~ statics.filename, statics.filenamext = filename.rsplit('.',1)
             statics.filename, _ = filename.rsplit('.',1)
             statics.filenamefull = filename
-        cls.report("Selected dataset in file " + statics.filenamefull)
+        cls.report("Selected dataset in file " + statics.filenamefull + ".")
 
     @classmethod
     def openfile(cls,filename,mode="r"):

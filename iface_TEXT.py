@@ -42,6 +42,7 @@ class iface:
 
     @classmethod
     def go(cls, yacaree):
+        cls.report("This is yacaree, version " + statics.version + ".")
         if statics.filenamefull is None:
             cls.reportwarning("No dataset file specified.")
             filename = cls.ask_input("Dataset File Name? ")

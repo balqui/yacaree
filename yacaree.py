@@ -20,6 +20,7 @@ class Yacaree:
         filenamenow = statics.filename + now
         filenamerules = filenamenow + "_rules.txt"
         statics.logfile = statics.iface.openfile(filenamenow + ".log","w")
+        # ~ statics.iface.report() on log file, also must introduce itself there
         results_file = statics.iface.openfile(filenamerules,"w")
         statics.iface.disable_filepick()
         statics.iface.disable_finish()
@@ -65,31 +66,58 @@ class Yacaree:
         statics.maxrules = mmm
 
 if __name__ == "__main__":
+    "The dataset will be changed later to a positional argument"
+    
+    from argparse import ArgumentParser
+    argp = ArgumentParser(
+        description = "Yet another closure-based association rule " +
+                      "experimentation environment.",
+        )
+    argp.add_argument('-g', '--gui', action = 'store_true', help = "launch GUI")
+    argp.add_argument('-v', '--version', action = 'version', 
+                                         version = "%(prog)s " + statics.version)
+    # ~ argp.add_argument('-d', '--dataset')
+    argp.add_argument('dataset', nargs = '?', default = None, 
+                      help = "name of optional dataset file")
+    
+    args = argp.parse_args()
 
-    from sys import argv
+    print(args); _ = input('(Go?)')
 
-    gui = False
-    fnm = None
-    others = []
-
-    for i in range(1, len(argv)):
-        if argv[i] == "-g": 
-            gui = True
-        elif argv[i] == "-d" and i+1 < len(argv):
-            fnm = argv[i+1]
-        else:
-            others.append(argv[i])
-
-    if gui:
+    if args.gui:
         from iface import iface
     else:
         from iface_TEXT import iface
-
+    
     statics.iface = iface
     
-    if fnm:
-        statics.filenamefull = fnm
-        statics.filename, statics.filenamext = fnm.rsplit('.',1)
+    if args.dataset:
+        statics.iface.storefilename(args.dataset)
+
+    # ~ from sys import argv
+
+    # ~ gui = False
+    # ~ fnm = None
+    # ~ others = []
+
+    # ~ for i in range(1, len(argv)):
+        # ~ if argv[i] == "-g": 
+            # ~ gui = True
+        # ~ elif argv[i] == "-d" and i+1 < len(argv):
+            # ~ fnm = argv[i+1]
+        # ~ else:
+            # ~ others.append(argv[i])
+
+    # ~ if gui:
+        # ~ from iface import iface
+    # ~ else:
+        # ~ from iface_TEXT import iface
+
+    # ~ statics.iface = iface
+    
+    # ~ if fnm:
+        # ~ statics.filenamefull = fnm
+        # ~ statics.filename, statics.filenamext = fnm.rsplit('.',1)
 
     # ~ if others:
         # ~ "fails: the dataset name goes here and GUI not ready yet"
