@@ -92,10 +92,10 @@ if __name__ == "__main__":
     statics.iface = iface
     
     if args.dataset:
-        if args.gui:
-            "GUI won't work as it has not been really set up yet, to be corrected"
-            print("Sorry. In this version, using a GUI leads to forgetting the dataset. Load it again on the GUI please.")
-        else:
+        # ~ if args.gui:
+            # ~ "GUI won't work as it has not been really set up yet, to be corrected"
+            # ~ print("Sorry. In this version, using a GUI leads to forgetting the dataset. Load it again on the GUI please.")
+        # ~ else:
             statics.iface.storefilename(args.dataset)
 
     y = Yacaree()

@@ -196,6 +196,23 @@ class iface:
         exit(m)
 
     @classmethod
+    def report_log_file(cls, filename):
+        cls.clock_at_report = clock()
+        m_log = "Log file " + filename + ".log (this file) set up.\n"
+        m_cls = " Log file " + filename + ".log set up.\n"
+        cls.console.insert(Tkinter.END,"[yacaree]" + m_cls)
+        cls.console.see("end-2c")
+        cls.console.update()
+        if statics.logfile: 
+            statics.logfile.write(str(datetime.now()) + m_log)
+
+        # ~ "not reported like the rest for lack of log file"
+        # ~ if statics.logfile: 
+            # ~ "print already done, here just log entry"
+            # ~ statics.logfile.write(str(datetime.now()) + " " + m + "\n")
+            # ~ stdout.flush()
+
+    @classmethod
     def storefilename(cls, filename):
         if len(filename)<=3 or filename[-4] != '.':
             statics.filename = filename
@@ -207,7 +224,7 @@ class iface:
             # ~ statics.filename, statics.filenamext = filename.rsplit('.',1)
             statics.filename, _ = filename.rsplit('.',1)
             statics.filenamefull = filename
-        cls.report("Selected dataset in file " + statics.filenamefull + ".")
+        # ~ cls.report("Selected dataset in file " + statics.filenamefull + ".")
 
     @classmethod
     def openfile(cls,filename,mode="r"):
