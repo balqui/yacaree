@@ -20,7 +20,7 @@ class Yacaree:
         filenamenow = statics.filename + now
         filenamerules = filenamenow + "_rules.txt"
         statics.logfile = statics.iface.openfile(filenamenow + ".log","w")
-        # ~ statics.iface.report() on log file, also must introduce itself there
+        statics.iface.report_log_file(filenamenow)
         results_file = statics.iface.openfile(filenamerules,"w")
         statics.iface.disable_filepick()
         statics.iface.disable_finish()
@@ -72,10 +72,12 @@ if __name__ == "__main__":
     argp = ArgumentParser(
         description = "Yet another closure-based association rule " +
                       "experimentation environment.",
+        prog = "python[2|3] yacaree.py"
         )
+
     argp.add_argument('-g', '--gui', action = 'store_true', help = "launch GUI")
     argp.add_argument('-v', '--version', action = 'version', 
-                                         version = "%(prog)s " + statics.version)
+                                         version = "yacaree " + statics.version)
     # ~ argp.add_argument('-d', '--dataset')
     argp.add_argument('dataset', nargs = '?', default = None, 
                       help = "name of optional dataset file")

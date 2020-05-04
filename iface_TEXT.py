@@ -24,6 +24,10 @@ ask_input:
 go:
  calls run method of miner, matching approximately 
  the similar button and callback of the GUI
+
+ToDo: optionally several messages in the same line?
+
+Opening of all files reported to log file... except opening of log file.
 """
 
 from sys import stdout
@@ -33,12 +37,6 @@ import statics
 
 class iface:
 
-# ToDo: optionally several messages in the same line
-
-# report methods exported to GUI should give opportunities of interaction
-# (No idea what that meant. JLB, april 30, 2020.)
-
-# Opening of all files reported to log file... except opening of log file.
 
     @classmethod
     def go(cls, yacaree):
@@ -61,13 +59,22 @@ class iface:
             # ~ statics.filename, statics.filenamext = filename.rsplit('.',1)
             statics.filename, _ = filename.rsplit('.',1)
             statics.filenamefull = filename
-        cls.report("Selected dataset in file " + statics.filenamefull)
+        # ~ cls.report("Selected dataset in file " + statics.filenamefull)
 
     @classmethod
     def report(cls,m=""):
         print("[yacaree] " + m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
+
+    @classmethod
+    def report_log_file(cls, filename):
+        "not reported like the rest for lack of log file"
+        if statics.logfile: 
+            "print already done, here just log entry"
+            m = "Log file " + filename + ".log (this file) set up."
+            statics.logfile.write(str(datetime.now()) + " " + m + "\n")
+            stdout.flush()
 
     @classmethod
     def endreport(cls):

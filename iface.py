@@ -1,5 +1,9 @@
 """
 A simple Tkinter-based GUI for yacaree
+
+ToDo: 
+report methods should give opportunities of interaction - eg 
+to stop the process or finish it
 """
 
 try:
