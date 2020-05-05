@@ -57,16 +57,13 @@ class Yacaree:
         statics.logfile = None
         statics.iface.enable_again()
         statics.iface.enable_finish()
-        # ~ print("MAXRULES:", statics.maxrules)
-        statics.set_standard() # Just in case something was recently tweaked - NOT WORKING
-        # ~ print("MAXRULES:", statics.maxrules)
+        statics.maxrules = statics.stdmaxrules # Just in case something was recently tweaked
         statics.iface.sound_bell()
 
     def standard_run_all(self):
-        mmm = statics.maxrules 
+        "needed as a single button command - std run will get back on its own the std figure afterwards"
         statics.maxrules = 0
         self.standard_run()
-        statics.maxrules = mmm # Likely to be unnecessary now
 
 if __name__ == "__main__":
     "The dataset will be changed later to a positional argument"

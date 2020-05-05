@@ -37,7 +37,6 @@ import statics
 
 class iface:
 
-
     @classmethod
     def go(cls, yacaree):
         cls.report("This is yacaree, version " + statics.version + ".")
@@ -47,9 +46,7 @@ class iface:
             cls.storefilename(filename)
         if statics.maxrules == 0:
             cls.report("Running for all rules.")
-            yacaree.standard_run_all()
-        else:
-            yacaree.standard_run()
+        yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
     @classmethod
     def storefilename(cls, filename):
