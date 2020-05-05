@@ -12,18 +12,18 @@ import statics
 
 import flheap
 
-from heapq import heappop, heapify
+from heapq import heappop 
 
 class FlHeap(flheap.FlHeap):
 
     def __init__(self):
         flheap.FlHeap.__init__(self)
 
-    def pr(self,elem):
+    def pr(self, elem):
         "overriding by sign change on first component"
         return -elem[0]
 
-    def elemsize(self,elem):
+    def elemsize(self, elem):
         return 1 + len(elem[1]) + len(elem[2])
 
     def test_size(self):

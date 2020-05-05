@@ -108,13 +108,13 @@ class ClMiner:
                 break
             if spp < self.minsupp:
                 self.minsupp = spp
+            self.card += 1
+            yield (ItSet(cl[1]),spp)
             statics.iface.report(str(self.card) +
                          " closures traversed, " +
                          str(pend_clos.count) + 
                          " further closures found so far; current support " +
                          str(spp) + ".")
-            self.card += 1
-            yield (ItSet(cl[1]),spp)
             for ext in self.clos_singl:
                 "try extending with freq closures of singletons"
                 if not ext[1] <= cl[1]:
@@ -144,9 +144,14 @@ class ClMiner:
                 statics.scale)
         
 if __name__ == "__main__":
+	
 
 ## This testing only worked for iface_TEXT in choose_iface
 ## Now that is being done differently and I must check it out
+
+    from iface_TEXT import iface
+    statics.iface = iface
+
 
 ##    fnm = "data/markbask"
 ##    supp = 0.0005 # half a transaction, that is, supp > 0: all
@@ -156,6 +161,7 @@ if __name__ == "__main__":
 
 ##    fnm = "data/adultrain"
 
+    statics.iface.storefilename(fnm)
     statics.iface.report("Module clminer running as test on file " + fnm + ".txt")
 
 ##    miner = ClMiner(Dataset(fnm+".txt"),supp)

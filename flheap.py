@@ -30,13 +30,13 @@ class FlHeap:
         self.count = 0
         self.totalsize = 0
 
-    def pr(self,elem):
+    def pr(self, elem):
         return elem
 
-    def elemsize(self,elem):
+    def elemsize(self, elem):
         return 0
 
-    def push(self,elem):
+    def push(self, elem):
         "push an elem into the heap, paired up with its pr"
         self.count += 1
         self.totalsize += self.elemsize(elem)
