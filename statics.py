@@ -71,7 +71,7 @@ boostdecr = 0.001 # minimal boost decrease allowed
 report_period = 30 # try to show program is alive every that many seconds
 
 def set_standard():
-    "set to the same values as just indicated"
+    "set to the same values as just indicated - guess it is not doing anything"
     pend_len_limit = 16384 
     pend_total_limit = 100000000
     pend_mem_limit = 1000000000

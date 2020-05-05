@@ -57,13 +57,16 @@ class Yacaree:
         statics.logfile = None
         statics.iface.enable_again()
         statics.iface.enable_finish()
+        # ~ print("MAXRULES:", statics.maxrules)
+        statics.set_standard() # Just in case something was recently tweaked - NOT WORKING
+        # ~ print("MAXRULES:", statics.maxrules)
         statics.iface.sound_bell()
 
     def standard_run_all(self):
         mmm = statics.maxrules 
         statics.maxrules = 0
         self.standard_run()
-        statics.maxrules = mmm
+        statics.maxrules = mmm # Likely to be unnecessary now
 
 if __name__ == "__main__":
     "The dataset will be changed later to a positional argument"
@@ -75,6 +78,7 @@ if __name__ == "__main__":
         prog = "python[2|3] yacaree.py"
         )
 
+    argp.add_argument('-a', '--all', action = 'store_true', help = "output with no rule limit")
     argp.add_argument('-g', '--gui', action = 'store_true', help = "launch GUI")
     argp.add_argument('-v', '--version', action = 'version', 
                                          version = "yacaree " + statics.version)
@@ -84,6 +88,9 @@ if __name__ == "__main__":
     
     args = argp.parse_args()
 
+    if args.all:
+        statics.maxrules = 0
+
     if args.gui:
         from iface import iface
     else:
@@ -92,11 +99,7 @@ if __name__ == "__main__":
     statics.iface = iface
     
     if args.dataset:
-        # ~ if args.gui:
-            # ~ "GUI won't work as it has not been really set up yet, to be corrected"
-            # ~ print("Sorry. In this version, using a GUI leads to forgetting the dataset. Load it again on the GUI please.")
-        # ~ else:
-            statics.iface.storefilename(args.dataset)
+        statics.iface.storefilename(args.dataset)
 
     y = Yacaree()
 

@@ -45,7 +45,11 @@ class iface:
             cls.reportwarning("No dataset file specified.")
             filename = cls.ask_input("Dataset File Name? ")
             cls.storefilename(filename)
-        yacaree.standard_run()
+        if statics.maxrules == 0:
+            cls.report("Running for all rules.")
+            yacaree.standard_run_all()
+        else:
+            yacaree.standard_run()
 
     @classmethod
     def storefilename(cls, filename):

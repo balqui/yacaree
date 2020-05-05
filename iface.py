@@ -31,7 +31,7 @@ class iface:
         "Parts of this must go into a regular __init__()"
         cls.root = Tkinter.Tk()
 
-        button_width = 25
+        button_width = 35
         button_height = 4
         text_width = 92
         text_height = 28
@@ -105,7 +105,10 @@ class iface:
         if statics.filenamefull:
             cls.report("Selected dataset in file " + statics.filenamefull)
             cls.run.configure(state = Tkinter.NORMAL)
-            cls.run50.configure(state = Tkinter.NORMAL)
+            if statics.maxrules == 0:
+                cls.report("Requested all rules as output.")
+            else:
+                cls.run50.configure(state = Tkinter.NORMAL)
         cls.clock_at_report = clock()
         cls.root.mainloop()
 
@@ -118,6 +121,7 @@ class iface:
         cls.storefilename(fnm)
         cls.run.configure(state = Tkinter.NORMAL)
         cls.run50.configure(state = Tkinter.NORMAL)
+        cls.report("Selected dataset in file " + statics.filenamefull + ".")
 
     @classmethod
     def finish(cls):
@@ -127,8 +131,11 @@ class iface:
 
     @classmethod
     def enable_again(cls):
-        cls.run.configure(state = Tkinter.DISABLED)
-        cls.run50.configure(state = Tkinter.DISABLED)
+        "After one of run/run50, user may wish to run the other"
+        # ~ cls.run.configure(state = Tkinter.DISABLED)
+        # ~ cls.run50.configure(state = Tkinter.DISABLED)
+        cls.run.configure(state = Tkinter.NORMAL)
+        cls.run50.configure(state = Tkinter.NORMAL)
         cls.filepick.configure(state = Tkinter.NORMAL)
 
     @classmethod
@@ -198,7 +205,7 @@ class iface:
     @classmethod
     def report_log_file(cls, filename):
         cls.clock_at_report = clock()
-        m_log = "Log file " + filename + ".log (this file) set up.\n"
+        m_log = " Log file " + filename + ".log (this file) set up.\n"
         m_cls = " Log file " + filename + ".log set up.\n"
         cls.console.insert(Tkinter.END,"[yacaree]" + m_cls)
         cls.console.see("end-2c")
@@ -224,7 +231,6 @@ class iface:
             # ~ statics.filename, statics.filenamext = filename.rsplit('.',1)
             statics.filename, _ = filename.rsplit('.',1)
             statics.filenamefull = filename
-        # ~ cls.report("Selected dataset in file " + statics.filenamefull + ".")
 
     @classmethod
     def openfile(cls,filename,mode="r"):
