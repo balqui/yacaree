@@ -75,13 +75,18 @@ if __name__ == "__main__":
         prog = "python[2|3] yacaree.py"
         )
 
-    argp.add_argument('-a', '--all', action = 'store_true', help = "output with no rule limit")
-    argp.add_argument('-g', '--gui', action = 'store_true', help = "launch GUI")
+    argp.add_argument('-a', '--all', action = 'store_true', 
+                      help = "output with no rule limit (default: limit to " 
+                           + str(statics.maxrules) + " rules)")
+    argp.add_argument('-g', '--gui', action = 'store_true', 
+                      help = "launch GUI (default: remain in command line interface - CLI)")
     argp.add_argument('-v', '--version', action = 'version', 
-                                         version = "yacaree " + statics.version)
-    # ~ argp.add_argument('-d', '--dataset')
+                                         version = "yacaree " + statics.version,
+                                         help = "print version and exit")
+    # ~ argp.add_argument('-t', '--test', action)
+    # ~ argp.add_argument('-d', '--dataset') # Not anymore an option but a positional argument
     argp.add_argument('dataset', nargs = '?', default = None, 
-                      help = "name of optional dataset file")
+                      help = "name of optional dataset file (default: none, ask user)")
     
     args = argp.parse_args()
 
