@@ -93,11 +93,16 @@ if __name__ == "__main__":
     if args.all:
         statics.maxrules = 0
 
-    if args.test:
-        from iface_TEXT_aux import iface_text as iface
+    if args.test and args.gui:
+        from iface_TEXT_aux import iface_gui as iface
     elif args.gui:
+        "no test"
         from iface import iface
+    elif args.test:
+        "no gui"
+        from iface_TEXT_aux import iface_text as iface
     else:
+        "no test, no gui"
         from iface_TEXT import iface
     
     if args.test:
