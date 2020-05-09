@@ -5,6 +5,10 @@ Programmer: JLB
 
 Module encompassing some static objects accessed from everywhere
 
+(or: Singleton pattern implemented as module; 
+spoiler: does not work well enough).
+
+
 iface: the actual interface, which can be textual CLI or GUI
 
 filenamext: extension assumed for dataset files if absent
