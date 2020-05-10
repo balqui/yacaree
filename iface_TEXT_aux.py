@@ -22,7 +22,9 @@ go:
  calls run method of miner, matching approximately 
  the similar button and callback of the GUI
 
-ToDo: optionally several messages in the same line?
+ToDo: 
+- several candidates to static methods
+- optionally several messages in the same line?
 """
 
 
@@ -69,7 +71,6 @@ class iface_text:
             statics.filenamefull = filename
 
     def report(self, m = ""):
-        "Several candidates to static methods"
         print("[yacaree] " + m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
@@ -160,14 +161,14 @@ class iface_gui:
 
     def go(self, mainprog):
         "Parts of this must go into a regular __init__()"
-        cls.root = Tkinter.Tk()
+        self.root = Tkinter.Tk()
 
         button_width = 35
         button_height = 4
         text_width = 92
         text_height = 28
 
-        left_frame = Tkinter.Frame(cls.root)
+        left_frame = Tkinter.Frame(self.root)
         left_frame.pack(side=Tkinter.LEFT)
         logo = Tkinter.BitmapImage(file="yac-v03.xbm")
         logo_frame = Tkinter.Frame(left_frame)
@@ -192,76 +193,73 @@ class iface_gui:
         process_frame = Tkinter.LabelFrame(left_frame,text="Process")
         process_frame.pack(side=Tkinter.BOTTOM)
 
-        console_frame = Tkinter.LabelFrame(cls.root,text="Console")
+        console_frame = Tkinter.LabelFrame(self.root,text="Console")
         console_frame.pack(side=Tkinter.LEFT)
-        cls.console = Tkinter.Text(console_frame)
-        cls.console.configure(width = text_width, height = text_height)
-        cls.console.pack(side=Tkinter.LEFT)
-        cls.scrollY = Tkinter.Scrollbar(console_frame,
+        self.console = Tkinter.Text(console_frame)
+        self.console.configure(width = text_width, height = text_height)
+        self.console.pack(side=Tkinter.LEFT)
+        self.scrollY = Tkinter.Scrollbar(console_frame,
                                     orient = Tkinter.VERTICAL,
-                                    command = cls.console.yview)
-        cls.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
-        cls.console.configure(yscrollcommand = cls.scrollY.set)
-        cls.report("This is yacaree, version " + statics.version + ".") 
+                                    command = self.console.yview)
+        self.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
+        self.console.configure(yscrollcommand = self.scrollY.set)
+        self.report("This is yacaree, version " + statics.version + ".") 
 
-        cls.filepick = Tkinter.Button(process_frame)
-        cls.filepick.configure(text = "Choose a dataset file",
+        self.filepick = Tkinter.Button(process_frame)
+        self.filepick.configure(text = "Choose a dataset file",
                                width = button_width,
                                height = button_height,
-                               command = cls.choose_datafile)
-        cls.filepick.pack()
+                               command = self.choose_datafile)
+        self.filepick.pack()
 
-        cls.run = Tkinter.Button(process_frame)
-        cls.run.configure(text = "Run yacaree for all rules\n(and be patient), or...",
+        self.run = Tkinter.Button(process_frame)
+        self.run.configure(text = "Run yacaree for all rules\n(and be patient), or...",
                           width = button_width,
                           height = button_height,
                           state = Tkinter.DISABLED,
                           command = mainprog.standard_run_all)
-        cls.run.pack()
+        self.run.pack()
 
-        cls.run50 = Tkinter.Button(process_frame)
-        cls.run50.configure(text = "...Run yacaree for at most 50 rules\n(but be equally patient)",
+        self.run50 = Tkinter.Button(process_frame)
+        self.run50.configure(text = "...Run yacaree for at most 50 rules\n(but be equally patient)",
                           width = button_width,
                           height = button_height,
                           state = Tkinter.DISABLED,
                           command = mainprog.standard_run)
-        cls.run50.pack()
+        self.run50.pack()
 
-        cls.finish_button = Tkinter.Button(process_frame)
-        cls.finish_button.configure(text = "Finish",
+        self.finish_button = Tkinter.Button(process_frame)
+        self.finish_button.configure(text = "Finish",
                                   width = button_width,
                                   height = button_height,
-                                  command = cls.finish)
-        cls.finish_button.pack()
+                                  command = self.finish)
+        self.finish_button.pack()
         if statics.filenamefull:
-            cls.report("Selected dataset in file " + statics.filenamefull)
-            cls.run.configure(state = Tkinter.NORMAL)
+            self.report("Selected dataset in file " + statics.filenamefull)
+            self.run.configure(state = Tkinter.NORMAL)
             if statics.maxrules == 0:
-                cls.report("Requested all rules as output.")
+                self.report("Requested all rules as output.")
             else:
-                cls.run50.configure(state = Tkinter.NORMAL)
-        cls.clock_at_report = clock()
-        cls.root.mainloop()
+                self.run50.configure(state = Tkinter.NORMAL)
+        self.clock_at_report = clock()
+        self.root.mainloop()
 
-    @classmethod
-    def choose_datafile(cls):
+    def choose_datafile(self):
         fnm = tkFileDialog.askopenfilename(
             defaultextension=".txt",
             filetypes = [("text files","*.txt"), ("all files","*.*")],
             title = "Choose a dataset file")
-        cls.storefilename(fnm)
-        cls.run.configure(state = Tkinter.NORMAL)
-        cls.run50.configure(state = Tkinter.NORMAL)
-        cls.report("Selected dataset in file " + statics.filenamefull + ".")
+        self.storefilename(fnm)
+        self.run.configure(state = Tkinter.NORMAL)
+        self.run50.configure(state = Tkinter.NORMAL)
+        self.report("Selected dataset in file " + statics.filenamefull + ".")
 
-    @classmethod
     def finish(cls):
         if statics.logfile: statics.logfile = None # not sure still necessary
         cls.console.bell()
         cls.root.destroy()
         exit(0)
 
-    @classmethod
     def enable_again(cls):
         "After one of run/run50, user may wish to run the other"
         # ~ cls.run.configure(state = Tkinter.DISABLED)
@@ -270,29 +268,23 @@ class iface_gui:
         cls.run50.configure(state = Tkinter.NORMAL)
         cls.filepick.configure(state = Tkinter.NORMAL)
 
-    @classmethod
     def disable_again(cls):
         pass
 
-    @classmethod
     def enable_finish(cls):
         cls.finish_button.configure(state = Tkinter.NORMAL)
 
-    @classmethod
     def disable_finish(cls):
         cls.finish_button.configure(state = Tkinter.DISABLED)
 ##        cls.finish_button.update()
 
-    @classmethod
     def disable_filepick(cls):
         cls.filepick.configure(state = Tkinter.DISABLED)
 
-    @classmethod
     def disable_run(cls):
         cls.run.configure(state = Tkinter.DISABLED)
         cls.run50.configure(state = Tkinter.DISABLED)
 
-    @classmethod
     def report(cls,m):
         cls.clock_at_report = clock()
         m = " " + m + "\n"
@@ -302,18 +294,15 @@ class iface_gui:
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m)
 
-    @classmethod
     def possibly_report(cls,m):
         "report only if too long time elapsed since last reporting"
         clock_now = clock()
         if clock_now - cls.clock_at_report > statics.report_period:
             cls.report(m)
 
-    @classmethod
     def endreport(cls):
         pass
 
-    @classmethod
     def reportwarning(cls,m):
         cls.clock_at_report = clock()
         m = " " + m + "\n"
@@ -323,7 +312,6 @@ class iface_gui:
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m)
 
-    @classmethod
     def reporterror(cls,m):
         cls.clock_at_report = clock()
         m += "\n"
@@ -334,7 +322,6 @@ class iface_gui:
         cls.root.destroy()
         exit(m)
 
-    @classmethod
     def report_log_file(cls, filename):
         cls.clock_at_report = clock()
         m_log = " Log file " + filename + ".log (this file) set up.\n"
@@ -351,7 +338,6 @@ class iface_gui:
             # ~ statics.logfile.write(str(datetime.now()) + " " + m + "\n")
             # ~ stdout.flush()
 
-    @classmethod
     def storefilename(cls, filename):
         if len(filename)<=3 or filename[-4] != '.':
             statics.filename = filename
@@ -364,7 +350,6 @@ class iface_gui:
             statics.filename, _ = filename.rsplit('.',1)
             statics.filenamefull = filename
 
-    @classmethod
     def openfile(cls,filename,mode="r"):
         if mode == "r":
             cls.report("Opening file " +
@@ -390,7 +375,6 @@ class iface_gui:
             cls.reporterror("Requested to open file in mode '" +
                             mode + "': no such mode available.")
 
-    @classmethod
     def sound_bell(cls):
         cls.console.bell()
 
