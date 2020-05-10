@@ -22,9 +22,7 @@ class Yacaree:
         statics.logfile = statics.iface.openfile(filenamenow + ".log","w")
         statics.iface.report_log_file(filenamenow)
         results_file = statics.iface.openfile(filenamerules,"w")
-        statics.iface.disable_filepick()
-        statics.iface.disable_finish()
-        statics.iface.disable_run()
+        statics.iface.get_ready_for_run()
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
@@ -55,8 +53,7 @@ class Yacaree:
                      statics.version + " finished.")
         statics.logfile.close()
         statics.logfile = None
-        statics.iface.enable_again()
-        statics.iface.enable_finish()
+        statics.iface.get_ready_for_new_run()
         statics.maxrules = statics.stdmaxrules # Just in case something was recently tweaked
         statics.iface.sound_bell()
 

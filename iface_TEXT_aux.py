@@ -50,6 +50,7 @@ except ModuleNotFoundError:
 class iface_text:
 
     def __init__(self):
+        "GUI requires initialization deferred to go, CLI does the same"
         pass
 
     def go(self, yacaree):
@@ -62,7 +63,8 @@ class iface_text:
             self.report("Running for all rules.")
         yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
-    def storefilename(self, filename):
+    @staticmethod
+    def storefilename(filename):
         if len(filename)<=3 or filename[-4] != '.':
             statics.filename = filename
             statics.filenamefull = filename + statics.filenamext
@@ -83,9 +85,9 @@ class iface_text:
             statics.logfile.write(str(datetime.now()) + " " + m + "\n")
             stdout.flush()
 
-    def endreport(self):
-        "flush - may become again necessary for line breaks"
-        pass
+    # ~ def endreport(self):
+        # ~ "flush - may become again necessary for line breaks"
+        # ~ pass
     
     def reportwarning(self, m=""):
         print("[yacaree warning] " + m)
@@ -134,21 +136,12 @@ class iface_text:
     def sound_bell(a):
         print('\a')
 
-## Temporary stand-ins for GUI-related calls
-
-    def disable_filepick(self):
+    def get_ready_for_run(self):
+        "stand-in for GUI, no such thing in the text CLI case"
         pass
 
-    def disable_finish(self):
-        pass
-
-    def disable_run(self):
-        pass
-
-    def enable_again(self):
-        pass
-
-    def enable_finish(self):
+    def get_ready_for_new_run(self):
+        "stand-in for GUI, no such thing in the text CLI case"
         pass
 
 
@@ -264,25 +257,31 @@ class iface_gui:
         self.root.destroy()
         exit(0)
 
-    def enable_again(self):
+    def get_ready_for_new_run(self):
         "After one of run/run50, user may wish to run the other"
         self.run.configure(state = Tkinter.NORMAL)
         self.run50.configure(state = Tkinter.NORMAL)
         self.filepick.configure(state = Tkinter.NORMAL)
-
-    def disable_again(self):
-        pass
-
-    def enable_finish(self):
         self.finish_button.configure(state = Tkinter.NORMAL)
 
-    def disable_finish(self):
-        self.finish_button.configure(state = Tkinter.DISABLED)
+    # ~ def disable_again(self):
+        # ~ pass
 
-    def disable_filepick(self):
+    # ~ def enable_finish(self):
+        # ~ self.finish_button.configure(state = Tkinter.NORMAL)
+
+    # ~ def disable_finish(self):
+        # ~ self.finish_button.configure(state = Tkinter.DISABLED)
+
+    # ~ def disable_filepick(self):
+        # ~ self.filepick.configure(state = Tkinter.DISABLED)
+
+    # ~ def disable_run(self):
+        # ~ self.run.configure(state = Tkinter.DISABLED)
+        # ~ self.run50.configure(state = Tkinter.DISABLED)
+
+    def get_ready_for_run(self):
         self.filepick.configure(state = Tkinter.DISABLED)
-
-    def disable_run(self):
         self.run.configure(state = Tkinter.DISABLED)
         self.run50.configure(state = Tkinter.DISABLED)
 
@@ -301,8 +300,8 @@ class iface_gui:
         if clock_now - self.clock_at_report > statics.report_period:
             self.report(m)
 
-    def endreport(self):
-        pass
+    # ~ def endreport(self):
+        # ~ pass
 
     def reportwarning(self, m):
         self.clock_at_report = clock()
@@ -334,7 +333,8 @@ class iface_gui:
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m_log)
 
-    def storefilename(self, filename):
+    @staticmethod
+    def storefilename(filename):
         if len(filename)<=3 or filename[-4] != '.':
             statics.filename = filename
             statics.filenamefull = filename + statics.filenamext

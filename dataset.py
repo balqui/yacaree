@@ -62,7 +62,7 @@ class Dataset:
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
-        statics.iface.endreport()
+        # ~ statics.iface.endreport()
 
     def inters(self,lstr):
         "for an iterable of transactions lstr, return their intersection"
