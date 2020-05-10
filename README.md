@@ -8,6 +8,15 @@ for instructions on Linux. Not sure what happens
 on Windows anymore, as these days I do not have
 access to such a box.
 
+Scientific details in
+
+José L. Balcázar:
+Formal and computational properties of the 
+confidence boost of association rules. 
+ACM Trans. Knowl. Discov. Data 7(4): 19:1-19:41 (2013)
+(please cite that work if you want to acknowledge
+usefulness of this software).
+
 Keep reading for further info.
 
 Based on SourceForge's revision 65 (probably its last).
