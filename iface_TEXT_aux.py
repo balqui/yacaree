@@ -72,12 +72,14 @@ class iface_text:
             statics.filename, _ = filename.rsplit('.',1)
             statics.filenamefull = filename
 
-    def report(self, m = ""):
+    @staticmethod
+    def report(m = ""):
         print("[yacaree] " + m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
-    def report_log_file(self, filename):
+    @staticmethod
+    def report_log_file(filename):
         "not reported like the rest for lack of log file"
         if statics.logfile: 
             "print already done, here just log entry"
@@ -89,12 +91,14 @@ class iface_text:
         # ~ "flush - may become again necessary for line breaks"
         # ~ pass
     
-    def reportwarning(self, m=""):
+    @staticmethod
+    def reportwarning(m=""):
         print("[yacaree warning] " + m)
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m + "\n")
         stdout.flush()
 
-    def reporterror(self, m = ""):
+    @staticmethod
+    def reporterror(m = ""):
         m = m + " Exiting.\n"
         if statics.logfile: statics.logfile.write(str(datetime.now()) + " " + m)
         exit("[yacaree error] " + m)
