@@ -231,12 +231,12 @@ class iface_gui:
                                   height = button_height,
                                   command = self.finish)
         self.finish_button.pack()
+        if statics.maxrules == 0:
+            self.report("Requested all rules as output.")
         if statics.filenamefull:
             self.report("Selected dataset in file " + statics.filenamefull)
             self.run.configure(state = Tkinter.NORMAL)
-            if statics.maxrules == 0:
-                self.report("Requested all rules as output.")
-            else:
+            if statics.maxrules:
                 self.run50.configure(state = Tkinter.NORMAL)
         self.clock_at_report = clock()
         self.root.mainloop()
@@ -246,10 +246,13 @@ class iface_gui:
             defaultextension=".txt",
             filetypes = [("text files","*.txt"), ("all files","*.*")],
             title = "Choose a dataset file")
-        self.storefilename(fnm)
-        self.run.configure(state = Tkinter.NORMAL)
-        self.run50.configure(state = Tkinter.NORMAL)
-        self.report("Selected dataset in file " + statics.filenamefull + ".")
+        if fnm:
+            "dialog could have been canceled, but actual file chosen"
+            self.storefilename(fnm)
+            self.report("Selected dataset in file " + statics.filenamefull + ".")
+            self.run.configure(state = Tkinter.NORMAL)
+            if statics.maxrules:
+                self.run50.configure(state = Tkinter.NORMAL)
 
     def finish(self):
         if statics.logfile: statics.logfile = None # not sure still necessary

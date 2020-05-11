@@ -80,7 +80,7 @@ if __name__ == "__main__":
     argp.add_argument('-v', '--version', action = 'version', 
                                          version = "yacaree " + statics.version,
                                          help = "print version and exit")
-    argp.add_argument('-t', '--test', action = 'store_true')
+    # ~ argp.add_argument('-t', '--test', action = 'store_true')
     # ~ argp.add_argument('-d', '--dataset') # Not anymore an option but a positional argument
     argp.add_argument('dataset', nargs = '?', default = None, 
                       help = "name of optional dataset file (default: none, ask user)")
@@ -90,23 +90,30 @@ if __name__ == "__main__":
     if args.all:
         statics.maxrules = 0
 
-    if args.test and args.gui:
+    # ~ if args.test and args.gui:
+        # ~ from iface_TEXT_aux import iface_gui as iface
+    # ~ elif args.gui:
+        # ~ "no test"
+        # ~ from iface import iface
+    # ~ elif args.test:
+        # ~ "no gui"
+        # ~ from iface_TEXT_aux import iface_text as iface
+    # ~ else:
+        # ~ "no test, no gui"
+        # ~ from iface_TEXT import iface
+    
+    # ~ if args.test:
+        # ~ statics.iface = iface()
+    # ~ else:
+        # ~ statics.iface = iface
+    
+    if args.gui:
         from iface_TEXT_aux import iface_gui as iface
-    elif args.gui:
-        "no test"
-        from iface import iface
-    elif args.test:
-        "no gui"
+    else:
         from iface_TEXT_aux import iface_text as iface
-    else:
-        "no test, no gui"
-        from iface_TEXT import iface
     
-    if args.test:
-        statics.iface = iface()
-    else:
-        statics.iface = iface
-    
+    statics.iface = iface()
+
     if args.dataset:
         statics.iface.storefilename(args.dataset)
 
