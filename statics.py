@@ -46,7 +46,7 @@ genabsupp: Do not consider closures with absolute support below this
 """
 
 # version = "version 1.2.2"
-version = "1.2.3"
+version = "1.2.4"
 
 iface = None
 filenamext = ".txt"

@@ -1,4 +1,5 @@
 """
+THIS FILE IS SLATED FOR DELETION SOON. PLEASE IGNORE IT.
 
 Project: yacaree
 Programmer: JLB
@@ -12,19 +13,13 @@ originally previous to the GUI and later concurrent with it
 iface_gui:
 Slight evolution of the first, simple Tkinter-based GUI for yacaree
 
-Usage (oldish, to review):
-say: outputs a string message, no line breaks
-report: likewise, prepends a line break,
+Usage:
+report*: outputs a string message, prepends a line break,
  variants for warnings and errors
-ask_input:
- user communication
-go:
- calls run method of miner, matching approximately 
- the similar button and callback of the GUI
-
-ToDo: 
-- several candidates to static methods
-- optionally several messages in the same line?
+ask_input: user communication
+openfile, storefilename: to set up the data source
+go: calls run method of miner
+others: to handle the communication with Tk
 """
 
 

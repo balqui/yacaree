@@ -22,6 +22,8 @@ class Yacaree:
         statics.iface.report_log_file(filenamenow)
         results_file = statics.iface.openfile(filenamerules,"w")
         statics.iface.get_ready_for_run()
+        if statics.maxrules == 0:
+            statics.iface.report("Providing all rules as output.")
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
@@ -89,9 +91,9 @@ if __name__ == "__main__":
         statics.maxrules = 0
     
     if args.gui:
-        from iface_TEXT_aux import iface_gui as iface
+        from iface import iface_gui as iface
     else:
-        from iface_TEXT_aux import iface_text as iface
+        from iface import iface_text as iface
     
     statics.iface = iface()
 
