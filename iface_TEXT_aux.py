@@ -1,4 +1,6 @@
 """
+THIS FILE IS SLATED FOR DELETION SOON. PLEASE IGNORE IT.
+
 Project: yacaree
 Programmer: JLB
 
@@ -52,6 +54,8 @@ class iface_text:
             self.reportwarning("No dataset file specified.")
             filename = self.ask_input("Dataset File Name? ")
             self.storefilename(filename)
+        if statics.maxrules == 0:
+            self.report("Running for all rules.")
         yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
     @staticmethod
@@ -227,7 +231,7 @@ class iface_gui:
                                   command = self.finish)
         self.finish_button.pack()
         if statics.maxrules == 0:
-            self.report("CLI call requested all rules as output.")
+            self.report("Requested all rules as output.")
         if statics.filenamefull:
             self.report("Selected dataset in file " + statics.filenamefull)
             self.run.configure(state = Tkinter.NORMAL)

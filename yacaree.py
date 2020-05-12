@@ -7,7 +7,6 @@ from datetime import datetime
 
 import statics
 from ruleminer import RuleMiner
-##from choose_iface import iface
 
 class Yacaree:
 
@@ -22,9 +21,9 @@ class Yacaree:
         statics.logfile = statics.iface.openfile(filenamenow + ".log","w")
         statics.iface.report_log_file(filenamenow)
         results_file = statics.iface.openfile(filenamerules,"w")
-        statics.iface.disable_filepick()
-        statics.iface.disable_finish()
-        statics.iface.disable_run()
+        statics.iface.get_ready_for_run()
+        if statics.maxrules == 0:
+            statics.iface.report("Providing all rules as output.")
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
@@ -55,8 +54,7 @@ class Yacaree:
                      statics.version + " finished.")
         statics.logfile.close()
         statics.logfile = None
-        statics.iface.enable_again()
-        statics.iface.enable_finish()
+        statics.iface.get_ready_for_new_run()
         statics.maxrules = statics.stdmaxrules # Just in case something was recently tweaked
         statics.iface.sound_bell()
 
@@ -75,26 +73,30 @@ if __name__ == "__main__":
         prog = "python[2|3] yacaree.py"
         )
 
-    argp.add_argument('-a', '--all', action = 'store_true', help = "output with no rule limit")
-    argp.add_argument('-g', '--gui', action = 'store_true', help = "launch GUI")
+    argp.add_argument('-a', '--all', action = 'store_true', 
+                      help = "output with no rule limit (default: limit to " 
+                           + str(statics.maxrules) + " rules)")
+    argp.add_argument('-g', '--gui', action = 'store_true', 
+                      help = "launch GUI (default: remain in command line interface - CLI)")
     argp.add_argument('-v', '--version', action = 'version', 
-                                         version = "yacaree " + statics.version)
-    # ~ argp.add_argument('-d', '--dataset')
+                                         version = "yacaree " + statics.version,
+                                         help = "print version and exit")
+    # ~ argp.add_argument('-t', '--test', action = 'store_true') # for testing times
     argp.add_argument('dataset', nargs = '?', default = None, 
-                      help = "name of optional dataset file")
+                      help = "name of optional dataset file (default: none, ask user)")
     
     args = argp.parse_args()
 
     if args.all:
         statics.maxrules = 0
-
+    
     if args.gui:
-        from iface import iface
+        from iface import iface_gui as iface
     else:
-        from iface_TEXT import iface
+        from iface import iface_text as iface
     
-    statics.iface = iface
-    
+    statics.iface = iface()
+
     if args.dataset:
         statics.iface.storefilename(args.dataset)
 

@@ -1,4 +1,4 @@
-"WARNING. THIS FILE IS SLATED FOR DELETION SOON. PLEASE IGNORE IT."
+"WARNING. Likely to be obsolete."
 
 from datetime import datetime
 

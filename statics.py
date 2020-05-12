@@ -5,6 +5,10 @@ Programmer: JLB
 
 Module encompassing some static objects accessed from everywhere
 
+(or: Singleton pattern implemented as module; 
+spoiler: does not work well enough).
+
+
 iface: the actual interface, which can be textual CLI or GUI
 
 filenamext: extension assumed for dataset files if absent
@@ -42,7 +46,7 @@ genabsupp: Do not consider closures with absolute support below this
 """
 
 # version = "version 1.2.2"
-version = "1.2.3"
+version = "1.2.4"
 
 iface = None
 filenamext = ".txt"

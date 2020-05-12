@@ -1,18 +1,24 @@
 # yacaree
 On our way to a decent, revamped Python3 future version of the now somewhat old yacaree association miner.
 
-Currently recommended version 1.2.3, the second one  
-(and possibly the last) to work under both Python 2 
+Latest versions 1.2.4 and the just earlier 1.2.3
+available, both able to work under both Python 2 
 and Python 3. Run python(2/3) yacaree.py --help
 for instructions on Linux. Not sure what happens
-on Windows anymore, as these days I do not have
-access to such a box.
+on Windows anymore, as these days (Covid-19-related
+confinement at home) I do not have access to such 
+a box.
 
-Keep reading for further info.
+Scientific details in
 
-Based on SourceForge's revision 65 (probably its last).
+José L. Balcázar:
+Formal and computational properties of the 
+confidence boost of association rules. 
+ACM Trans. Knowl. Discov. Data 7(4): 19:1-19:41 (2013)
+(please cite that work if you want to acknowledge
+usefulness of this software).
 
-(earlier text follows next)
+Keep reading for further info. (Earlier text follows next.)
 
 Readme file for yacaree version 1.2.1 - January 27, 2011
 

@@ -184,6 +184,6 @@ if __name__ == "__main__":
     statics.iface.report("Last closure generated was " +
                  str(last[0]) + "  s: " +
                  str(last[1]) + ".")
-    statics.iface.endreport()
+    # ~ statics.iface.endreport()
 
 
