@@ -1,5 +1,6 @@
-Current version 1.2.1 is offered under the MIT X11 open source license, 
-sometimes called MIT License, that can be easily found in e.g. Wikipedia. 
+All currently available versions of this project are offered 
+under the MIT X11 open source license, sometimes called MIT License, 
+that can be easily found in e.g. Wikipedia. 
 
 Disclaimer: whereas each line of code has been written in good will, 
 absolutely no guarantees, whether explicit or implicit, are made about 
