@@ -1,9 +1,6 @@
 """
 Using yacaree through either the text CLI or the GUI. 
 Current default is text CLI but this is likely to change.
-
-Now: refactoring hypergraps, future pull request:
-https://github.com/balqui/yacaree/pull/new/Refactoring_towards_forking_out_hypergraphs
 """
 
 from datetime import datetime
