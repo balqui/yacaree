@@ -75,7 +75,7 @@ def mine_implications(rminer,cn):
     warn_potential_deprecation()
     global heappushcnt
     mingens = []
-    for m in _faces(cn,rminer.latt.immpreds[cn]).transv().hyedges:
+    for m in transv(_faces(cn,rminer.latt.immpreds[cn])).hyedges:
         mingens.append(ItSet(m))
     if len(cn) == len(mingens[0]):
         "o/w no rules as cn is a free set and its own unique mingen"
