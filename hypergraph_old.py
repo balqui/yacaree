@@ -158,6 +158,20 @@ class hypergraph:
                 nodups.append(e)
         self.hyedges = nodups
 
+
+def transv_zero(hygr):
+    """
+    Fallback to old hypergraph code in case HyTra is not available
+    Then hygr is a hypergraph like in this module above
+    """
+    # ~ currtrs = hypergraph()
+    # ~ newtr = set([])
+    # ~ while hygr._newtransv_z(hygr, currtrs, newtr):
+        # ~ currtrs.added(newtr.copy())
+        # ~ newtr = set([])
+    return hygr.transv()
+
+
 if __name__ == "__main__":
 	"TOO MANY print TO CORRECT THEM ALL, TESTS JUST HIDDEN"
 	pass

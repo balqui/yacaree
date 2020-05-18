@@ -11,17 +11,36 @@ See also partialruleminer.py
 
 
 import statics
-##from choose_iface import iface
 from itset import ItSet
-##from lattice import Lattice
 from rule import Rule
 
-##from heapq import heapify, heappush, heappop
+##from choose_iface import iface
+##from lattice import Lattice
+
 from heapq import heappush
+##from heapq import heapify, heappush, heappop
 ##from collections import defaultdict
 
 from iter_subsets import all_proper_subsets
-from hypergraph import hypergraph
+
+old_hygr = False
+
+try:
+    from hytra import HyperGraph as hypergraph
+    from hytra import transv_zero as transv
+except ImportError:
+    "take note to report it, but wait until statics.iface exists"
+    old_hygr = True
+    from hypergraph_old import hypergraph, transv_zero as transv
+
+def warn_potential_deprecation():
+    global old_hygr
+    if old_hygr:
+        "report at most once"
+        old_hygr = False
+        statics.iface.report("Could not import from module HyTra.")
+        statics.iface.report("Please pip install hytra at some point.")
+        statics.iface.report("Falling back on deprecated hypergraph_old code.")
 
 heappushcnt = 0 # see above
 
@@ -53,6 +72,7 @@ def checkrule(rul,rminer):
 
 def mine_implications(rminer,cn):
     "cn closure of sufficient suppratio, find implications there"
+    warn_potential_deprecation()
     global heappushcnt
     mingens = []
     for m in _faces(cn,rminer.latt.immpreds[cn]).transv().hyedges:
