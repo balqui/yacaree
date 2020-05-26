@@ -1,5 +1,7 @@
+#! /usr/bin/env python3
+
 """
-Using yacaree through either the text CLI or the GUI. 
+Using yacaree through either the text CLI or the GUI on *nix.
 Current default is text CLI but this is likely to change.
 """
 
@@ -69,8 +71,8 @@ if __name__ == "__main__":
     from argparse import ArgumentParser
     argp = ArgumentParser(
         description = "Yet another closure-based association rule " +
-                      "experimentation environment.",
-        prog = "python[2|3] yacaree.py"
+                      "experimentation environment (*nix flavor).",
+        prog = "python[2|3] yacaree.py (or maybe just ./yacaree)"
         )
 
     argp.add_argument('-a', '--all', action = 'store_true', 
