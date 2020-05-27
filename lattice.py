@@ -186,7 +186,7 @@ class Lattice:
         if v <= self.boosthr - statics.boostdecr:
             self.boosthr = v
             statics.iface.report(("Confidence boost bound reduced to %2.3f." % v)) 
-            # + "; current support " + str(spp) + ".") but need current support spp
+            statics.please_report = True
             while self.freezer:
                 "fish back in closures that reach enough supp ratio now"
                 if -self.freezer[0][0] > self.boosthr:

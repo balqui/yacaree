@@ -32,7 +32,7 @@ confthr: was about 2/3 for long, scaled; set at 0.6 for some
 days, not convincing, settling for 0.65 for v1.1
 (natural alternatives to consider: 3/4 and 4/5)
 
-supp_rep_often: how often to report about the ongoing support
+supp_rep_often: how often to report about the ongoing support - CONCEPT CHANGED
 
 findrules: process bound, don't mine more than that many rules; 
  if zero or negative, don't apply any bound
@@ -48,7 +48,7 @@ genabsupp: Do not consider closures with absolute support below this
 """
 
 # version = "version 1.2.2"
-version = "1.2.4"
+version = "1.2.5"
 
 iface = None
 filenamext = ".txt"
@@ -58,10 +58,14 @@ filenamefull = None
 
 verbose = False
 
+running = False
+
+please_report = False # To report every now and then 
 scale = 100000
 epsilon = 100.0/scale
 boostab = 5
-supp_rep_often = 10 # report current support at most that many times
+supp_rep_often = 100 # every that many closures unless verbose
+# report current support at most that many times # changed concept
 
 ## standard process:
 
