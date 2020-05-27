@@ -19,7 +19,6 @@ from math import floor
 
 import statics
 from itset import ItSet
-##from choose_iface import iface
 from dataset import Dataset
 from yaflheap import FlHeap
 
@@ -84,7 +83,7 @@ class ClMiner:
         pend_clos = FlHeap() 
         pend_clos.mpush(self.clos_singl)
         self.minsupp = self.dataset.nrtr
-        while pend_clos.more():
+        while pend_clos.more() and statics.running:
             """
             extract largest-support closure and find subsequent ones,
             possibly after halving the heap through test_size(),
@@ -103,6 +102,7 @@ class ClMiner:
 #                              "; current support " +
 #                            str(spp) +     # wrong reporting place, spp gets value later
                             ".")
+                statics.please_report = True
                 self.intsupp = new_supp
             cl = pend_clos.pop()
             spp = cl[0]
@@ -113,7 +113,9 @@ class ClMiner:
                 self.minsupp = spp
             self.card += 1
             yield (ItSet(cl[1]),spp)
-            if statics.verbose:
+            if (statics.verbose or statics.please_report or 
+                self.card % statics.supp_rep_often == 0):
+                statics.please_report = False
                 statics.iface.report(str(self.card) +
                             " closures traversed, " +
                                str(pend_clos.count) + 

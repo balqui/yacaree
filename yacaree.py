@@ -26,6 +26,7 @@ class Yacaree:
         statics.iface.get_ready_for_run()
         if statics.maxrules == 0:
             statics.iface.report("Providing all rules as output.")
+        statics.running = True
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
@@ -66,13 +67,14 @@ class Yacaree:
         self.standard_run()
 
 if __name__ == "__main__":
-    "The dataset will be changed later to a positional argument"
     
     from argparse import ArgumentParser
     argp = ArgumentParser(
         description = "Yet another closure-based association rule " +
-                      "experimentation environment (*nix flavor).",
-        prog = "python[2|3] yacaree.py (or maybe just ./yacaree)"
+                      "experimentation environment (CLI *nix flavor, " +
+                      "alt Win/*nix-compatible double-click launch " +
+                      "in file yacaree.pyw).",
+        prog = "python[2|3] yacaree.py or just ./yacaree"
         )
 
     argp.add_argument('-a', '--all', action = 'store_true', 
@@ -81,7 +83,7 @@ if __name__ == "__main__":
     argp.add_argument('-g', '--gui', action = 'store_true', 
                       help = "launch GUI (default: remain in command line interface - CLI)")
     argp.add_argument('-v', '--verbose', action = 'store_true', 
-                      help = "echo to terminal log entries with current support per closure")
+                      help = "verbose report of current support at every closure")
     argp.add_argument('-V', '--version', action = 'version', 
                                          version = "yacaree " + statics.version,
                                          help = "print version and exit")

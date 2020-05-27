@@ -221,7 +221,7 @@ class iface_gui:
         self.run50.pack()
 
         self.finish_button = Tkinter.Button(process_frame)
-        self.finish_button.configure(text = "Finish",
+        self.finish_button.configure(text = "Stop ASAP (be patient) / Close",
                                   width = button_width,
                                   height = button_height,
                                   command = self.finish)
@@ -250,10 +250,17 @@ class iface_gui:
                 self.run50.configure(state = Tkinter.NORMAL)
 
     def finish(self):
-        if statics.logfile: statics.logfile = None # not sure still necessary
-        self.sound_bell()
-        self.root.destroy()
-        exit(0)
+        if statics.running:
+            "please stop mining ASAP"
+            self.finish_button.configure(state = Tkinter.DISABLED)
+            self.report("User-requested stop of mining process.")
+            statics.running = False
+        else:
+            "not running, hence exit"
+            if statics.logfile: statics.logfile = None # not sure still necessary
+            self.sound_bell()
+            self.root.destroy()
+            exit(0)
 
     def get_ready_for_new_run(self):
         "After one of run/run50, user may wish to run the other"
@@ -261,22 +268,6 @@ class iface_gui:
         self.run50.configure(state = Tkinter.NORMAL)
         self.filepick.configure(state = Tkinter.NORMAL)
         self.finish_button.configure(state = Tkinter.NORMAL)
-
-    # ~ def disable_again(self):
-        # ~ pass
-
-    # ~ def enable_finish(self):
-        # ~ self.finish_button.configure(state = Tkinter.NORMAL)
-
-    # ~ def disable_finish(self):
-        # ~ self.finish_button.configure(state = Tkinter.DISABLED)
-
-    # ~ def disable_filepick(self):
-        # ~ self.filepick.configure(state = Tkinter.DISABLED)
-
-    # ~ def disable_run(self):
-        # ~ self.run.configure(state = Tkinter.DISABLED)
-        # ~ self.run50.configure(state = Tkinter.DISABLED)
 
     def get_ready_for_run(self):
         self.filepick.configure(state = Tkinter.DISABLED)

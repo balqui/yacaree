@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
 
 """
-Attempt at using GUI-based yacaree on Windows by just
-double-click through the Python Launcher for Windows. 
+GUI-based option-less yacaree run by just double-click, 
+if Files/Nautilus configured properly on Ubuntu and if
+Python Launcher is available on Windows.
 """
 
 from datetime import datetime
@@ -26,6 +27,8 @@ class Yacaree:
         statics.iface.get_ready_for_run()
         if statics.maxrules == 0:
             statics.iface.report("Providing all rules as output.")
+        statics.running = True
+        # ~ statics.verbose = True
         miner = RuleMiner(statics.filenamefull) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
