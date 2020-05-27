@@ -1,13 +1,17 @@
 # yacaree
 On our way to a decent, revamped Python3 future version of the now somewhat old yacaree association miner.
 
-Latest versions 1.2.4 and the just earlier 1.2.3
-available, both able to work under both Python 2 
-and Python 3. Run python(2/3) yacaree.py --help
-for instructions on Linux. Not sure what happens
-on Windows anymore, as these days (Covid-19-related
-confinement at home) I do not have access to such 
-a box.
+Current recommended version is v1.2.5 under Releases.
+
+Double-click on yacaree.pyw to launch directly GUI in both Windows
+and Linux (if launchers are properly configured in your system);
+otherwise, call ./yacaree.py or, in an emergency, python(2/3) yacaree.py
+(with --help for instructions). Latest versions since 1.2.3 are able 
+to work under both Python 2 and Python 3.  
+
+If run from CLI, further options exist. If run from GUI, the 
+advantage is the ability to stop the mining process should your
+patience be exhausted.
 
 Scientific details in
 
