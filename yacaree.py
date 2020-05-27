@@ -80,7 +80,9 @@ if __name__ == "__main__":
                            + str(statics.maxrules) + " rules)")
     argp.add_argument('-g', '--gui', action = 'store_true', 
                       help = "launch GUI (default: remain in command line interface - CLI)")
-    argp.add_argument('-v', '--version', action = 'version', 
+    argp.add_argument('-v', '--verbose', action = 'store_true', 
+                      help = "echo to terminal log entries with current support per closure")
+    argp.add_argument('-V', '--version', action = 'version', 
                                          version = "yacaree " + statics.version,
                                          help = "print version and exit")
     # ~ argp.add_argument('-t', '--test', action = 'store_true') # for testing times
@@ -91,7 +93,10 @@ if __name__ == "__main__":
 
     if args.all:
         statics.maxrules = 0
-    
+
+    if args.verbose:
+        statics.verbose = True
+
     if args.gui:
         from iface import iface_gui as iface
     else:

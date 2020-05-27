@@ -11,6 +11,8 @@ spoiler: does not work well enough).
 
 iface: the actual interface, which can be textual CLI or GUI
 
+verbose: echo all log entries to terminal
+
 filenamext: extension assumed for dataset files if absent
 
 logfile: potential logging file
@@ -53,6 +55,8 @@ filenamext = ".txt"
 logfile = None
 filename = None 
 filenamefull = None
+
+verbose = False
 
 scale = 100000
 epsilon = 100.0/scale

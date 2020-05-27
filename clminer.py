@@ -99,7 +99,10 @@ class ClMiner:
                               self.to_percent(self.intsupp)) +
                              str(new_supp) +
                              (" (%2.3f%%)" %
-                              self.to_percent(new_supp)) + ".")
+                              self.to_percent(new_supp)) + 
+#                              "; current support " +
+#                            str(spp) +     # wrong reporting place, spp gets value later
+                            ".")
                 self.intsupp = new_supp
             cl = pend_clos.pop()
             spp = cl[0]
@@ -110,11 +113,12 @@ class ClMiner:
                 self.minsupp = spp
             self.card += 1
             yield (ItSet(cl[1]),spp)
-            statics.iface.report(str(self.card) +
-                         " closures traversed, " +
-                         str(pend_clos.count) + 
-                         " further closures found so far; current support " +
-                         str(spp) + ".")
+            if statics.verbose:
+                statics.iface.report(str(self.card) +
+                            " closures traversed, " +
+                               str(pend_clos.count) + 
+                            " further closures found so far; current support " +
+                            str(spp) + ".")
             for ext in self.clos_singl:
                 "try extending with freq closures of singletons"
                 if not ext[1] <= cl[1]:
