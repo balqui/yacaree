@@ -29,9 +29,6 @@ also:
 from collections import defaultdict
 
 import statics
-##from iface import iface
-##from choose_iface import iface
-
 
 class Dataset:
 
@@ -42,7 +39,7 @@ class Dataset:
                      statics.filenamefull)
         self.nrocc = 0
         self.nrtr = 0
-        self.univ = set([])
+        self.univ = set()
         self.transcns = defaultdict(set)
         self.occurncs = defaultdict(set)
         for line in self.datasetfile:
@@ -60,9 +57,8 @@ class Dataset:
         self.datasetfile.close()
         statics.iface.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
-                     str(self.nrits) + " items, with a total of " +
+                     str(self.nrits) + " different items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
-        # ~ statics.iface.endreport()
 
     def inters(self,lstr):
         "for an iterable of transactions lstr, return their intersection"
