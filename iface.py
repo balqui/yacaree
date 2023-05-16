@@ -25,7 +25,8 @@ others: to handle the communication with Tk
 
 from sys import stdout
 from datetime import datetime
-from time import clock # only for gui right now
+from time import time as clock # only for gui right now
+# ~ from time import clock # only for gui right now
 from six.moves import input as raw_input
 import statics
 
