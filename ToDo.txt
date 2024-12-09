@@ -25,7 +25,7 @@ Rest not so crucial:
 . checkrule in partialruleminer
 . maybe try to move flush to a separate thread
 
-[2024 branch test]
+[2024 branch test - unable to make it work right now]
 
 [Not sure of date or of why this is still here:]
 In ItSet: added parentheses to a print and refactored the sep string,
