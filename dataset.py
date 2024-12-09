@@ -1,30 +1,33 @@
-"""
+'''
+yacaree
 
-Project: yacaree
-Programmer: JLB
+Current revision: mid / late Frimaire 2024
 
-Description:
+Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
+Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
-transactional dataset, read in from a txt file
-one transaction per line
+Read in a transactional dataset from a txt file,
+one transaction per line.
+
+CAVEAT: Merge some day with equivalent fragments of degais and/or PyDaMElo.
+
 items in each transaction separated by whitespace
  as per string method split()
 whitespace characters as per split() cannot occur
  inside the items
 empty transactions are ignored
-dataset replicated into two dicts:
+dataset replicated into two ddicts:
  transcns: set of items per transaction id (unsigned, starts at zero)
  occurncs: set of transaction ids per item
 also:
- scale (maybe to migrate somewhere else)
- nrits
- nrtr
- nrocc
- univ
+ scale (CAVEAT: maybe to migrate somewhere else)
+ nrits - number of items
+ nrtr  - number of transactions
+ nrocc - number of occurrences
+ univ  - universe of items
  dataset filename
  datasetfile, closed, should one need to open it again
-
-"""
+'''
 
 from collections import defaultdict
 
@@ -68,7 +71,7 @@ class Dataset:
         return items
 
 if __name__ == "__main__":
-
+    "CAVEAT: Needs an iface on statics, initially it is None and reading fails"
     fnm = "e13"
 ##    fnm = "pumsb_star"
 ##    fnm = "adultrain"

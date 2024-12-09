@@ -9,6 +9,10 @@ Module encompassing some static objects accessed from everywhere
 spoiler: does not work well enough).
 
 
+CAVEAT: MUST BE FULLY REFACTORED
+
+
+
 iface: the actual interface, which can be textual CLI or GUI
 
 verbose: echo all log entries to terminal
