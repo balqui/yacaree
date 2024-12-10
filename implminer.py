@@ -1,4 +1,8 @@
 '''
+Before anything: reporting of hytra unavailability is on statics.iface
+which does not work anymore, so this must run with hytra installed.
+
+
 Current usage of heappush might compare Rule's if supports coincide
 On the CPython version of Python2 this was harmless
 Python 3 does not allow comparing Rule's until proper comparison is added

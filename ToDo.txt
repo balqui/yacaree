@@ -1,4 +1,8 @@
 
+[Branch frozen with snapshot as of Dec 9th, 2024.
+Move on and keep development on master branch.]
+
+
 Real ToDo: migrate _correctly_ to Python 3, that is, itsets must
 inherit from sets, and all that jazz, paying attention to find out
 where I had hacked in a workaround due to not being able to inherit 
@@ -24,8 +28,6 @@ Rest not so crucial:
 . candidate_closures, listcomp, close, allpreds in lattice
 . checkrule in partialruleminer
 . maybe try to move flush to a separate thread
-
-[2024 branch test - unable to make it work right now]
 
 [Not sure of date or of why this is still here:]
 In ItSet: added parentheses to a print and refactored the sep string,

@@ -31,15 +31,15 @@ also:
 
 from collections import defaultdict
 
-import statics
+# ~ import statics
 
 class Dataset:
 
-    def __init__(self,filename=None):
+    def __init__(self, iface, hpar):
         "find actual file, open, and read the dataset in - redundancies left"
-        self.datasetfile = statics.iface.openfile(statics.filenamefull)
-        statics.iface.report("Reading in dataset from file " +
-                     statics.filenamefull)
+        self.datasetfile = iface.openfile(hpar.filenamefull)
+        iface.report("Reading in dataset from file " +
+                     hpar.filenamefull)
         self.nrocc = 0
         self.nrtr = 0
         self.univ = set()
@@ -58,7 +58,7 @@ class Dataset:
                 self.nrtr += 1
         self.nrits = len(self.univ)
         self.datasetfile.close()
-        statics.iface.report("Dataset read in. Consists of " +
+        iface.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " different items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
@@ -71,7 +71,7 @@ class Dataset:
         return items
 
 if __name__ == "__main__":
-    "CAVEAT: Needs an iface on statics, initially it is None and reading fails"
+    "CAVEAT: Needs an iface, if taken from statics then initially it is None and reading fails"
     fnm = "e13"
 ##    fnm = "pumsb_star"
 ##    fnm = "adultrain"

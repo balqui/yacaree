@@ -48,8 +48,9 @@ class Lattice:
     union_cover is the union of all immediate successors seen so far
     """
 
-    def __init__(self,datasetfilename):
-        self.dataset = Dataset(datasetfilename)
+    def __init__(self, iface, hpar):
+        self.iface = iface
+        self.dataset = Dataset(iface, hpar)
         self.closeds = []
         self.supps = {}
         self.suppratios = defaultdict(inffloat)
@@ -71,7 +72,7 @@ class Lattice:
         lie on iterator from ClMiner
         """
         bord = set([])
-        self.miner = ClMiner(self.dataset) # supp extra?
+        self.miner = ClMiner(self.dataset, iface = self.iface) # supp extra?
         for (node,supp) in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing
@@ -185,7 +186,7 @@ class Lattice:
             v = statics.absoluteboost
         if v <= self.boosthr - statics.boostdecr:
             self.boosthr = v
-            statics.iface.report(("Confidence boost bound reduced to %2.3f." % v)) 
+            self.iface.report(("Confidence boost bound reduced to %2.3f." % v)) 
             statics.please_report = True
             while self.freezer:
                 "fish back in closures that reach enough supp ratio now"

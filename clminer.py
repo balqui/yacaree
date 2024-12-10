@@ -24,7 +24,7 @@ from yaflheap import FlHeap
 
 class ClMiner:
 
-    def __init__(self,dataset,supp=-1):
+    def __init__(self, dataset, supp=-1, iface = None):
         """
         may receive an external support bound in (0,1]
         otherwise, resort to statics.genabsupp - most often,
@@ -35,10 +35,17 @@ class ClMiner:
         initializes other quantities and finds closures of
         singletons
         """
+        statics.running = True # this should become unnecessary some day
+        self.iface = iface     # this too
         self.dataset = dataset
         if supp > -1:
             self.intsupp = int(supp * dataset.nrtr)
         else:
+            """
+            Cl_Miner needs hpar but is not available.
+            Needed for quite a few fields.
+            Go with statics for the time being.
+            """
             self.intsupp = statics.genabsupp
         self.supp_percent = self.to_percent(self.intsupp)
         self.card = 0
@@ -46,7 +53,7 @@ class ClMiner:
         self.maxnonsupp = 0
         self.maxitemnonsupp = 0
         self.minsupp = 0
-        statics.iface.report("Initializing singletons.")
+        iface.report("Initializing singletons.")
 
         "pair up items with their support and sort them"
         sorteduniv = [ (len(self.dataset.occurncs[item]),item)
@@ -70,7 +77,7 @@ class ClMiner:
                        frozenset(self.dataset.inters(supportingset)),
                        frozenset(supportingset))
             self.clos_singl.add(cl_node)
-        statics.iface.report(str(len(self.clos_singl)) +
+        iface.report(str(len(self.clos_singl)) +
                      " singleton-based closures.")
 
     def mine_closures(self):
@@ -92,7 +99,7 @@ class ClMiner:
             new_supp = pend_clos.test_size()
             if new_supp > self.intsupp:
                 "support bound grows, heap halved, report"
-                statics.iface.report("Increasing min support from " +
+                self.iface.report("Increasing min support from " +
                              str(self.intsupp) +
                              (" (%2.3f%%) up to " %
                               self.to_percent(self.intsupp)) +
@@ -116,7 +123,7 @@ class ClMiner:
             if (statics.verbose or statics.please_report or 
                 self.card % statics.supp_rep_often == 0):
                 statics.please_report = False
-                statics.iface.report(str(self.card) +
+                self.iface.report(str(self.card) +
                             " closures traversed, " +
                                str(pend_clos.count) + 
                             " further closures found so far; current support " +
@@ -149,47 +156,48 @@ class ClMiner:
         return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 statics.scale)
         
-if __name__ == "__main__":
-	
+# ~ if __name__ == "__main__":
 
-## This testing only worked for iface_TEXT in choose_iface
-## Now that is being done differently and I must check it out
+# ~ NEW TESTING PHASE TO BE REDESIGNED	
 
-    from iface_TEXT import iface
-    statics.iface = iface
+# ~ ## This testing only worked for iface_TEXT in choose_iface
+# ~ ## Now that is being done differently and I must check it out
+
+    # ~ from iface_TEXT import iface
+    # ~ statics.iface = iface
 
 
-##    fnm = "data/markbask"
-##    supp = 0.0005 # half a transaction, that is, supp > 0: all
+# ~ ##    fnm = "data/markbask"
+# ~ ##    supp = 0.0005 # half a transaction, that is, supp > 0: all
     
-    fnm = "data/e13"
-    supp = 1.0/14
+    # ~ fnm = "data/e13"
+    # ~ supp = 1.0/14
 
-##    fnm = "data/adultrain"
+# ~ ##    fnm = "data/adultrain"
 
-    statics.iface.storefilename(fnm)
-    statics.iface.report("Module clminer running as test on file " + fnm + ".txt")
+    # ~ statics.iface.storefilename(fnm)
+    # ~ statics.iface.report("Module clminer running as test on file " + fnm + ".txt")
 
-##    miner = ClMiner(Dataset(fnm+".txt"),supp)
-    miner = ClMiner(Dataset(fnm+".txt"))
+# ~ ##    miner = ClMiner(Dataset(fnm+".txt"),supp)
+    # ~ miner = ClMiner(Dataset(fnm+".txt"))
 
-    cnt = 0
-    for e in miner.clos_singl:
-        cnt += 1
-        statics.iface.report(str(cnt) + "/ " + str(ItSet(e[1])) + "  s: " + str(e[0]))
+    # ~ cnt = 0
+    # ~ for e in miner.clos_singl:
+        # ~ cnt += 1
+        # ~ statics.iface.report(str(cnt) + "/ " + str(ItSet(e[1])) + "  s: " + str(e[0]))
 
-    statics.iface.report("Now computing all affordable closures.")
+    # ~ statics.iface.report("Now computing all affordable closures.")
 
-    cnt = 0
-    for e in miner.mine_closures():
-        cnt += 1
-        last = e
-        statics.iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))
+    # ~ cnt = 0
+    # ~ for e in miner.mine_closures():
+        # ~ cnt += 1
+        # ~ last = e
+        # ~ statics.iface.report(str(cnt) + "/ " + str(e[0]) + "  s: " + str(e[1]))
 
-    statics.iface.report("Found " + str(cnt) + " closures.")
-    statics.iface.report("Last closure generated was " +
-                 str(last[0]) + "  s: " +
-                 str(last[1]) + ".")
-    # ~ statics.iface.endreport()
+    # ~ statics.iface.report("Found " + str(cnt) + " closures.")
+    # ~ statics.iface.report("Last closure generated was " +
+                 # ~ str(last[0]) + "  s: " +
+                 # ~ str(last[1]) + ".")
+    # ~ ## statics.iface.endreport()
 
 

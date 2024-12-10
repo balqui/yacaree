@@ -2,6 +2,8 @@
 Project: yacaree
 Programmer: JLB
 
+CAVEAT: "Close" button does not always work, I believe already in the frozen version.
+
 Description:
 
 iface_text:
@@ -48,21 +50,21 @@ class iface_text:
         pass
 
     def go(self, yacaree):
-        self.report("This is yacaree, version " + statics.version + ".")
-        if statics.filenamefull is None:
+        self.report("This is yacaree, version " + yacaree.hpar.version + ".")
+        if yacaree.hpar.filenamefull is None:
             self.reportwarning("No dataset file specified.")
             filename = self.ask_input("Dataset File Name? ")
-            self.storefilename(filename)
+            yacaree.hpar.storefilename(filename)
         yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
-    @staticmethod
-    def storefilename(filename):
-        if len(filename)<=3 or filename[-4] != '.':
-            statics.filename = filename
-            statics.filenamefull = filename + statics.filenamext
-        else:
-            statics.filename, _ = filename.rsplit('.',1)
-            statics.filenamefull = filename
+    # ~ @staticmethod
+    # ~ def storefilename(filename):
+        # ~ if len(filename)<=3 or filename[-4] != '.':
+            # ~ statics.filename = filename
+            # ~ statics.filenamefull = filename + statics.filenamext
+        # ~ else:
+            # ~ statics.filename, _ = filename.rsplit('.',1)
+            # ~ statics.filenamefull = filename
 
     @staticmethod
     def report(m = ""):
@@ -154,6 +156,8 @@ class iface_gui:
 
     def go(self, yacaree):
         "Bindings could not be made in a regular __init__()"
+        self.hpar = yacaree.hpar
+
         self.root = Tkinter.Tk()
 
         button_width = 35
@@ -244,8 +248,8 @@ class iface_gui:
             title = "Choose a dataset file")
         if fnm:
             "dialog could have been canceled, but actual file chosen"
-            self.storefilename(fnm)
-            self.report("Selected dataset in file " + statics.filenamefull + ".")
+            self.hpar.storefilename(fnm)
+            self.report("Selected dataset in file " + self.hpar.filenamefull + ".")
             self.run.configure(state = Tkinter.NORMAL)
             if statics.maxrules:
                 self.run50.configure(state = Tkinter.NORMAL)
@@ -323,16 +327,16 @@ class iface_gui:
         if statics.logfile: 
             statics.logfile.write(str(datetime.now()) + m_log)
 
-    @staticmethod
-    def storefilename(filename):
-        if len(filename)<=3 or filename[-4] != '.':
-            statics.filename = filename
-            statics.filenamefull = filename + statics.filenamext
-        else:
-            statics.filename, _ = filename.rsplit('.',1)
-            statics.filenamefull = filename
+    # ~ @staticmethod
+    # ~ def storefilename(filename):
+        # ~ if len(filename)<=3 or filename[-4] != '.':
+            # ~ statics.filename = filename
+            # ~ statics.filenamefull = filename + statics.filenamext
+        # ~ else:
+            # ~ statics.filename, _ = filename.rsplit('.',1)
+            # ~ statics.filenamefull = filename
 
-    def openfile(self, filename,mode = "r"):
+    def openfile(self, filename, mode = "r"):
         if mode == "r":
             self.report("Opening file " +
                        filename + " for reading.")
