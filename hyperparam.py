@@ -81,14 +81,13 @@ class HyperParam:
         self.absoluteboost = 1.05
         self.genabsupp = 5 # absolute number of transactions
         self.boostdecr = 0.001 # minimal boost decrease allowed
-        self.report_period = 30 # try to show program is alive every that many seconds
 
     # ~ @staticmethod
-    def storefilename(self, filename):
-        if len(filename)<=3 or filename[-4] != '.':
-            self.filename = filename
-            self.filenamefull = filename + self.filenamext
-        else:
-            self.filename, _ = filename.rsplit('.',1)
-            self.filenamefull = filename
+    # ~ def storefilename(self, filename):
+        # ~ if len(filename)<=3 or filename[-4] != '.':
+            # ~ self.filename = filename
+            # ~ self.filenamefull = filename + self.filenamext
+        # ~ else:
+            # ~ self.filename, _ = filename.rsplit('.',1)
+            # ~ self.filenamefull = filename
 

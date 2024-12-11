@@ -24,9 +24,9 @@ class Yacaree:
     def standard_run(self):
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         now = datetime.today().strftime("%Y%m%d%H%M%S")
-        filenamenow = self.hpar.filename + now
+        filenamenow = self.iface.filename + now
         filenamerules = filenamenow + "_rules.log" # + "_rules.txt" to get back to
-        self.hpar.logfile = self.iface.openfile(filenamenow + ".log", "w")
+        self.iface.logfile = self.iface.openfile(filenamenow + ".log", "w") # CURRENTLY, NONSENSE
         self.iface.report_log_file(filenamenow)
         results_file = self.iface.openfile(filenamerules, "w")
         self.iface.get_ready_for_run()
@@ -58,11 +58,11 @@ class Yacaree:
         self.iface.report(str(cnt) + " rules chosen according to their " +
                      "confidence boost written to file " + filenamerules + ".") 
         self.iface.report("End of process of dataset in file " + 
-                     self.hpar.filenamefull + ".")
+                     self.iface.filenamefull + ".")
         self.iface.report("Closing output and log files; run of yacaree " + 
                      self.hpar.version + " finished.")
-        self.hpar.logfile.close()
-        self.hpar.logfile = None
+        self.iface.logfile.close()
+        self.iface.logfile = None
         self.iface.get_ready_for_new_run()
         self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
         self.iface.sound_bell()
@@ -108,14 +108,30 @@ if __name__ == "__main__":
     if args.verbose:
         hpar.verbose = True
 
-    if args.gui:
-        from iface import iface_gui as IFace
-    else:
-        from iface import iface_text as IFace
-    
+# ~ on iface3:
+
+    from iface3 import IFace
+    iface = IFace(args.gui)
+
     if args.dataset:
-        hpar.storefilename(args.dataset)
+        print(args.dataset) ####
+        iface.storefilename(args.dataset)
 
-    y = Yacaree(IFace(), hpar)
 
-    # ~ y.iface.go(y)
+    import statics
+    statics.put_iface_in_statics(iface) # VERY DIRTY TRICK
+
+    y = Yacaree(iface, hpar)
+
+    y.iface.go(y)
+
+# ~ on iface:
+
+    # ~ if args.gui:
+        # ~ from iface import iface_gui as IFace
+    # ~ else:
+        # ~ from iface import iface_text as IFace
+    
+    # ~ y = Yacaree(IFace(), hpar)
+
+    # ~ # y.iface.go(y)

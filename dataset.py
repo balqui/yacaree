@@ -37,9 +37,9 @@ class Dataset:
 
     def __init__(self, iface, hpar):
         "find actual file, open, and read the dataset in - redundancies left"
-        self.datasetfile = iface.openfile(hpar.filenamefull)
+        self.datasetfile = iface.openfile(iface.filenamefull)
         iface.report("Reading in dataset from file " +
-                     hpar.filenamefull)
+                     iface.filenamefull)
         self.nrocc = 0
         self.nrtr = 0
         self.univ = set()

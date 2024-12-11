@@ -52,9 +52,15 @@ genabsupp: Do not consider closures with absolute support below this
 """
 
 # version = "version 1.2.2"
-version = "1.2.5"
+# ~ version = "1.2.5"
 
 iface = None
+
+# ~ very dirty trick to make implminer go
+def put_iface_in_statics(the_iface):
+    global iface
+    iface = the_iface
+
 filenamext = ".txt"
 logfile = None
 filename = None 
