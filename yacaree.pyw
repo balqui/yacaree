@@ -4,6 +4,8 @@
 GUI-based option-less yacaree run by just double-click, 
 if Files/Nautilus configured properly on Ubuntu and if
 Python Launcher is available on Windows.
+
+Lagging behind yacaree.py, fish it back in later on.
 """
 
 from datetime import datetime

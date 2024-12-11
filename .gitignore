@@ -1,0 +1,4 @@
+# Get back to other extension the rules files in due time
+*.log
+# Byte-compiled files
+__pycache__/

@@ -1,0 +1,25 @@
+The memory bound seems irrelevant: on the Honolulu big dataset,
+after about 7h30, with a 500000 closures limit, it is using just
+1.3GB on my desktop machine (2.3, down to 1 upon killing the
+process). Seems only older machines may need it.
+
+The single thread leads to using only one core even on quadcores.
+
+There should be a way of running it remotely on a machine like those 
+of the Larca minicluster or RDlab: therefore, no GUI etc.
+
+Does it make sense to use as CAR predictor? What computations could
+we spare then?
+
+The support limit should be implemented differently, something like
+"how long do you want me to run without reporting?" and then use some
+maybe 85% of that time constructing closures.
+
+Should see whether there is a more-or-less stable speed in terms of
+Hasse edges constructed. This can be used to approximate the running
+time. On Honolulu it seems to start at some 6000 edges/min but pretty
+soon (around 50K closures) runs at about 2500 edges/min until getting
+close to 100K closures (after 20min running); then it sort of
+stabilizes at around 1100 edges/min for quite a long time (over 7h,
+kill it at support 120 out of 291 = 41%, with the 50K limit it took
+much less to get to lower supports, must clarify the reason here!)

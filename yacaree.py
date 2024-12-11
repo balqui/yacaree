@@ -25,10 +25,10 @@ class Yacaree:
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         now = datetime.today().strftime("%Y%m%d%H%M%S")
         filenamenow = self.hpar.filename + now
-        filenamerules = filenamenow + "_rules.txt"
-        self.hpar.logfile = self.iface.openfile(filenamenow + ".log","w")
+        filenamerules = filenamenow + "_rules.log" # + "_rules.txt" to get back to
+        self.hpar.logfile = self.iface.openfile(filenamenow + ".log", "w")
         self.iface.report_log_file(filenamenow)
-        results_file = self.iface.openfile(filenamerules,"w")
+        results_file = self.iface.openfile(filenamerules, "w")
         self.iface.get_ready_for_run()
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")

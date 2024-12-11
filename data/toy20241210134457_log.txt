@@ -1,0 +1,22 @@
+2024-12-10 13:44:57.022240 Log file data/toy20241210134457.log (this file) set up.
+2024-12-10 13:44:57.022258 Opening file data/toy20241210134457_rules.txt for writing.
+2024-12-10 13:44:57.022292 File is now open.
+2024-12-10 13:44:57.022306 Opening file data/toy.txt for reading.
+2024-12-10 13:44:57.022351 File is now open.
+2024-12-10 13:44:57.022391 Reading in dataset from file data/toy.txt
+2024-12-10 13:44:57.022468 Dataset read in. Consists of 12 transactions from among 5 different items, with a total of 45 item occurrences.
+2024-12-10 13:44:57.022489 Initializing singletons.
+2024-12-10 13:44:57.022541 4 singleton-based closures.
+2024-12-10 13:44:57.022695 Could not import from module HyTra.
+2024-12-10 13:44:57.022704 Please pip install hytra at some point.
+2024-12-10 13:44:57.022710 Falling back on deprecated hypergraph_old code.
+2024-12-10 13:44:57.022810 Confidence boost bound reduced to 1.140.
+2024-12-10 13:44:57.022850 6 closures traversed, 2 further closures found so far; current support 8.
+2024-12-10 13:44:57.023012 Confidence boost bound reduced to 1.126.
+2024-12-10 13:44:57.023137 8 closures traversed, 0 further closures found so far; current support 6.
+2024-12-10 13:44:57.023153 Mining process terminated; searched for rules of confidence boost at least 1.126.
+2024-12-10 13:44:57.023166 Total of 5 Rules obtained from 8 closures of support at least 6 (50.0%).
+2024-12-10 13:44:57.024346 Confidence threshold was 0.650.
+2024-12-10 13:44:57.024357 5 rules chosen according to their confidence boost written to file data/toy20241210134457_rules.txt.
+2024-12-10 13:44:57.024364 End of process of dataset in file data/toy.txt.
+2024-12-10 13:44:57.024379 Closing output and log files; run of yacaree 1.2.5 finished.
