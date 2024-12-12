@@ -50,7 +50,7 @@ class Lattice:
 
     def __init__(self, iface, hpar):
         self.iface = iface
-        self.dataset = Dataset(iface, hpar)
+        self.dataset = Dataset(hpar)
         self.closeds = []
         self.supps = {}
         self.suppratios = defaultdict(inffloat)

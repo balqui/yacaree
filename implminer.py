@@ -18,7 +18,7 @@ import statics
 from itset import ItSet
 from rule import Rule
 
-from iface3 import IFace
+from iface import IFace
 
 ##from choose_iface import iface
 ##from lattice import Lattice

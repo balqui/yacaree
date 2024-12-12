@@ -31,21 +31,24 @@ also:
 
 from collections import defaultdict
 
+from iface import IFace as iface
+
 # ~ import statics
 
 class Dataset:
 
-    def __init__(self, iface, hpar):
+    def __init__(self, hpar):
         "find actual file, open, and read the dataset in - redundancies left"
-        self.datasetfile = iface.openfile(iface.filenamefull)
+        # ~ self.datasetfile = iface.openfile(iface.filenamefull)
         iface.report("Reading in dataset from file " +
-                     iface.filenamefull)
+                     iface._filenamefull) # move this to where it is true
         self.nrocc = 0
         self.nrtr = 0
         self.univ = set()
         self.transcns = defaultdict(set)
         self.occurncs = defaultdict(set)
-        for line in self.datasetfile:
+        # ~ for line in self.datasetfile:
+        for line in iface.datafile:
             isempty = True
             for el in line.strip().split():
                 if len(el)>0:
@@ -57,7 +60,7 @@ class Dataset:
             if not isempty:
                 self.nrtr += 1
         self.nrits = len(self.univ)
-        self.datasetfile.close()
+        iface.datafile.close()
         iface.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " different items, with a total of " +

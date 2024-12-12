@@ -4,12 +4,13 @@
 Using yacaree through either the text CLI or the GUI on *nix.
 Current default is text CLI but this is likely to change.
 
-CAVEAT: refactoring to bring here iface and take it out of statics
+Refactored to bring here iface and take it out of statics
 """
 
-from datetime import datetime
+# ~ from datetime import datetime
+import statics # for that stray running
 
-# ~ import statics
+from iface import IFace
 from hyperparam import HyperParam
 
 from ruleminer import RuleMiner
@@ -21,15 +22,16 @@ class Yacaree:
         self.iface = iface
         self.iface.go(self)
 
+    def setfiles(self):
+        "temporary detour"
+        if self.iface.filename is None:
+            self.iface.reportwarning("No dataset file specified.")
+            self.iface.filename = input("Dataset File Name? ")
+        self.iface.openfiles()
+
     def standard_run(self):
-        "MOVE URGENTLY FILE AND FILENAME HANDLING TO IFace !!!!!!!!!!!!!    "
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
-        now = datetime.today().strftime("%Y%m%d%H%M%S")
-        filenamenow = self.iface.filename + now
-        filenamerules = filenamenow + "_rules.log" # + "_rules.txt" to get back to
-        self.iface.logfile = self.iface.openfile(filenamenow + ".log", "w") # CURRENTLY, NONSENSE
-        self.iface.report_log_file(filenamenow)
-        results_file = self.iface.openfile(filenamerules, "w")
+        results_file = self.iface.rulesfile
         self.iface.get_ready_for_run()
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
@@ -57,13 +59,14 @@ class Yacaree:
         self.iface.report("Confidence threshold was %2.3f."
                      % (float(self.hpar.confthr)/self.hpar.scale))
         self.iface.report(str(cnt) + " rules chosen according to their " +
-                     "confidence boost written to file " + filenamerules + ".") 
+                     "confidence boost written to file " + self.iface.rulesfilename + ".") 
         self.iface.report("End of process of dataset in file " + 
-                     self.iface.filenamefull + ".")
+                     self.iface._filenamefull + ".")
         self.iface.report("Closing output and log files; run of yacaree " + 
                      self.hpar.version + " finished.")
         self.iface.logfile.close()
         self.iface.logfile = None
+        statics.running = False
         self.iface.get_ready_for_new_run()
         self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
         self.iface.sound_bell()
@@ -109,22 +112,15 @@ if __name__ == "__main__":
     if args.verbose:
         hpar.verbose = True
 
-# ~ on iface3:
-
-    from iface3 import IFace
     iface = IFace()
     iface.gui = args.gui
-    # ~ iface = IFace(args.gui)
 
     if args.dataset:
-        iface.storefilename(args.dataset)
-
-    # ~ import statics
-    # ~ statics.put_iface_in_statics(iface) # VERY DIRTY TRICK
+        iface.filename = args.dataset
 
     y = Yacaree(iface, hpar)
 
-    y.iface.go(y)
+    # ~ y.iface.go(y) # Launches upon init
 
 # ~ on iface:
 
@@ -133,6 +129,9 @@ if __name__ == "__main__":
     # ~ else:
         # ~ from iface import iface_text as IFace
     
+    # ~ if args.dataset:
+        # ~ iface.storefilename(args.dataset)
+
     # ~ y = Yacaree(IFace(), hpar)
 
     # ~ # y.iface.go(y)

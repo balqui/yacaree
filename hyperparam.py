@@ -91,3 +91,8 @@ class HyperParam:
             # ~ self.filename, _ = filename.rsplit('.',1)
             # ~ self.filenamefull = filename
 
+    def setfile(self, IFace, fnm):
+        "temporary detour, has to be done this way, IFace.filename fails"
+        iface = IFace()
+        iface.filename = fnm
+
