@@ -16,20 +16,23 @@ iface_gui:
 Slight evolution of the first, simple Tkinter-based GUI for yacaree
 
 Usage:
+
+REVISE URGENTLY
+
 report*: outputs a string message, prepends a line break,
  variants for warnings and errors
 ask_input: user communication
 openfile, storefilename: to set up the data source
 go: calls run method of miner
 others: to handle the communication with Tk
+
 """
 
 
 
 
-from sys import stdout
 from datetime import datetime
-from time import time as clock # only for gui right now
+from time import sleep, time as clock
 # ~ from time import clock # only for gui right now
 # ~ from six.moves import input as raw_input
 import statics # for version, maxrules, running
@@ -48,35 +51,55 @@ except ModuleNotFoundError:
 # ~ class iface_gui:
 class IFace:
 
-    def __init__(self, gui = False):
-        """
-        Instantiation is made before having a yacaree to  
-        bind the buttons to, hence everything deferred to self.go()
-        NOT SURE OF THE RIGHT PLACE TO IMPORT tkinter
-        """
-        self.gui = gui
-        self.report_period = 30 # seconds between possibly_report calls
-        self.filenamext = ".td"
-        self.logfile = None
-        self.filenamefull = None
+    # ~ def __init__(self, gui = False):
+        # ~ """
+        # ~ Instantiation is made before having a yacaree to  
+        # ~ bind the buttons to, hence everything deferred to self.go()
+        # ~ NOT SURE OF THE RIGHT PLACE TO IMPORT tkinter
+        # ~ """
+        # ~ self.gui = gui
+        # ~ self.report_period = 30 # seconds between possibly_report calls
+        # ~ self.filenamext = ".td"
+        # ~ self.logfile = None
+        # ~ self.filenamefull = None
         # ~ if gui: # tried to import Tkinter here but did not work
 
-    def go(self, yacaree):
+    report_period = 30 # seconds between possibly_report calls
+    filenamext = ".td"
+    logfile = None
+    filenamefull = None
+    filenamenow = None
+
+    print("NO LOG FILE") ####
+
+    _gui = False
+
+    @property
+    def gui(self):
+        return type(self)._gui
+
+    @gui.setter
+    def gui(self, val):
+        type(self)._gui = bool(val)
+
+
+    @classmethod
+    def go(cls, yacaree):
         """Bindings could not be made in a regular __init__()
         try to have only hpar as argument
         """
-        self.hpar = yacaree.hpar
+        cls.hpar = yacaree.hpar
 
-        if self.gui:
+        if cls._gui:
 
-            self.root = Tkinter.Tk()
+            cls.root = Tkinter.Tk()
     
             button_width = 35
             button_height = 4
             text_width = 92
             text_height = 28
     
-            left_frame = Tkinter.Frame(self.root)
+            left_frame = Tkinter.Frame(cls.root)
             left_frame.pack(side=Tkinter.LEFT)
             logo = Tkinter.BitmapImage(file="yac-v03.xbm")
             logo_frame = Tkinter.Frame(left_frame)
@@ -85,7 +108,7 @@ class IFace:
             slogan_label = Tkinter.Label(left_frame, text =
                                          "yet another\nclosure-based association " +
                                          "rules\nexperimentation environment\n(version " +
-                                         self.hpar.version + ")")
+                                         cls.hpar.version + ")")
             slogan_label.configure(width = button_width)
             slogan_label.pack(side=Tkinter.TOP)
             logo_label = Tkinter.Label(logo_frame,image=logo)
@@ -101,227 +124,257 @@ class IFace:
             process_frame = Tkinter.LabelFrame(left_frame,text="Process")
             process_frame.pack(side=Tkinter.BOTTOM)
     
-            console_frame = Tkinter.LabelFrame(self.root,text="Console")
+            console_frame = Tkinter.LabelFrame(cls.root,text="Console")
             console_frame.pack(side=Tkinter.LEFT)
-            self.console = Tkinter.Text(console_frame)
-            self.console.configure(width = text_width, height = text_height)
-            self.console.pack(side=Tkinter.LEFT)
-            self.scrollY = Tkinter.Scrollbar(console_frame,
+            cls.console = Tkinter.Text(console_frame)
+            cls.console.configure(width = text_width, height = text_height)
+            cls.console.pack(side=Tkinter.LEFT)
+            cls.scrollY = Tkinter.Scrollbar(console_frame,
                                         orient = Tkinter.VERTICAL,
-                                        command = self.console.yview)
-            self.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
-            self.console.configure(yscrollcommand = self.scrollY.set)
-            self.report("This is yacaree, version " + self.hpar.version + ".") 
+                                        command = cls.console.yview)
+            cls.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
+            cls.console.configure(yscrollcommand = cls.scrollY.set)
+            cls.report("This is yacaree, version " + cls.hpar.version + ".") 
     
-            self.filepick = Tkinter.Button(process_frame)
-            self.filepick.configure(text = "Choose a dataset file",
+            cls.filepick = Tkinter.Button(process_frame)
+            cls.filepick.configure(text = "Choose a dataset file",
                                    width = button_width,
                                    height = button_height,
-                                   command = self.choose_datafile)
-            self.filepick.pack()
+                                   command = cls.choose_datafile)
+            cls.filepick.pack()
     
-            self.run = Tkinter.Button(process_frame)
-            self.run.configure(text = "Run yacaree for all rules\n(and be patient), or...",
+            cls.run = Tkinter.Button(process_frame)
+            cls.run.configure(text = "Run yacaree for all rules\n(and be patient), or...",
                               width = button_width,
                               height = button_height,
                               state = Tkinter.DISABLED,
                               command = yacaree.standard_run_all)
-            self.run.pack()
+            cls.run.pack()
     
-            self.run50 = Tkinter.Button(process_frame)
-            self.run50.configure(text = "...Run yacaree for at most 50 rules\n(but be equally patient)",
+            cls.run50 = Tkinter.Button(process_frame)
+            cls.run50.configure(text = "...Run yacaree for at most 50 rules\n(but be equally patient)",
                               width = button_width,
                               height = button_height,
                               state = Tkinter.DISABLED,
                               command = yacaree.standard_run)
-            self.run50.pack()
+            cls.run50.pack()
     
-            self.finish_button = Tkinter.Button(process_frame)
-            self.finish_button.configure(text = "Stop ASAP (be patient) / Close",
+            cls.finish_button = Tkinter.Button(process_frame)
+            cls.finish_button.configure(text = "Stop ASAP (be patient) / Close",
                                       width = button_width,
                                       height = button_height,
-                                      command = self.finish)
-            self.finish_button.pack()
+                                      command = cls.finish)
+            cls.finish_button.pack()
             if statics.maxrules == 0:
-                self.report("CLI call requested all rules as output.")
-            if self.filenamefull:
-                self.report("Selected dataset in file " + self.filenamefull)
-                self.run.configure(state = Tkinter.NORMAL)
+                cls.report("CLI call requested all rules as output.")
+            if cls.filenamefull:
+                cls.report("Selected dataset in file " + cls.filenamefull)
+                cls.run.configure(state = Tkinter.NORMAL)
                 if statics.maxrules:
-                    self.run50.configure(state = Tkinter.NORMAL)
-            self.clock_at_report = clock()
-            self.root.mainloop()
+                    cls.run50.configure(state = Tkinter.NORMAL)
+            cls.clock_at_report = clock()
+            cls.root.mainloop()
 
         else:
             "CLI interface"
-            self.report("This is yacaree, version " + yacaree.hpar.version + ".")
-            if self.filenamefull is None:
-                self.reportwarning("No dataset file specified.")
-                filename = self.ask_input("Dataset File Name? ")
-                self.storefilename(filename)
+            cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
+            if cls.filenamefull is None:
+                cls.reportwarning("No dataset file specified.")
+                filename = cls.ask_input("Dataset File Name? ")
+                cls.storefilename(filename)
             yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
 
-    def ask_input(self, prompt):
+    @classmethod
+    def ask_input(cls, prompt):
         "Refactor, check only use is for dataset file, add a loop until correct"
-        if self.logfile: self.logfile.write("Asked:" + prompt + "\n")
+        if cls.logfile: cls.logfile.write("Asked:" + prompt + "\n")
         ans = input(prompt)
-        if self.logfile: self.logfile.write("Answer:" + ans + "\n")
+        if cls.logfile: cls.logfile.write("Answer:" + ans + "\n")
         return ans
 
 
-    def storefilename(self, filename):
+    @classmethod
+    def storefilename(cls, filename):
         if len(filename)<=3 or filename[-4] != '.':
-            self.filename = filename
-            self.filenamefull = filename + self.filenamext
+            cls.filename = filename
+            cls.filenamefull = filename + cls.filenamext
         else:
-            self.filename, _ = filename.rsplit('.',1)
-            self.filenamefull = filename
-        print(self.filename, self.filenamefull) ####
+            cls.filename, _ = filename.rsplit('.',1)
+            cls.filenamefull = filename
 
 
-    def choose_datafile(self):
+    @classmethod
+    def choose_datafile(cls):
         "only on GUI - consider merging with above"
-        if self.gui:
+        if cls._gui:
             fnm = tkFileDialog.askopenfilename(
                 defaultextension=".txt",
                 filetypes = [("text files","*.txt"), ("all files","*.*")],
                 title = "Choose a dataset file")
             if fnm:
                 "dialog could have been canceled, but actual file chosen"
-                self.storefilename(fnm)
-                self.report("Selected dataset in file " + self.filenamefull + ".")
-                self.run.configure(state = Tkinter.NORMAL)
+                cls.storefilename(fnm)
+                cls.report("Selected dataset in file " + cls.filenamefull + ".")
+                cls.run.configure(state = Tkinter.NORMAL)
                 if statics.maxrules:
-                    self.run50.configure(state = Tkinter.NORMAL)
+                    cls.run50.configure(state = Tkinter.NORMAL)
 
-    def finish(self):
+
+    @classmethod
+    def finish(cls):
         "only on GUI"
         if statics.running:
             "please stop mining ASAP"
-            self.finish_button.configure(state = Tkinter.DISABLED)
-            self.report("User-requested stop of mining process.")
+            cls.finish_button.configure(state = Tkinter.DISABLED)
+            cls.report("User-requested stop of mining process.")
             statics.running = False
         else:
             "not running, hence exit"
-            if self.logfile: self.logfile = None # not sure still necessary
-            self.sound_bell()
-            self.root.destroy()
+            if cls.logfile: cls.logfile = None # not sure still necessary
+            cls.sound_bell()
+            cls.root.destroy()
             exit(0)
 
-    def get_ready_for_new_run(self):
+
+    @classmethod
+    def get_ready_for_new_run(cls):
         "Only on GUI. After one of run/run50, user may wish to run the other"
-        if self.gui:
-            self.run.configure(state = Tkinter.NORMAL)
-            self.run50.configure(state = Tkinter.NORMAL)
-            self.filepick.configure(state = Tkinter.NORMAL)
-            self.finish_button.configure(state = Tkinter.NORMAL)
+        if cls._gui:
+            cls.run.configure(state = Tkinter.NORMAL)
+            cls.run50.configure(state = Tkinter.NORMAL)
+            cls.filepick.configure(state = Tkinter.NORMAL)
+            cls.finish_button.configure(state = Tkinter.NORMAL)
 
-    def get_ready_for_run(self):
+
+    @classmethod
+    def get_ready_for_run(cls):
         "Only on GUI."
-        if self.gui:
-            self.filepick.configure(state = Tkinter.DISABLED)
-            self.run.configure(state = Tkinter.DISABLED)
-            self.run50.configure(state = Tkinter.DISABLED)
+        if cls._gui:
+            cls.filepick.configure(state = Tkinter.DISABLED)
+            cls.run.configure(state = Tkinter.DISABLED)
+            cls.run50.configure(state = Tkinter.DISABLED)
 
-    def report(self, m = ""):
-        self.clock_at_report = clock()
+
+    @classmethod
+    def report(cls, m = "", warnlevel = ''): #, noskip = True):
+        "SIMPLIFY"
+        cls.clock_at_report = clock()
+        # ~ if noskip or \
+            # ~ clock_now - cls.clock_at_report > cls.report_period:
         m = " " + m + "\n"
-        if self.gui:
-            self.console.insert(Tkinter.END,"[yacaree]" + m)
-            self.console.see("end-2c")
-            self.console.update()
+        if cls._gui:
+            cls.console.insert(Tkinter.END,"[yacaree]" + m)
+            cls.console.see("end-2c")
+            cls.console.update()
         else:
-            print("[yacaree]" + m, end = '')
-            stdout.flush()
-        if self.logfile: 
-            self.logfile.write(str(datetime.now()) + m)
+            print("[yacaree]" + m, end = '', flush = True)
+            # ~ stdout.flush()
+        if cls.logfile: 
+            cls.logfile.write(str(datetime.now()) + m)
 
-    def possibly_report(self, m):
-        "report only if too long time elapsed since last reporting"
-        clock_now = clock()
-        if clock_now - self.clock_at_report > self.report_period:
-            self.report(m)
+    # ~ @classmethod
+    # ~ def possibly_report(cls, m):
+        # ~ """
+        # ~ report only if too long time elapsed since last reporting
+        # ~ Some day: replace by direct calls using noskip and remove
+        # ~ (BUT DO I HAVE IT ANYWHERE?)
+        # ~ """
+        # ~ # clock_now = clock()
+        # ~ # if clock_now - cls.clock_at_report > cls.report_period:
+            # ~ # cls.report(m)
+        # ~ cls.report(m, warnlevel = '', noskip = True)
 
-    def reportwarning(self, m = ""):
+
+    @classmethod
+    def reportwarning(cls, m = ""):
         "get warning to be an argument of report instead"
-        self.clock_at_report = clock()
+        cls.clock_at_report = clock()
         m = " " + m + "\n"
-        if self.gui:
-            self.console.insert(Tkinter.END,"[yacaree warning]" + m)
-            self.console.see("end-2c")
-            self.console.update()
+        cls.sound_bell()
+        if cls._gui:
+            cls.console.insert(Tkinter.END,"[yacaree warning]" + m)
+            cls.console.see("end-2c")
+            cls.console.update()
         else:
-            print("[yacaree warning]" + m, end = '')
-            stdout.flush()
-        if self.logfile: 
-            self.logfile.write(str(datetime.now()) + m)
+            print("[yacaree warning]" + m, end = '', flush = True)
+        sleep(1)
+        if cls.logfile: 
+            cls.logfile.write(str(datetime.now()) + m)
+        sleep(1)
 
 
-    def reporterror(self, m = ""):
+    @classmethod
+    def reporterror(cls, m = ""):
         "get error to be an argument of report instead"
-        self.clock_at_report = clock()
-        m += "\n"
-        if self.gui:
-            self.console.insert(Tkinter.END,"[yacaree error] " + m)
-            self.sound_bell()
-            sleep(10)
-            self.root.destroy()
+        cls.clock_at_report = clock()
+        cls.sound_bell()
+        if cls._gui:
+            cls.finish_button.configure(state = Tkinter.DISABLED)
+            m += "\n"
+            cls.console.insert(Tkinter.END,"[yacaree error] " + m)
+            cls.console.configure(background = "misty rose")
+            cls.console.update()
+            sleep(8)
+            cls.root.destroy()
         else:
             m = "Error: " + m + " Exiting.\n"
-        if self.logfile: 
-            self.logfile.write(str(datetime.now()) + " " + m)
+            sleep(2)
+        if cls.logfile: 
+            cls.logfile.write(str(datetime.now()) + " " + m)
         exit("[yacaree error] " + m)
 
 
-    def report_log_file(self, filename):
+    @classmethod
+    def report_log_file(cls, filename):
         """
         Refactor so that the names are constructed only in one place -
         not reported like the rest for lack of log file
         """
-        self.clock_at_report = clock()
+        cls.clock_at_report = clock()
         m_log = " Log file " + filename + ".log (this file) set up.\n"
         m_cls = " Log file " + filename + ".log set up.\n"
-        if self.gui:
-            self.console.insert(Tkinter.END,"[yacaree]" + m_cls)
-            self.console.see("end-2c")
-            self.console.update()
-        if self.logfile: 
+        if cls._gui:
+            cls.console.insert(Tkinter.END,"[yacaree]" + m_cls)
+            cls.console.see("end-2c")
+            cls.console.update()
+        if cls.logfile: 
             "print already done, here just log entry (????)"
-            self.logfile.write(str(datetime.now()) + m_log)
-            # ~ stdout.flush()
+            cls.logfile.write(str(datetime.now()) + m_log)
 
 
-    def openfile(self, filename, mode = "r"):
+    @classmethod
+    def openfile(cls, filename, mode = "r"):
         "checks for readability"
         if mode == "r":
-            self.report("Opening file " +
+            cls.report("Opening file " +
                        filename + " for reading.")
             try:
                 f = open(filename)
                 f.readline()
                 f.close
-                self.report("File is now open.")
+                cls.report("File is now open.")
                 return open(filename)
             except (IOError, OSError):
-                self.reporterror("Nonexistent or unreadable file.")
+                cls.reporterror("Nonexistent or unreadable file.")
         elif mode == "w":
-            self.report("Opening file " +
+            cls.report("Opening file " +
                        filename + " for writing.")
             try:
                 f = open(filename, "w")
-                self.report("File is now open.")
+                cls.report("File is now open.")
                 return f
             except (IOError, OSError):
-                self.reporterror("Unable to open file.")
+                cls.reporterror("Unable to open file.")
         else:
-            self.reporterror("Requested to open file in mode '" +
+            cls.reporterror("Requested to open file in mode '" +
                             mode + "': no such mode available.")
 
 
-    def sound_bell(self):
-        if self.gui:
-            self.console.bell()
+    @classmethod
+    def sound_bell(cls):
+        if cls._gui:
+            cls.console.bell()
         else:
-            print('\a')
+            print('\a', end = '', flush = True)
 

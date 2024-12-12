@@ -22,6 +22,7 @@ class Yacaree:
         self.iface.go(self)
 
     def standard_run(self):
+        "MOVE URGENTLY FILE AND FILENAME HANDLING TO IFace !!!!!!!!!!!!!    "
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         now = datetime.today().strftime("%Y%m%d%H%M%S")
         filenamenow = self.iface.filename + now
@@ -111,15 +112,15 @@ if __name__ == "__main__":
 # ~ on iface3:
 
     from iface3 import IFace
-    iface = IFace(args.gui)
+    iface = IFace()
+    iface.gui = args.gui
+    # ~ iface = IFace(args.gui)
 
     if args.dataset:
-        print(args.dataset) ####
         iface.storefilename(args.dataset)
 
-
-    import statics
-    statics.put_iface_in_statics(iface) # VERY DIRTY TRICK
+    # ~ import statics
+    # ~ statics.put_iface_in_statics(iface) # VERY DIRTY TRICK
 
     y = Yacaree(iface, hpar)
 

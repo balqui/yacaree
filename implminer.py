@@ -18,6 +18,8 @@ import statics
 from itset import ItSet
 from rule import Rule
 
+from iface3 import IFace
+
 ##from choose_iface import iface
 ##from lattice import Lattice
 
@@ -42,9 +44,12 @@ def warn_potential_deprecation():
     if old_hygr:
         "report at most once"
         old_hygr = False
-        statics.iface.report("Could not import from module HyTra.")
-        statics.iface.report("Please pip install hytra at some point.")
-        statics.iface.report("Falling back on deprecated hypergraph_old code.")
+        # ~ statics.iface.report("Could not import from module HyTra.")
+        # ~ statics.iface.report("Please pip install hytra at some point.")
+        # ~ statics.iface.report("Falling back on deprecated hypergraph_old code.")
+        IFace.reportwarning("Could not import from module HyTra.")
+        IFace.reportwarning("Please pip install hytra at some point.")
+        IFace.reportwarning("Falling back on deprecated hypergraph_old code.")
 
 heappushcnt = 0 # see above
 
