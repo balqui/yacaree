@@ -8,11 +8,11 @@ Refactored to bring here iface and take it out of statics
 """
 
 # ~ from datetime import datetime
-import statics # for that stray running
+# ~ import statics # for that stray running
 
 from iface import IFace
 from hyperparam import HyperParam
-
+from dataset import Dataset
 from ruleminer import RuleMiner
 
 class Yacaree:
@@ -20,14 +20,15 @@ class Yacaree:
     def __init__(self, iface, hpar, datafilename):
         self.hpar = hpar
         self.iface = iface
+        self.dataset = None
         self.iface.go(self, datafilename)
 
-    def setfiles(self):
-        "temporary detour"
-        if self.iface.filename is None:
-            self.iface.reportwarning("No dataset file specified.")
-            self.iface.filename = input("Dataset File Name? ")
-        self.iface.openfiles()
+    # ~ def setfiles(self):
+        # ~ "temporary detour"
+        # ~ if self.iface.filename is None:
+            # ~ self.iface.reportwarning("No dataset file specified.")
+            # ~ self.iface.filename = input("Dataset File Name? ")
+        # ~ self.iface.openfiles()
 
     def standard_run(self):
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
@@ -36,7 +37,9 @@ class Yacaree:
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
         self.hpar.running = True
-        miner = RuleMiner(self.iface, self.hpar) ## miner.miner is a ClMiner
+        if not self.dataset:
+            self.dataset = Dataset(hpar)
+        miner = RuleMiner(self.iface, self.hpar, self.dataset) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
             "if someday Rule has comparison, remove all mentions to rulecnt"
@@ -65,8 +68,6 @@ class Yacaree:
         self.iface.report("Closing output and log files; run of yacaree " + 
                      self.hpar.version + " finished.")
         self.iface.logfile.close()
-        self.iface.logfile = None
-        statics.running = False
         self.iface.get_ready_for_new_run()
         self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
         self.iface.sound_bell()

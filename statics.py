@@ -57,14 +57,14 @@ genabsupp: Do not consider closures with absolute support below this
 iface = None
 
 # ~ very dirty trick to make implminer go
-def put_iface_in_statics(the_iface):
-    global iface
-    iface = the_iface
+# ~ def put_iface_in_statics(the_iface):
+    # ~ global iface
+    # ~ iface = the_iface
 
-filenamext = ".txt"
-logfile = None
-filename = None 
-filenamefull = None
+# ~ filenamext = ".txt"
+# ~ logfile = None
+# ~ filename = None 
+# ~ filenamefull = None
 
 verbose = False
 

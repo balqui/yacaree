@@ -50,11 +50,11 @@ class HyperParam:
         # ~ version = "1.2.5"
         self.version = "2.0.0"           # MOVE THIS SOMEWHERE ELSE
 
-        self.iface = None
-        self.filenamext = ".txt"
-        self.logfile = None
-        self.filename = None 
-        self.filenamefull = None
+        # ~ self.iface = None
+        # ~ self.filenamext = ".txt"
+        # ~ self.logfile = None
+        # ~ self.filename = None 
+        # ~ self.filenamefull = None
 
         self.verbose = False
 
@@ -91,8 +91,8 @@ class HyperParam:
             # ~ self.filename, _ = filename.rsplit('.',1)
             # ~ self.filenamefull = filename
 
-    def setfile(self, IFace, fnm):
-        "temporary detour, has to be done this way, IFace.filename fails"
-        iface = IFace()
-        iface.filename = fnm
+    # ~ def setfile(self, IFace, fnm):
+        # ~ "temporary detour, has to be done this way, IFace.filename fails"
+        # ~ iface = IFace()
+        # ~ iface.filename = fnm
 

@@ -48,9 +48,9 @@ class Lattice:
     union_cover is the union of all immediate successors seen so far
     """
 
-    def __init__(self, iface, hpar):
-        self.iface = iface
-        self.dataset = Dataset(hpar)
+    def __init__(self, iface, hpar, dataset):
+        self.iface = iface # maybe I can just declare a fresh one - same in RuleMiner
+        self.dataset = dataset # Dataset(hpar)
         self.closeds = []
         self.supps = {}
         self.suppratios = defaultdict(inffloat)

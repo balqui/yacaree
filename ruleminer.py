@@ -23,9 +23,9 @@ from partialruleminer import mine_partial_rules
 
 class RuleMiner: # Does not subclass Lattice anymore
 
-    def __init__(self, iface, hpar):
+    def __init__(self, iface, hpar, dataset):
         "some codes, reserved rules, and average lift so far"
-        self.latt = Lattice(iface, hpar)
+        self.latt = Lattice(iface, hpar, dataset)
         self.count = 0
         self.DISCARD = -1
         self.reserved = []

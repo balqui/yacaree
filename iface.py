@@ -205,10 +205,10 @@ class IFace:
                 # ~ cls.report("Selected dataset in file " + cls.fn._filenamefull)
             if datafilename:
                 cls.report("Called on dataset in file " + datafilename)
-            cls.run.configure(state = Tkinter.NORMAL)
-            if statics.maxrules:
-                cls.run50.configure(state = Tkinter.NORMAL)
-            cls.openfiles(datafilename)
+                cls.run.configure(state = Tkinter.NORMAL)
+                if statics.maxrules:
+                    cls.run50.configure(state = Tkinter.NORMAL)
+                cls.openfiles(datafilename)
             cls.clock_at_report = clock()
             cls.root.mainloop()
 
@@ -224,20 +224,16 @@ class IFace:
         "only on GUI - consider merging with above"
         if cls._gui:
             fnm = tkFileDialog.askopenfilename(
-                defaultextension=".txt",
+                defaultextension = cls.fn._filenamext, 
                 filetypes = [("text files","*.txt"), ("all files","*.*")],
                 title = "Choose a dataset file")
             if fnm:
                 "dialog could have been canceled, but actual file chosen"
-                cls.hpar.setfile(cls, fnm)
-                cls.report("Selected dataset in file " + cls._filenamefull + ".")
+                cls.openfiles(fnm)
+                cls.report("Selected dataset in file " + cls.fn._filenamefull + ".")
                 cls.run.configure(state = Tkinter.NORMAL)
                 if statics.maxrules:
                     cls.run50.configure(state = Tkinter.NORMAL)
-                cls.openfiles()
-
-# LIADO DE DONDE SE PROGRAMA OPENFILES Y DESDE DONDE SE LE LLAMA
-# OPENFILE QUEDA EN FILEHANDLER, HAY QUE FABRICAR UNO Y PASARLE cls
 
     # ~ def setfile(self, IFace, fnm):
         # ~ "temporary detour, has to be done this way, IFace.filename fails"
@@ -256,7 +252,6 @@ class IFace:
     @classmethod
     def openfiles(cls, datafilename):
         "here so that filehandler's filename can be used as property"
-        # NOT GOOD FOR GUI RIGHT NOW, OK FOR CLI, KEEP THINKING
         if datafilename:
             cls.fn.filename = datafilename
             cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
@@ -269,40 +264,17 @@ class IFace:
                 exit()
             cls.fn.filename = filename
             cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
+        cls.openauxfiles()
+
+
+    @classmethod
+    def openauxfiles(cls):
         cls.logfile = cls.fn.openfile(cls.fn._filenamenow + ".log", "w")
         cls.rulesfile = cls.fn.openfile(cls.fn._filenamenow + 
             "_rules.log", "w") # + "_rules.txt" to get back to
         if not cls.logfile or not cls.rulesfile:
             cls.reporterror("Could not open or write on output" +
                             " and/or log files.")
-
-
-    # ~ @classmethod
-    # ~ def openfile(cls, filename, mode = "r"):
-        # ~ "checks for readability"
-        # ~ if mode == "r":
-            # ~ cls.report("Opening file " +
-                       # ~ filename + " for reading.")
-            # ~ try:
-                # ~ f = open(filename)
-                # ~ f.readline()
-                # ~ f.close
-                # ~ cls.report("File is now open.")
-                # ~ return open(filename)
-            # ~ except (IOError, OSError):
-                # ~ cls.reporterror("Nonexistent or unreadable file.")
-        # ~ elif mode == "w":
-            # ~ cls.report("Opening file " +
-                       # ~ filename + " for writing.")
-            # ~ try:
-                # ~ f = open(filename, "w")
-                # ~ cls.report("File is now open.")
-                # ~ return f
-            # ~ except (IOError, OSError):
-                # ~ cls.reporterror("Unable to open file.")
-        # ~ else:
-            # ~ cls.reporterror("Requested to open file in mode '" +
-                            # ~ mode + "': no such mode available.")
 
 
     @classmethod
@@ -315,8 +287,8 @@ class IFace:
                 cls.report("User-requested stop of mining process.")
                 statics.running = False
             else:
-                "not running, hence exit - somehow launches again !?!"
-                if cls.logfile: cls.logfile = None # not sure still necessary
+                "not running, hence exit"
+                # ~ if cls.logfile: cls.logfile = None # not sure still necessary
                 cls.sound_bell()
                 cls.root.destroy()
                 exit(0)
@@ -326,10 +298,13 @@ class IFace:
     def get_ready_for_new_run(cls):
         "Only on GUI. After one of run/run50, user may wish to run the other"
         if cls._gui:
+            statics.running = False
             cls.run.configure(state = Tkinter.NORMAL)
             cls.run50.configure(state = Tkinter.NORMAL)
             cls.filepick.configure(state = Tkinter.NORMAL)
             cls.finish_button.configure(state = Tkinter.NORMAL)
+            cls.fn.filename = cls.fn.filename # refresh datetime in names
+            cls.openauxfiles()
 
 
     @classmethod
@@ -355,7 +330,8 @@ class IFace:
         else:
             print("[yacaree]" + m, end = '', flush = True)
             # ~ stdout.flush()
-        if cls.logfile: 
+        if cls.logfile and not cls.logfile.closed:
+            "Remains to report the opening of the log !!!!!!!!!!!" 
             cls.logfile.write(str(datetime.now()) + m)
 
 
@@ -397,22 +373,23 @@ class IFace:
         exit("[yacaree error] " + m)
 
 
-    @classmethod
-    def report_log_file(cls, filename):
-        """
-        Refactor so that the names are constructed only in one place -
-        not reported like the rest for lack of log file
-        """
-        cls.clock_at_report = clock()
-        m_log = " Log file " + filename + ".log (this file) set up.\n"
-        m_cls = " Log file " + filename + ".log set up.\n"
-        if cls._gui:
-            cls.console.insert(Tkinter.END,"[yacaree]" + m_cls)
-            cls.console.see("end-2c")
-            cls.console.update()
-        if cls.logfile: 
-            "print already done, here just log entry (????)"
-            cls.logfile.write(str(datetime.now()) + m_log)
+################# PENDING
+    # ~ @classmethod
+    # ~ def report_log_file(cls, filename):
+        # ~ """
+        # ~ Refactor so that the names are constructed only in one place -
+        # ~ not reported like the rest for lack of log file
+        # ~ """
+        # ~ cls.clock_at_report = clock()
+        # ~ m_log = " Log file " + filename + ".log (this file) set up.\n"
+        # ~ m_cls = " Log file " + filename + ".log set up.\n"
+        # ~ if cls._gui:
+            # ~ cls.console.insert(Tkinter.END,"[yacaree]" + m_cls)
+            # ~ cls.console.see("end-2c")
+            # ~ cls.console.update()
+        # ~ if cls.logfile: 
+            # ~ "print already done, here just log entry (????)"
+            # ~ cls.logfile.write(str(datetime.now()) + m_log)
 
 
     @classmethod
@@ -453,3 +430,33 @@ class IFace:
         # ~ ans = input(prompt)
         # ~ if cls.logfile: cls.logfile.write("Answer:" + ans + "\n")
         # ~ return ans
+
+
+    # ~ @classmethod
+    # ~ def openfile(cls, filename, mode = "r"):
+        # ~ "checks for readability"
+        # ~ if mode == "r":
+            # ~ cls.report("Opening file " +
+                       # ~ filename + " for reading.")
+            # ~ try:
+                # ~ f = open(filename)
+                # ~ f.readline()
+                # ~ f.close
+                # ~ cls.report("File is now open.")
+                # ~ return open(filename)
+            # ~ except (IOError, OSError):
+                # ~ cls.reporterror("Nonexistent or unreadable file.")
+        # ~ elif mode == "w":
+            # ~ cls.report("Opening file " +
+                       # ~ filename + " for writing.")
+            # ~ try:
+                # ~ f = open(filename, "w")
+                # ~ cls.report("File is now open.")
+                # ~ return f
+            # ~ except (IOError, OSError):
+                # ~ cls.reporterror("Unable to open file.")
+        # ~ else:
+            # ~ cls.reporterror("Requested to open file in mode '" +
+                            # ~ mode + "': no such mode available.")
+
+
