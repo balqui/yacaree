@@ -41,7 +41,7 @@ class Dataset:
         "find actual file, open, and read the dataset in - redundancies left"
         # ~ self.datasetfile = iface.openfile(iface.filenamefull)
         iface.report("Reading in dataset from file " +
-                     iface._filenamefull) # move this to where it is true
+                     iface.datafile.name)
         self.nrocc = 0
         self.nrtr = 0
         self.univ = set()

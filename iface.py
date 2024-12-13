@@ -27,6 +27,8 @@ openfile, storefilename: to set up the data source
 go: calls run method of miner
 others: to handle the communication with Tk
 
+Can one combine decorator @classmethod with @property-related?
+
 """
 
 
@@ -37,6 +39,7 @@ from time import sleep, time as clock
 # ~ from time import clock # only for gui right now
 # ~ from six.moves import input as raw_input
 import statics # for version, maxrules, running
+from filenames import FileNames
 
 try:
     "Python 2 version - all these imports only for gui"
@@ -70,6 +73,8 @@ class IFace:
     report_period = 30 # seconds between possibly_report calls
 
     _gui = False
+    
+    fn = None
 
     @property
     def gui(self):
@@ -83,33 +88,33 @@ class IFace:
     logfile = None
     rulesfile = None
 
-    _filenamenow = None
-    _filenamext = ".td"
-    _filename = None
-    _filenamefull = None
-    rulesfilename = None
+    # ~ _filenamenow = None
+    # ~ _filenamext = ".td"
+    # ~ _filename = None
+    # ~ _filenamefull = None
+    # ~ rulesfilename = None
 
-    @property
-    def filename(self):
-        return type(self)._filename
+    # ~ @property
+    # ~ def filename(self):
+        # ~ return type(self)._filename
 
-    @filename.setter
-    def filename(self, name):
-        now = datetime.today().strftime("%Y%m%d%H%M%S")
-        if name.endswith('.td') or name.endswith('.txt'):
-            ".txt will be deprecated at some point"
-            type(self)._filenamefull = name
-            type(self)._filename, _ = name.rsplit('.',1)
-        else:
-            type(self)._filename = name
-            type(self)._filenamefull = name + type(self)._filenamext
-        type(self)._filenamenow = type(self)._filename + now
+    # ~ @filename.setter
+    # ~ def filename(self, name):
+        # ~ now = datetime.today().strftime("%Y%m%d%H%M%S")
+        # ~ if name.endswith('.td') or name.endswith('.txt'):
+            # ~ ".txt will be deprecated at some point"
+            # ~ type(self)._filenamefull = name
+            # ~ type(self)._filename, _ = name.rsplit('.',1)
+        # ~ else:
+            # ~ type(self)._filename = name
+            # ~ type(self)._filenamefull = name + type(self)._filenamext
+        # ~ type(self)._filenamenow = type(self)._filename + now
 
         # ~ self.iface.report_log_file(filenamenow)
 
 
     @classmethod
-    def go(cls, yacaree):
+    def go(cls, yacaree, datafilename):
         """
         Try to move bindings to a regular __init__()
         (this could not be done in the earlier structure).
@@ -117,6 +122,7 @@ class IFace:
         standard_run and standard_run_all to bind to the buttons.
         """
         cls.hpar = yacaree.hpar
+        cls.fn = FileNames(cls)
 
         if cls._gui:
 
@@ -195,19 +201,21 @@ class IFace:
             cls.finish_button.pack()
             if statics.maxrules == 0:
                 cls.report("CLI call requested all rules as output.")
-            if cls._filenamefull:
-                cls.report("Selected dataset in file " + cls._filenamefull)
-                cls.run.configure(state = Tkinter.NORMAL)
-                if statics.maxrules:
-                    cls.run50.configure(state = Tkinter.NORMAL)
-                cls.openfiles()
+            # ~ if cls.fn._filenamefull:
+                # ~ cls.report("Selected dataset in file " + cls.fn._filenamefull)
+            if datafilename:
+                cls.report("Called on dataset in file " + datafilename)
+            cls.run.configure(state = Tkinter.NORMAL)
+            if statics.maxrules:
+                cls.run50.configure(state = Tkinter.NORMAL)
+            cls.openfiles(datafilename)
             cls.clock_at_report = clock()
             cls.root.mainloop()
 
         else:
             "CLI interface"
             cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
-            yacaree.setfiles()
+            cls.openfiles(datafilename)
             yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
 
@@ -228,48 +236,73 @@ class IFace:
                     cls.run50.configure(state = Tkinter.NORMAL)
                 cls.openfiles()
 
+# LIADO DE DONDE SE PROGRAMA OPENFILES Y DESDE DONDE SE LE LLAMA
+# OPENFILE QUEDA EN FILEHANDLER, HAY QUE FABRICAR UNO Y PASARLE cls
+
+    # ~ def setfile(self, IFace, fnm):
+        # ~ "temporary detour, has to be done this way, IFace.filename fails"
+        # ~ iface = IFace()
+        # ~ iface.filename = fnm
+
+
+    # ~ def setfiles(self):
+        # ~ "temporary detour"
+        # ~ if self.iface.filename is None:
+            # ~ self.iface.reportwarning("No dataset file specified.")
+            # ~ self.iface.filename = input("Dataset File Name? ")
+        # ~ self.iface.openfiles()
+
 
     @classmethod
-    def openfiles(cls):
-        cls.datafile = cls.openfile(cls._filenamefull)
+    def openfiles(cls, datafilename):
+        "here so that filehandler's filename can be used as property"
+        # NOT GOOD FOR GUI RIGHT NOW, OK FOR CLI, KEEP THINKING
+        if datafilename:
+            cls.fn.filename = datafilename
+            cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
+        else:
+            cls.datafile = None
         while not cls.datafile:
             "find the dataset file"
-            filename = cls.ask_input("Dataset File Name again? [RET to exit]")
+            filename = input("Dataset File Name again? [RET to exit] ")
             if not filename:
                 exit()
-            cls.filename = filename
-            cls.datafile = cls.openfile(cls.filenamefull)
-        cls.logfile = cls.openfile(cls._filenamenow + ".log", "w")
-        cls.rulesfilename = cls._filenamenow + "_rules.log"
-        cls.rulesfile = cls.openfile(cls.rulesfilename, "w") # + "_rules.txt" to get back to
+            cls.fn.filename = filename
+            cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
+        cls.logfile = cls.fn.openfile(cls.fn._filenamenow + ".log", "w")
+        cls.rulesfile = cls.fn.openfile(cls.fn._filenamenow + 
+            "_rules.log", "w") # + "_rules.txt" to get back to
+        if not cls.logfile or not cls.rulesfile:
+            cls.reporterror("Could not open or write on output" +
+                            " and/or log files.")
 
 
-    @classmethod
-    def openfile(cls, filename, mode = "r"):
-        "checks for readability"
-        if mode == "r":
-            cls.report("Opening file " +
-                       filename + " for reading.")
-            try:
-                f = open(filename)
-                f.readline()
-                f.close
-                cls.report("File is now open.")
-                return open(filename)
-            except (IOError, OSError):
-                cls.reporterror("Nonexistent or unreadable file.")
-        elif mode == "w":
-            cls.report("Opening file " +
-                       filename + " for writing.")
-            try:
-                f = open(filename, "w")
-                cls.report("File is now open.")
-                return f
-            except (IOError, OSError):
-                cls.reporterror("Unable to open file.")
-        else:
-            cls.reporterror("Requested to open file in mode '" +
-                            mode + "': no such mode available.")
+    # ~ @classmethod
+    # ~ def openfile(cls, filename, mode = "r"):
+        # ~ "checks for readability"
+        # ~ if mode == "r":
+            # ~ cls.report("Opening file " +
+                       # ~ filename + " for reading.")
+            # ~ try:
+                # ~ f = open(filename)
+                # ~ f.readline()
+                # ~ f.close
+                # ~ cls.report("File is now open.")
+                # ~ return open(filename)
+            # ~ except (IOError, OSError):
+                # ~ cls.reporterror("Nonexistent or unreadable file.")
+        # ~ elif mode == "w":
+            # ~ cls.report("Opening file " +
+                       # ~ filename + " for writing.")
+            # ~ try:
+                # ~ f = open(filename, "w")
+                # ~ cls.report("File is now open.")
+                # ~ return f
+            # ~ except (IOError, OSError):
+                # ~ cls.reporterror("Unable to open file.")
+        # ~ else:
+            # ~ cls.reporterror("Requested to open file in mode '" +
+                            # ~ mode + "': no such mode available.")
 
 
     @classmethod

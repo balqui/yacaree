@@ -17,10 +17,10 @@ from ruleminer import RuleMiner
 
 class Yacaree:
 
-    def __init__(self, iface, hpar):
+    def __init__(self, iface, hpar, datafilename):
         self.hpar = hpar
         self.iface = iface
-        self.iface.go(self)
+        self.iface.go(self, datafilename)
 
     def setfiles(self):
         "temporary detour"
@@ -59,9 +59,9 @@ class Yacaree:
         self.iface.report("Confidence threshold was %2.3f."
                      % (float(self.hpar.confthr)/self.hpar.scale))
         self.iface.report(str(cnt) + " rules chosen according to their " +
-                     "confidence boost written to file " + self.iface.rulesfilename + ".") 
+                     "confidence boost written to file " + self.iface.rulesfile.name + ".") 
         self.iface.report("End of process of dataset in file " + 
-                     self.iface._filenamefull + ".")
+                     self.iface.datafile.name + ".")
         self.iface.report("Closing output and log files; run of yacaree " + 
                      self.hpar.version + " finished.")
         self.iface.logfile.close()
@@ -115,10 +115,10 @@ if __name__ == "__main__":
     iface = IFace()
     iface.gui = args.gui
 
-    if args.dataset:
-        iface.filename = args.dataset
+    y = Yacaree(iface, hpar, args.dataset)
 
-    y = Yacaree(iface, hpar)
+    # ~ if args.dataset:
+        # ~ iface.filename = args.dataset
 
     # ~ y.iface.go(y) # Launches upon init
 
