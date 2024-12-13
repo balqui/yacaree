@@ -5,6 +5,12 @@ Using yacaree through either the text CLI or the GUI on *nix.
 Current default is text CLI but this is likely to change.
 
 Refactored to bring here iface and take it out of statics
+
+
+REVIEW THE a OPTION AND CLARIFY BUTTONS
+
+
+
 """
 
 # ~ from datetime import datetime
@@ -25,13 +31,13 @@ class Yacaree:
         self.iface.go(self)
 
     def standard_run(self):
-        self.iface.report("This is yacaree, version " + self.hpar.version + ".")
+        if not self.iface.gui:
+            self.iface.report("This is yacaree, version " + self.hpar.version + ".")
         if self.hpar.maxrules == 0:
-            cls.report("CLI call requested all rules as output.")
-        if self.datafilename:
-            self.iface.report("Called on dataset in file " + self.datafilename)
+            self.iface.report("CLI call requested all rules as output.")
         if self.dataset:
-            self.iface.openauxfiles(self.datafilename)
+            self.iface.report("Read in dataset in file " + self.datafilename)
+            self.iface.openauxfiles()
         else:
             self.iface.openfiles(self.datafilename)
             self.dataset = Dataset()

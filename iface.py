@@ -204,18 +204,18 @@ class IFace:
             cls.finish_button.pack()
             # ~ if statics.maxrules == 0:
                 # ~ cls.report("CLI call requested all rules as output.")
-            # ~ if datafilename:
-                # ~ cls.report("Called on dataset in file " + datafilename)
-                # ~ cls.run.configure(state = Tkinter.NORMAL)
-                # ~ if statics.maxrules:
-                    # ~ cls.run50.configure(state = Tkinter.NORMAL)
+            cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
+            if yacaree.datafilename:
+                cls.report("Called on dataset in file " + yacaree.datafilename)
+                cls.run.configure(state = Tkinter.NORMAL)
+                if cls.hpar.maxrules:
+                    cls.run50.configure(state = Tkinter.NORMAL)
                 # ~ cls.openfiles(datafilename)
             cls.clock_at_report = clock()
             cls.root.mainloop()
 
         else:
             "CLI interface"
-            # ~ cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
             # ~ cls.openfiles(datafilename)
             yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
@@ -230,7 +230,7 @@ class IFace:
                 title = "Choose a dataset file")
             if fnm:
                 "dialog could have been canceled, but actual file chosen"
-                self.dataset = None
+                cls.yacaree.dataset = None # ONLY AVAILABLE WITHIN METHOD go 
                 cls.openfiles(fnm)
                 cls.report("Selected dataset in file " + cls.fn._filenamefull + ".")
                 # ~ cls.run.configure(state = Tkinter.NORMAL)
@@ -258,9 +258,10 @@ class IFace:
 
     @classmethod
     def openauxfiles(cls):
-        cls.run.configure(state = Tkinter.NORMAL)
-        if cls.hpar.maxrules:
-            cls.run50.configure(state = Tkinter.NORMAL)
+        if cls._gui:
+            cls.run.configure(state = Tkinter.NORMAL)
+            if cls.hpar.maxrules:
+                cls.run50.configure(state = Tkinter.NORMAL)
         cls.logfile = cls.fn.openfile(cls.fn._filenamenow + ".log", "w")
         cls.rulesfile = cls.fn.openfile(cls.fn._filenamenow + 
             "_rules.log", "w") # + "_rules.txt" to get back to
