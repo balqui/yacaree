@@ -58,7 +58,7 @@ class HyperParam:
 
         self.verbose = False
 
-        self.running = False
+        # ~ self.running = False
 
         self.please_report = False # To report every now and then 
         self.scale = 100000

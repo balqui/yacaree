@@ -37,8 +37,8 @@ from iface import IFace as iface
 
 class Dataset:
 
-    def __init__(self, hpar):
-        "find actual file, open, and read the dataset in - redundancies left"
+    def __init__(self):
+        "find actual file, already open, and read the dataset in - redundancies left"
         # ~ self.datasetfile = iface.openfile(iface.filenamefull)
         iface.report("Reading in dataset from file " +
                      iface.datafile.name)

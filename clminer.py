@@ -35,7 +35,7 @@ class ClMiner:
         initializes other quantities and finds closures of
         singletons
         """
-        statics.running = True # this should become unnecessary some day
+        # ~ statics.running = True # this should become unnecessary some day
         self.iface = iface     # this too
         self.dataset = dataset
         if supp > -1:
@@ -90,7 +90,7 @@ class ClMiner:
         pend_clos = FlHeap() 
         pend_clos.mpush(self.clos_singl)
         self.minsupp = self.dataset.nrtr
-        while pend_clos.more() and statics.running:
+        while pend_clos.more() and self.iface.fn.running:
             """
             extract largest-support closure and find subsequent ones,
             possibly after halving the heap through test_size(),

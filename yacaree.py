@@ -21,24 +21,26 @@ class Yacaree:
         self.hpar = hpar
         self.iface = iface
         self.dataset = None
-        self.iface.go(self, datafilename)
-
-    # ~ def setfiles(self):
-        # ~ "temporary detour"
-        # ~ if self.iface.filename is None:
-            # ~ self.iface.reportwarning("No dataset file specified.")
-            # ~ self.iface.filename = input("Dataset File Name? ")
-        # ~ self.iface.openfiles()
+        self.datafilename = datafilename
+        self.iface.go(self)
 
     def standard_run(self):
+        self.iface.report("This is yacaree, version " + self.hpar.version + ".")
+        if self.hpar.maxrules == 0:
+            cls.report("CLI call requested all rules as output.")
+        if self.datafilename:
+            self.iface.report("Called on dataset in file " + self.datafilename)
+        if self.dataset:
+            self.iface.openauxfiles(self.datafilename)
+        else:
+            self.iface.openfiles(self.datafilename)
+            self.dataset = Dataset()
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         results_file = self.iface.rulesfile
         self.iface.get_ready_for_run()
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
-        self.hpar.running = True
-        if not self.dataset:
-            self.dataset = Dataset(hpar)
+        self.iface.fn.running = True # PROBABLY THIS IS NOT THE GOOD PLACE FOR THIS
         miner = RuleMiner(self.iface, self.hpar, self.dataset) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
@@ -136,3 +138,11 @@ if __name__ == "__main__":
     # ~ y = Yacaree(IFace(), hpar)
 
     # ~ # y.iface.go(y)
+
+    # ~ def setfiles(self):
+        # ~ "temporary detour"
+        # ~ if self.iface.filename is None:
+            # ~ self.iface.reportwarning("No dataset file specified.")
+            # ~ self.iface.filename = input("Dataset File Name? ")
+        # ~ self.iface.openfiles()
+

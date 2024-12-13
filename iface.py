@@ -38,7 +38,7 @@ from datetime import datetime
 from time import sleep, time as clock
 # ~ from time import clock # only for gui right now
 # ~ from six.moves import input as raw_input
-import statics # for version, maxrules, running
+import statics # for version, maxrules
 from filenames import FileNames
 
 try:
@@ -73,7 +73,7 @@ class IFace:
     report_period = 30 # seconds between possibly_report calls
 
     _gui = False
-    
+
     fn = None
 
     @property
@@ -114,7 +114,7 @@ class IFace:
 
 
     @classmethod
-    def go(cls, yacaree, datafilename):
+    def go(cls, yacaree):
         """
         Try to move bindings to a regular __init__()
         (this could not be done in the earlier structure).
@@ -123,6 +123,9 @@ class IFace:
         """
         cls.hpar = yacaree.hpar
         cls.fn = FileNames(cls)
+
+        # ~ cls.first = True
+
 
         if cls._gui:
 
@@ -168,7 +171,7 @@ class IFace:
                                         command = cls.console.yview)
             cls.scrollY.pack(side=Tkinter.LEFT, fill = Tkinter.Y)
             cls.console.configure(yscrollcommand = cls.scrollY.set)
-            cls.report("This is yacaree, version " + cls.hpar.version + ".") 
+            # ~ cls.report("This is yacaree, version " + cls.hpar.version + ".") 
     
             cls.filepick = Tkinter.Button(process_frame)
             cls.filepick.configure(text = "Choose a dataset file",
@@ -199,23 +202,21 @@ class IFace:
                                       height = button_height,
                                       command = cls.finish)
             cls.finish_button.pack()
-            if statics.maxrules == 0:
-                cls.report("CLI call requested all rules as output.")
-            # ~ if cls.fn._filenamefull:
-                # ~ cls.report("Selected dataset in file " + cls.fn._filenamefull)
-            if datafilename:
-                cls.report("Called on dataset in file " + datafilename)
-                cls.run.configure(state = Tkinter.NORMAL)
-                if statics.maxrules:
-                    cls.run50.configure(state = Tkinter.NORMAL)
-                cls.openfiles(datafilename)
+            # ~ if statics.maxrules == 0:
+                # ~ cls.report("CLI call requested all rules as output.")
+            # ~ if datafilename:
+                # ~ cls.report("Called on dataset in file " + datafilename)
+                # ~ cls.run.configure(state = Tkinter.NORMAL)
+                # ~ if statics.maxrules:
+                    # ~ cls.run50.configure(state = Tkinter.NORMAL)
+                # ~ cls.openfiles(datafilename)
             cls.clock_at_report = clock()
             cls.root.mainloop()
 
         else:
             "CLI interface"
-            cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
-            cls.openfiles(datafilename)
+            # ~ cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
+            # ~ cls.openfiles(datafilename)
             yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
 
@@ -229,24 +230,12 @@ class IFace:
                 title = "Choose a dataset file")
             if fnm:
                 "dialog could have been canceled, but actual file chosen"
+                self.dataset = None
                 cls.openfiles(fnm)
                 cls.report("Selected dataset in file " + cls.fn._filenamefull + ".")
-                cls.run.configure(state = Tkinter.NORMAL)
-                if statics.maxrules:
-                    cls.run50.configure(state = Tkinter.NORMAL)
-
-    # ~ def setfile(self, IFace, fnm):
-        # ~ "temporary detour, has to be done this way, IFace.filename fails"
-        # ~ iface = IFace()
-        # ~ iface.filename = fnm
-
-
-    # ~ def setfiles(self):
-        # ~ "temporary detour"
-        # ~ if self.iface.filename is None:
-            # ~ self.iface.reportwarning("No dataset file specified.")
-            # ~ self.iface.filename = input("Dataset File Name? ")
-        # ~ self.iface.openfiles()
+                # ~ cls.run.configure(state = Tkinter.NORMAL)
+                # ~ if statics.maxrules:
+                    # ~ cls.run50.configure(state = Tkinter.NORMAL)
 
 
     @classmethod
@@ -269,6 +258,9 @@ class IFace:
 
     @classmethod
     def openauxfiles(cls):
+        cls.run.configure(state = Tkinter.NORMAL)
+        if cls.hpar.maxrules:
+            cls.run50.configure(state = Tkinter.NORMAL)
         cls.logfile = cls.fn.openfile(cls.fn._filenamenow + ".log", "w")
         cls.rulesfile = cls.fn.openfile(cls.fn._filenamenow + 
             "_rules.log", "w") # + "_rules.txt" to get back to
@@ -281,11 +273,11 @@ class IFace:
     def finish(cls):
         "only on GUI, to bind a button"
         if cls._gui:
-            if statics.running:
+            if cls.fn.running:
                 "please stop mining ASAP"
                 cls.finish_button.configure(state = Tkinter.DISABLED)
                 cls.report("User-requested stop of mining process.")
-                statics.running = False
+                cls.fn.running = False
             else:
                 "not running, hence exit"
                 # ~ if cls.logfile: cls.logfile = None # not sure still necessary
@@ -298,13 +290,13 @@ class IFace:
     def get_ready_for_new_run(cls):
         "Only on GUI. After one of run/run50, user may wish to run the other"
         if cls._gui:
-            statics.running = False
+            cls.fn.running = False
             cls.run.configure(state = Tkinter.NORMAL)
             cls.run50.configure(state = Tkinter.NORMAL)
             cls.filepick.configure(state = Tkinter.NORMAL)
             cls.finish_button.configure(state = Tkinter.NORMAL)
-            cls.fn.filename = cls.fn.filename # refresh datetime in names
-            cls.openauxfiles()
+            cls.fn.filename = cls.fn.filename # refresh datetime in names, just in case we use the same dataset
+            # ~ cls.openauxfiles()
 
 
     @classmethod
@@ -458,5 +450,19 @@ class IFace:
         # ~ else:
             # ~ cls.reporterror("Requested to open file in mode '" +
                             # ~ mode + "': no such mode available.")
+
+
+    # ~ def setfile(self, IFace, fnm):
+        # ~ "temporary detour, has to be done this way, IFace.filename fails"
+        # ~ iface = IFace()
+        # ~ iface.filename = fnm
+
+
+    # ~ def setfiles(self):
+        # ~ "temporary detour"
+        # ~ if self.iface.filename is None:
+            # ~ self.iface.reportwarning("No dataset file specified.")
+            # ~ self.iface.filename = input("Dataset File Name? ")
+        # ~ self.iface.openfiles()
 
 
