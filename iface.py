@@ -206,7 +206,6 @@ class IFace:
             # ~ if statics.maxrules == 0:
                 # ~ cls.report("CLI call requested all rules as output.")
             cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
-            print(" ... In CLI part of go, test yacaree.datafilename", yacaree.datafilename)
             if yacaree.datafilename:
                 cls.report("Called on dataset in file " + yacaree.datafilename)
                 cls.run.configure(state = Tkinter.NORMAL)
@@ -214,13 +213,12 @@ class IFace:
                     cls.run50.configure(state = Tkinter.NORMAL)
                 cls.opendatafile(yacaree.datafilename)
             cls.clock_at_report = clock()
-            print(" ... In GUI part of go, just before mainloop")
-            print(" ... ... yacaree.datafilename", yacaree.datafilename)
             cls.root.mainloop()
 
         else:
             "CLI interface"
-            cls.opendatafile(cls.fn.filename)
+            # ~ cls.opendatafile(cls.fn.filename)
+            cls.opendatafile(yacaree.datafilename)
             # ~ yacaree.dataset = Dataset()
             yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
@@ -228,7 +226,6 @@ class IFace:
     @classmethod
     def choose_datafile(cls):
         "only on GUI - consider merging with above"
-        print(" ... Enter choose_datafile")
         if cls._gui:
             fnm = tkFileDialog.askopenfilename(
                 defaultextension = cls.fn._filenamext, 
@@ -251,7 +248,6 @@ class IFace:
         on the same data; from here, filehandler's filename can be 
         handled as a property.
         """
-        print(" ... Enter opendatafile, datafilename:", datafilename)
         if datafilename:
             cls.fn.filename = datafilename
             cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
@@ -269,7 +265,6 @@ class IFace:
 
     @classmethod
     def openauxfiles(cls):
-        print(" ... Enter openauxfiles")
         if cls._gui:
             cls.run.configure(state = Tkinter.NORMAL)
             if cls.hpar.maxrules:

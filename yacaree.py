@@ -58,7 +58,6 @@ class Yacaree:
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
         self.iface.fn.running = True # PROBABLY THIS IS NOT THE GOOD PLACE FOR THIS
-        print(" ... Hacia RuleMiner, self.dataset:", self.dataset)
         miner = RuleMiner(self.iface, self.hpar, self.dataset) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():
