@@ -31,22 +31,34 @@ class Yacaree:
         self.iface.go(self)
 
     def standard_run(self):
+        # ~ assert self.dataset is not None, "Dataset in yacaree is None"
         if not self.iface.gui:
             self.iface.report("This is yacaree, version " + self.hpar.version + ".")
         if self.hpar.maxrules == 0:
             self.iface.report("CLI call requested all rules as output.")
-        if self.dataset:
-            self.iface.report("Read in dataset in file " + self.datafilename)
-            self.iface.openauxfiles()
-        else:
-            self.iface.openfiles(self.datafilename)
-            self.dataset = Dataset()
+        if not self.dataset:
+            self.dataset = Dataset() # reads in from iface.datafile
+        self.iface.openauxfiles()
+
+        # ~ if self.iface.datafile:
+            # ~ self.iface.openauxfiles()
+            # ~ self.iface.openfiles()
+            # ~ self.iface.report("Read in dataset in file " + self.datafilename)
+        # ~ else:
+            # ~ self.iface.report("No dataset in file " + self.datafilename)
+            # ~ exit() # ???
+        # ~ elif not self.iface.gui:
+            # ~ "This structure of if's does not make sense, must find out and clarify"
+            # ~ self.iface.openfiles(self.datafilename)
+            # ~ self.dataset = Dataset()
+
         rulecnt = 0 # to avoid rule comparison in sorted(rules) at equal cboo
         results_file = self.iface.rulesfile
         self.iface.get_ready_for_run()
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
         self.iface.fn.running = True # PROBABLY THIS IS NOT THE GOOD PLACE FOR THIS
+        print(" ... Hacia RuleMiner, self.dataset:", self.dataset)
         miner = RuleMiner(self.iface, self.hpar, self.dataset) ## miner.miner is a ClMiner
         rules = []
         for rul in miner.minerules():

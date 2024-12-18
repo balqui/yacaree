@@ -202,27 +202,33 @@ class IFace:
                                       height = button_height,
                                       command = cls.finish)
             cls.finish_button.pack()
+
             # ~ if statics.maxrules == 0:
                 # ~ cls.report("CLI call requested all rules as output.")
             cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
+            print(" ... In CLI part of go, test yacaree.datafilename", yacaree.datafilename)
             if yacaree.datafilename:
                 cls.report("Called on dataset in file " + yacaree.datafilename)
                 cls.run.configure(state = Tkinter.NORMAL)
                 if cls.hpar.maxrules:
                     cls.run50.configure(state = Tkinter.NORMAL)
-                # ~ cls.openfiles(datafilename)
+                cls.opendatafile(yacaree.datafilename)
             cls.clock_at_report = clock()
+            print(" ... In GUI part of go, just before mainloop")
+            print(" ... ... yacaree.datafilename", yacaree.datafilename)
             cls.root.mainloop()
 
         else:
             "CLI interface"
-            # ~ cls.openfiles(datafilename)
+            cls.opendatafile(cls.fn.filename)
+            # ~ yacaree.dataset = Dataset()
             yacaree.standard_run() # no need to call run_all as maxrules already at 0
 
 
     @classmethod
     def choose_datafile(cls):
         "only on GUI - consider merging with above"
+        print(" ... Enter choose_datafile")
         if cls._gui:
             fnm = tkFileDialog.askopenfilename(
                 defaultextension = cls.fn._filenamext, 
@@ -230,17 +236,22 @@ class IFace:
                 title = "Choose a dataset file")
             if fnm:
                 "dialog could have been canceled, but actual file chosen"
-                cls.yacaree.dataset = None # ONLY AVAILABLE WITHIN METHOD go 
-                cls.openfiles(fnm)
+                cls.datafile = None  
+                cls.opendatafile(fnm)
                 cls.report("Selected dataset in file " + cls.fn._filenamefull + ".")
-                # ~ cls.run.configure(state = Tkinter.NORMAL)
-                # ~ if statics.maxrules:
-                    # ~ cls.run50.configure(state = Tkinter.NORMAL)
+                cls.run.configure(state = Tkinter.NORMAL)
+                if statics.maxrules:
+                    cls.run50.configure(state = Tkinter.NORMAL)
 
 
     @classmethod
-    def openfiles(cls, datafilename):
-        "here so that filehandler's filename can be used as property"
+    def opendatafile(cls, datafilename):
+        """
+        Decoupled now from openauxfiles in case of repeated analysis
+        on the same data; from here, filehandler's filename can be 
+        handled as a property.
+        """
+        print(" ... Enter opendatafile, datafilename:", datafilename)
         if datafilename:
             cls.fn.filename = datafilename
             cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
@@ -253,11 +264,12 @@ class IFace:
                 exit()
             cls.fn.filename = filename
             cls.datafile = cls.fn.openfile(cls.fn._filenamefull)
-        cls.openauxfiles()
+        # ~ cls.openauxfiles()
 
 
     @classmethod
     def openauxfiles(cls):
+        print(" ... Enter openauxfiles")
         if cls._gui:
             cls.run.configure(state = Tkinter.NORMAL)
             if cls.hpar.maxrules:
