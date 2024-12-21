@@ -1,19 +1,18 @@
 """
-Project: yacaree
-Programmer: JLB
+yacaree
 
-Evolution of earlier module encompassing some static objects accessed from everywhere
-(or: Singleton pattern implemented as module; spoiler: did not work well enough).
+Current revision: mid / late Frimaire 2024
 
-CAVEAT: IS BEING FULLY REFACTORED
+Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
+Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
-iface: the actual interface, which can be textual CLI or GUI - MOVED TO yacaree.py FOR THE TIME BEING
+Evolution of earlier module encompassing some static objects 
+accessed from everywhere (or: Singleton pattern implemented 
+as module; spoiler: did not work well enough).
+
+please_report - To report every now and then 
 
 verbose: echo all log entries to terminal - UNCLEAR
-
-filenamext: extension assumed for dataset files if absent - UNCLEAR
-
-logfile: potential logging file - UNCLEAR
 
 scale: for writing ints as floats with controlled precision loss - UNCLEAR
 
@@ -22,6 +21,8 @@ epsilon: to compare floats to zero, try to avoid using it - TO BE REMOVED
 pend_len_limit: limit on the size of the heap of closures pending for expansion - TO BE POSSIBLY REMOVED
 
 pend_total_limit: max total length of info related to the pending closures - TO BE POSSIBLY REMOVED
+
+pend_mem_limit ???
 
 boostab: stability of boost, weight of current value in front of lift values coming in - TO STAY
 
@@ -46,20 +47,7 @@ class HyperParam:
 
     def __init__(self):
         
-        # version = "version 1.2.2"
-        # ~ version = "1.2.5"
-        self.version = "2.0.0"           # MOVE THIS SOMEWHERE ELSE
-
-        # ~ self.iface = None
-        # ~ self.filenamext = ".txt"
-        # ~ self.logfile = None
-        # ~ self.filename = None 
-        # ~ self.filenamefull = None
-
         self.verbose = False
-
-        # ~ self.running = False
-
         self.please_report = False # To report every now and then 
         self.scale = 100000
         self.epsilon = 100.0/self.scale
@@ -81,18 +69,4 @@ class HyperParam:
         self.absoluteboost = 1.05
         self.genabsupp = 5 # absolute number of transactions
         self.boostdecr = 0.001 # minimal boost decrease allowed
-
-    # ~ @staticmethod
-    # ~ def storefilename(self, filename):
-        # ~ if len(filename)<=3 or filename[-4] != '.':
-            # ~ self.filename = filename
-            # ~ self.filenamefull = filename + self.filenamext
-        # ~ else:
-            # ~ self.filename, _ = filename.rsplit('.',1)
-            # ~ self.filenamefull = filename
-
-    # ~ def setfile(self, IFace, fnm):
-        # ~ "temporary detour, has to be done this way, IFace.filename fails"
-        # ~ iface = IFace()
-        # ~ iface.filename = fnm
 

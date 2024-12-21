@@ -17,7 +17,6 @@ handle the neg border:
 
 from math import floor
 
-# ~ import statics
 from iface import IFace as iface
 from itset import ItSet
 from dataset import Dataset
@@ -36,8 +35,6 @@ class ClMiner:
         initializes other quantities and finds closures of
         singletons
         """
-        # ~ statics.running = True # this should become unnecessary some day
-        # ~ self.iface = iface     # this too
         self.dataset = dataset
         if supp > -1:
             self.intsupp = int(supp * dataset.nrtr)

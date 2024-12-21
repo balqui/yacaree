@@ -9,7 +9,7 @@ Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 Read in a transactional dataset from a txt file,
 one transaction per line.
 
-CAVEAT: Merge some day with equivalent fragments of degais and/or PyDaMElo.
+To merge some day with equivalent fragments of degais and/or PyDaMElo.
 
 items in each transaction separated by whitespace
  as per string method split()
@@ -31,24 +31,20 @@ also:
 
 from collections import defaultdict
 
-from iface import IFace as iface
-
-# ~ import statics
+from iface import IFace
 
 class Dataset:
 
     def __init__(self):
         "find actual file, already open, and read the dataset in - redundancies left"
-        # ~ self.datasetfile = iface.openfile(iface.filenamefull)
-        iface.report("Reading in dataset from file " +
-                     iface.datafile.name)
+        IFace.report("Reading in dataset from file " +
+                     IFace.datafile.name)
         self.nrocc = 0
         self.nrtr = 0
         self.univ = set()
         self.transcns = defaultdict(set)
         self.occurncs = defaultdict(set)
-        # ~ for line in self.datasetfile:
-        for line in iface.datafile:
+        for line in IFace.datafile:
             isempty = True
             for el in line.strip().split():
                 if len(el)>0:
@@ -60,29 +56,33 @@ class Dataset:
             if not isempty:
                 self.nrtr += 1
         self.nrits = len(self.univ)
-        iface.datafile.close()
-        iface.report("Dataset read in. Consists of " +
+        IFace.datafile.close()
+        IFace.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +
                      str(self.nrits) + " different items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
 
     def inters(self,lstr):
-        "for an iterable of transactions lstr, return their intersection"
+        "for iterable of transactions lstr, return their intersection"
         items = self.univ.copy()
         for t in lstr:
             items &= self.transcns[t]
         return items
 
 if __name__ == "__main__":
-    "CAVEAT: Needs an iface, if taken from statics then initially it is None and reading fails"
-    fnm = "e13"
-##    fnm = "pumsb_star"
-##    fnm = "adultrain"
-    d = Dataset(fnm)
-    if fnm != "e13":
-        exit(5)
+
+    from filenames import FileNames
+
+    fnm = "data/e13"
+    # ~ fnm = "data/adultrain"
+
+    IFace.fn = FileNames(IFace)
+    IFace.opendatafile(fnm)
+    d = Dataset()
     tr_a = d.occurncs['a']
     tr_c = d.occurncs['c']
+    # ~ tr_a = d.occurncs['Black']
+    # ~ tr_c = d.occurncs['Doctorate']
     tr = tr_a & tr_c
     print(tr_a)
     print(tr_c)
