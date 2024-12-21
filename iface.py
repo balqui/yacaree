@@ -38,7 +38,7 @@ from datetime import datetime
 from time import sleep, time as clock
 # ~ from time import clock # only for gui right now
 # ~ from six.moves import input as raw_input
-import statics # for version, maxrules
+# ~ import statics # for version, maxrules
 from filenames import FileNames
 
 try:
@@ -69,6 +69,8 @@ class IFace:
         # ~ self.logfile = None
         # ~ self.filenamefull = None
         # ~ if gui: # tried to import Tkinter here but did not work
+
+    version = "2.0.0"           # OK TO HAVE THIS HERE?
 
     report_period = 30 # seconds between possibly_report calls
 
@@ -145,7 +147,7 @@ class IFace:
             slogan_label = Tkinter.Label(left_frame, text =
                                          "yet another\nclosure-based association " +
                                          "rules\nexperimentation environment\n(version " +
-                                         cls.hpar.version + ")")
+                                         cls.version + ")")
             slogan_label.configure(width = button_width)
             slogan_label.pack(side=Tkinter.TOP)
             logo_label = Tkinter.Label(logo_frame,image=logo)
@@ -205,7 +207,7 @@ class IFace:
 
             # ~ if statics.maxrules == 0:
                 # ~ cls.report("CLI call requested all rules as output.")
-            cls.report("This is yacaree, version " + yacaree.hpar.version + ".")
+            cls.report("This is yacaree, version " + cls.version + ".")
             if yacaree.datafilename:
                 cls.report("Called on dataset in file " + yacaree.datafilename)
                 cls.run.configure(state = Tkinter.NORMAL)
@@ -237,7 +239,7 @@ class IFace:
                 cls.opendatafile(fnm)
                 cls.report("Selected dataset in file " + cls.fn._filenamefull + ".")
                 cls.run.configure(state = Tkinter.NORMAL)
-                if statics.maxrules:
+                if cls.hpar.maxrules:
                     cls.run50.configure(state = Tkinter.NORMAL)
 
 

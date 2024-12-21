@@ -27,8 +27,9 @@ ToDo:
 from heapq import heapify, heappush, heappop
 from collections import defaultdict
 
-import statics
-##from choose_iface import iface
+# ~ import statics
+# ~ from choose_iface import iface
+from iface import IFace as iface
 from itset import ItSet
 from dataset import Dataset
 from clminer import ClMiner
@@ -49,7 +50,7 @@ class Lattice:
     """
 
     def __init__(self, iface, hpar, dataset):
-        self.iface = iface # maybe I can just declare a fresh one - same in RuleMiner
+        # ~ self.iface = iface # maybe I can just declare a fresh one - same in RuleMiner
         self.dataset = dataset # Dataset(hpar)
         self.closeds = []
         self.supps = {}
@@ -58,7 +59,7 @@ class Lattice:
         self.immpreds = defaultdict(list)
         self.ready = []
         self.freezer = []
-        self.boosthr = statics.initialboost
+        self.boosthr = iface.hpar.initialboost
         self.miner = None
 
     def candidate_closures(self):
@@ -72,7 +73,7 @@ class Lattice:
         lie on iterator from ClMiner
         """
         bord = set([])
-        self.miner = ClMiner(self.dataset, iface = self.iface) # supp extra?
+        self.miner = ClMiner(self.dataset, iface = iface) # supp extra?
         for (node,supp) in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing
@@ -179,15 +180,15 @@ class Lattice:
         current value weights as boostab of the lifts added up
         only to reduce it, and provided it does not get that low
         """
-        s = s + statics.boostab*self.boosthr
-        n = n + statics.boostab
+        s = s + iface.hpar.boostab*self.boosthr
+        n = n + iface.hpar.boostab
         v = float(s)/n
-        if v < statics.absoluteboost:
-            v = statics.absoluteboost
-        if v <= self.boosthr - statics.boostdecr:
+        if v < iface.hpar.absoluteboost:
+            v = iface.hpar.absoluteboost
+        if v <= self.boosthr - iface.hpar.boostdecr:
             self.boosthr = v
-            self.iface.report(("Confidence boost bound reduced to %2.3f." % v)) 
-            statics.please_report = True
+            iface.report(("Confidence boost bound reduced to %2.3f." % v)) 
+            iface.please_report = True
             while self.freezer:
                 "fish back in closures that reach enough supp ratio now"
                 if -self.freezer[0][0] > self.boosthr:

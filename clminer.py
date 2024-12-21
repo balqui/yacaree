@@ -17,7 +17,8 @@ handle the neg border:
 
 from math import floor
 
-import statics
+# ~ import statics
+from iface import IFace as iface
 from itset import ItSet
 from dataset import Dataset
 from yaflheap import FlHeap
@@ -36,7 +37,7 @@ class ClMiner:
         singletons
         """
         # ~ statics.running = True # this should become unnecessary some day
-        self.iface = iface     # this too
+        # ~ self.iface = iface     # this too
         self.dataset = dataset
         if supp > -1:
             self.intsupp = int(supp * dataset.nrtr)
@@ -46,7 +47,7 @@ class ClMiner:
             Needed for quite a few fields.
             Go with statics for the time being.
             """
-            self.intsupp = statics.genabsupp
+            self.intsupp = iface.hpar.genabsupp
         self.supp_percent = self.to_percent(self.intsupp)
         self.card = 0
         self.negbordsize = 0
@@ -90,7 +91,7 @@ class ClMiner:
         pend_clos = FlHeap() 
         pend_clos.mpush(self.clos_singl)
         self.minsupp = self.dataset.nrtr
-        while pend_clos.more() and self.iface.fn.running:
+        while pend_clos.more() and iface.fn.running:
             """
             extract largest-support closure and find subsequent ones,
             possibly after halving the heap through test_size(),
@@ -99,7 +100,7 @@ class ClMiner:
             new_supp = pend_clos.test_size()
             if new_supp > self.intsupp:
                 "support bound grows, heap halved, report"
-                self.iface.report("Increasing min support from " +
+                iface.report("Increasing min support from " +
                              str(self.intsupp) +
                              (" (%2.3f%%) up to " %
                               self.to_percent(self.intsupp)) +
@@ -109,7 +110,7 @@ class ClMiner:
 #                              "; current support " +
 #                            str(spp) +     # wrong reporting place, spp gets value later
                             ".")
-                statics.please_report = True
+                iface.hpar.please_report = True
                 self.intsupp = new_supp
             cl = pend_clos.pop()
             spp = cl[0]
@@ -120,10 +121,10 @@ class ClMiner:
                 self.minsupp = spp
             self.card += 1
             yield (ItSet(cl[1]),spp)
-            if (statics.verbose or statics.please_report or 
-                self.card % statics.supp_rep_often == 0):
-                statics.please_report = False
-                self.iface.report(str(self.card) +
+            if (iface.hpar.verbose or iface.hpar.please_report or 
+                self.card % iface.hpar.supp_rep_often == 0):
+                iface.hpar.please_report = False
+                iface.report(str(self.card) +
                             " closures traversed, " +
                                str(pend_clos.count) + 
                             " further closures found so far; current support " +
@@ -153,8 +154,8 @@ class ClMiner:
         (e.g. for scale 100000 means three decimal places);
         role is only human communication
         """
-        return (floor(statics.scale*anyintsupp*100.0/self.dataset.nrtr) /
-                statics.scale)
+        return (floor(iface.hpar.scale*anyintsupp*100.0/self.dataset.nrtr) /
+                iface.hpar.scale)
         
 # ~ if __name__ == "__main__":
 

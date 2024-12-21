@@ -14,7 +14,8 @@ See also partialruleminer.py
 '''
 
 
-import statics
+from iface import IFace as iface
+# ~ import statics
 from itset import ItSet
 from rule import Rule
 
@@ -68,14 +69,14 @@ def checkrule(rul,rminer):
         cn2 = rminer.latt.close(rul.rcn.union(an2))
         if float(rminer.latt.supps[cn2])/rminer.latt.supps[an2] > belowconf:
             belowconf = float(rminer.latt.supps[cn2])/rminer.latt.supps[an2]
-        if float(rul.conf)/belowconf < statics.absoluteboost:
+        if float(rul.conf)/belowconf < iface.hpar.absoluteboost:
             return rminer.DISCARD
-    if rul.cboo < statics.epsilon:
+    if rul.cboo < iface.hpar.epsilon:
         "ToDo: refactor without floats"
         if rul.cn in rminer.latt.suppratios:
             rul.cboo = rminer.latt.suppratios[rul.cn]
         if belowconf > 0:
-            if rul.cboo > rul.conf/belowconf or rul.cboo < statics.epsilon:
+            if rul.cboo > rul.conf/belowconf or rul.cboo < iface.hpar.epsilon:
                 rul.cboo = rul.conf/belowconf
     return rul.cboo
 

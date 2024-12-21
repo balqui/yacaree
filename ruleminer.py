@@ -8,8 +8,9 @@ Plan is to change this into two (or more?) separate processes (tricky).
 """
 
 
-import statics
-##from choose_iface import iface
+# ~ import statics
+# ~ from choose_iface import iface
+from iface import IFace as iface
 ##from itset import ItSet
 from lattice import Lattice
 ##from rule import Rule
@@ -53,12 +54,12 @@ if __name__=="__main__":
     
     miner = RuleMiner(fnm)
     for rul in miner.minerules(0.05):
-        statics.iface.report(str(miner.count) + "/ " + str(rul))
-        ans = statics.iface.ask_input("More? (<CR> to finish) ")
+        iface.report(str(miner.count) + "/ " + str(rul))
+        ans = iface.ask_input("More? (<CR> to finish) ")
         if len(ans)==0: break
 
-    statics.iface.report("Proposed " + str(miner.count) + " rules.")
-    statics.iface.endreport()
+    iface.report("Proposed " + str(miner.count) + " rules.")
+    iface.endreport()
 
 ## send ruleminer to garbage collector and recover free memory
     ruleminer = None

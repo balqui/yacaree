@@ -10,7 +10,9 @@ See also implminer.py
 '''
 
 
-import statics
+
+# ~ import statics
+from iface import IFace as iface
 ##from choose_iface import iface
 ##from itset import ItSet
 ##from lattice import Lattice
@@ -30,14 +32,14 @@ def checkrule(rul,rm):
         cn2 = la.close(rul.rcn.union(an2))
         if float(la.supps[cn2])/la.supps[an2] > belowconf:
             belowconf = float(la.supps[cn2])/la.supps[an2]
-        if float(rul.conf)/belowconf < statics.absoluteboost:
+        if float(rul.conf)/belowconf < iface.hpar.absoluteboost:
             return rm.DISCARD
-    if rul.cboo < statics.epsilon:
+    if rul.cboo < iface.hpar.epsilon:
         "ToDo: refactor without floats"
         if rul.cn in la.suppratios:
             rul.cboo = la.suppratios[rul.cn]
         if belowconf > 0:
-            if rul.cboo > rul.conf/belowconf or rul.cboo < statics.epsilon:
+            if rul.cboo > rul.conf/belowconf or rul.cboo < iface.hpar.epsilon:
                 rul.cboo = rul.conf/belowconf
     return rul.cboo
 
@@ -47,7 +49,7 @@ def checkrule(rul,rm):
 def mine_partial_rules(rminer,cn):
     "check boost wrt smaller antecedents only"
     global heappushcnt
-    for an in rminer.latt.allpreds(cn,(rminer.latt.supps[cn]*statics.scale)/statics.confthr):
+    for an in rminer.latt.allpreds(cn,(rminer.latt.supps[cn]*iface.hpar.scale)/iface.hpar.confthr):
         rul = Rule(an,cn,rminer.latt)
         if len(an) == 1: # and len(cn) == 2:
             "boost revision may require to fish back in reserved rules"

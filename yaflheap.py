@@ -8,7 +8,8 @@ We also have an extra operation test_size() that halves
 the heap if it has grown too much.
 """
 
-import statics
+# ~ import statics
+from iface import IFace as iface
 
 import flheap
 
@@ -33,9 +34,9 @@ class FlHeap(flheap.FlHeap):
         to keep and transmit intsupp unchanged if heap unmodified
         """
         intsupp = 0
-        if (self.count > statics.pend_len_limit or
-            self.totalsize > statics.pend_total_limit or
-            self.pend_clos_size(self.storage) > statics.pend_mem_limit):
+        if (self.count > iface.hpar.pend_len_limit or
+            self.totalsize > iface.hpar.pend_total_limit or
+            self.pend_clos_size(self.storage) > iface.hpar.pend_mem_limit):
             """
             too many closures pending expansion: raise
             the support bound so that about half of the
