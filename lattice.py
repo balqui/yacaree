@@ -73,7 +73,7 @@ class Lattice:
         lie on iterator from ClMiner
         """
         bord = set([])
-        self.miner = ClMiner(self.dataset, iface = iface) # supp extra?
+        self.miner = ClMiner(self.dataset) # supp extra?
         for (node,supp) in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing

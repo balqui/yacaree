@@ -35,9 +35,6 @@ class Yacaree:
         self.iface.go(self)
 
     def standard_run(self):
-        if not self.iface.gui:
-            self.iface.report("This is yacaree, version " + 
-                              self.hpar.version + ".")
         if self.hpar.maxrules == 0:
             self.iface.report("CLI call requested all rules as output.")
         if not self.dataset:
@@ -49,7 +46,7 @@ class Yacaree:
         self.iface.get_ready_for_run()
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
-        self.iface.fn.running = True
+        self.iface.running = True
         miner = RuleMiner(self.iface, self.hpar, self.dataset) # ClMiner
         rules = []
         for rul in miner.minerules():
@@ -78,7 +75,7 @@ class Yacaree:
         self.iface.report("End of process of dataset in file " + 
                      self.iface.datafile.name + ".")
         self.iface.report("Closing output and log files; run of yacaree " + 
-                     self.hpar.version + " finished.")
+                     self.iface.version + " finished.")
         self.iface.logfile.close()
         self.iface.get_ready_for_new_run()
         self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
@@ -93,6 +90,7 @@ if __name__ == "__main__":
     
     from argparse import ArgumentParser
 
+    iface = IFace()
     hpar = HyperParam()
 
     argp = ArgumentParser(
@@ -114,7 +112,7 @@ if __name__ == "__main__":
                       help = "verbose report of current support " + 
                              "at every closure")
     argp.add_argument('-V', '--version', action = 'version', 
-                            version = "yacaree " + hpar.version,
+                            version = "yacaree " + iface.version,
                             help = "print version and exit")
     argp.add_argument('dataset', nargs = '?', default = None, 
                       help = "name of optional dataset file " + 
@@ -131,7 +129,6 @@ if __name__ == "__main__":
     if args.verbose:
         hpar.verbose = True
 
-    iface = IFace()
     iface.gui = args.gui
 
     y = Yacaree(iface, hpar, args.dataset)

@@ -20,16 +20,6 @@ class FileNames:
         self._filenamenow = None
         self._filenamext = ".txt" # TO MOVE ON INTO .td ONE DAY
 
-        self._running = False # actually out of place admittedly
-
-    @property
-    def running(self):
-        return self._running
-
-    @running.setter
-    def running(self, val):
-        self._running = bool(val)
-
     @property
     def filename(self):
         return self._filename

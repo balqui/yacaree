@@ -68,6 +68,15 @@ class IFace:
     logfile = None
     rulesfile = None
 
+    _running = False
+
+    @property
+    def running(self):
+        return type(self)._running
+
+    @running.setter
+    def running(self, val):
+        type(self)._running = bool(val)
 
     @classmethod
     def go(cls, yacaree):
@@ -172,6 +181,7 @@ class IFace:
 
         else:
             "CLI interface"
+            cls.report("This is yacaree, version " + cls.version + ".")
             cls.opendatafile(yacaree.datafilename)
             yacaree.standard_run() 
             # no need to call run_all as maxrules already at 0
@@ -236,11 +246,11 @@ class IFace:
     def finish(cls):
         "only on GUI, to bind a button"
         if cls._gui:
-            if cls.fn.running:
+            if cls._running:
                 "please stop mining ASAP"
                 cls.finish_button.configure(state = Tkinter.DISABLED)
                 cls.report("User-requested stop of mining process.")
-                cls.fn.running = False
+                cls._running = False
             else:
                 "not running, hence exit"
                 cls.sound_bell()
@@ -252,7 +262,7 @@ class IFace:
     def get_ready_for_new_run(cls):
         "Only on GUI. After one of run/run50, may wish to run the other"
         if cls._gui:
-            cls.fn.running = False
+            cls._running = False
             cls.run.configure(state = Tkinter.NORMAL)
             cls.run50.configure(state = Tkinter.NORMAL)
             cls.filepick.configure(state = Tkinter.NORMAL)
