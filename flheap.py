@@ -114,7 +114,7 @@ if __name__ == "__main__":
     else:
         print("expected singletons from [6,6,5,5,4,2,2,1,1], obtained", test)
 
-    h = FlHeapA()
+    h = FlHeapA() # sorts according to hash; on letters, Python 2 and Python 3 differ
 
     h.mpush("all the letters of this sentence")
 
@@ -124,6 +124,7 @@ if __name__ == "__main__":
         test += h.pop()
 
     if test == "ac     eeeeeefhhilllnnorsssttttt":
+        "this was correct on Python2 but not anymore"
         pass
     else:
         print("expected 'ac     eeeeeefhhilllnnorsssttttt', obtained", test)
