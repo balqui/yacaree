@@ -29,15 +29,6 @@ Rest not so crucial:
 . checkrule in partialruleminer
 . maybe try to move flush to a separate thread
 
-[Not sure of date or of why this is still here:]
-In ItSet: added parentheses to a print and refactored the sep string,
-but must review the inherited init, check out further functionality
-and decide about the potential translator from items to something else
-(I think I did that inspired by the good practice in Borgelt's over
-the C implementation where items are ints, but here is Python, they
-can be any sorts of objects by the same price as ints, in particular
-strings work well enough, so most likely I will drop all mentions to
-the hypothetical translator)
 
 [Oct 3: adding parenthesis to all prints in some of the unit tests 
 even if not running them, so as to be able to run clminer: touched
@@ -122,3 +113,15 @@ report confidence boost reached all along (done)
 
 
 
+=== Leftovers that I bring here, starting Jan 2025:
+
+DID THAT, OR I HOPE AS MUCH: removed mentions to translator from ToDo and from ItSet
+[Not sure of date or of why this is still here:]
+In ItSet: added parentheses to a print and refactored the sep string,
+but must review the inherited init, check out further functionality
+and decide about the potential translator from items to something else
+(I think I did that inspired by the good practice in Borgelt's over
+the C implementation where items are ints, but here is Python, they
+can be any sorts of objects by the same price as ints, in particular
+strings work well enough, so most likely I will drop all mentions to
+the hypothetical translator)

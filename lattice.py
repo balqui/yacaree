@@ -47,6 +47,13 @@ class Lattice:
     Closures expected ordered in the list by decreasing supports
     or increasing sizes
     union_cover is the union of all immediate successors seen so far
+
+    URGENT: closeds UNNECESSARY SINCE 3.7 WHEN DICTS KEPT ORDER
+
+    CAVEAT: Should we dispense with the supportset in ItSet's once
+    they have been mined? Then we only need the supp but is the 
+    rescued memory useful enough to spend a bit of time (by our 
+    deletion and by the garbage collector)?
     """
 
     def __init__(self, iface, hpar, dataset):
@@ -165,9 +172,10 @@ class Lattice:
             node = ItSet(self.dataset.univ)
         return node
 
-    def isclosed(self,st):
-        "test closedness of set st according to current closures"
-        return set2node(st) in self.nodes
+# ~ set2node undefined - luckily isclosed never called
+    # ~ def isclosed(self,st):
+        # ~ "test closedness of set st according to current closures"
+        # ~ return set2node(st) in self.nodes
 
     def __str__(self):
         s = ""
