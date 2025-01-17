@@ -51,9 +51,10 @@ class Yacaree:
         rules = []
         for rul in miner.minerules():
             "if someday Rule has comparison, remove mentions to rulecnt"
-            rulecnt += 1
-            rules.append((-rul.cboo, rulecnt, rul))
-            if miner.count == self.hpar.findrules > 0: break
+            print(rul) # currently pair closure/immpreds
+            # ~ rulecnt += 1
+            # ~ rules.append((-rul.cboo, rulecnt, rul))
+            # ~ if miner.count == self.hpar.findrules > 0: break
         self.iface.report("Mining process terminated;" + 
                           " searched for rules of confidence boost" + 
                          (" at least %1.3f." % miner.latt.boosthr)) 

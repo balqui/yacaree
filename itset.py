@@ -66,11 +66,11 @@ class ItSet(set):
         self.supp = len(supportset)
         ItSet.cnt += 1
         self.tie_breaker = ItSet.cnt
-        print(" *** created:", self)
+        print(" *** created:", self, self.supportset, self.tie_breaker)
 
     # ~ def __eq__(self, other):
         # ~ return self.contents == other.contents
-        # ~ try to inherit from super instead
+        # ~ inherited from super instead
 
     def __lt__(self, other):
         """
@@ -86,29 +86,37 @@ class ItSet(set):
                     self.tie_breaker < other.tie_breaker)
 
     def __str__(self):
-        return ('{ ' + ', '.join(str(e) for e in self) +
+        return ('{ ' + ', '.join(sorted(str(e) for e in self)) +
                        ' } [' +  str(self.supp) + ']')
 
     def difference(self, anything):
         "returns a plain set, not an ItSet, as we lack supp"
         return self - set(anything)
 
-# ~ PENDING: test printing and all the comparisons with all cases, also difference
+if __name__ == "__main__":
 
-print(ItSet([], range(100, 120)))
-s0 = ItSet([], range(100, 120))
-print(s0)
-s1 = ItSet([], range(150, 175))
-print(s1)
-print(ItSet(range(5), range(200, 210)))
-s2 = ItSet(range(5), range(200, 210))
-print(s2)
+    # ~ PENDING: test printing and all the comparisons with all cases, also difference
 
-print("s0 == s1", s0 == s1)
-print("s0 == s2", s0 == s2)
-print("s2 == s1", s2 == s1)
+    print(ItSet([], range(100, 120)))
+    s0 = ItSet([], range(100, 120))
+    print(s0)
+    s1 = ItSet([], range(150, 175))
+    print(s1)
+    print(ItSet(range(5), range(200, 210)))
+    s2 = ItSet(range(5), range(200, 210))
+    print(s2)
 
+    print("s0 == s1", s0 == s1)
+    print("s0 == s2", s0 == s2)
+    print("s2 == s1", s2 == s1)
 
-a = ItSet(range(5), range(10))
-b = a.difference([2, 3])
-print(b, type(b))
+    a = ItSet(range(5), range(30))
+    print("s1", s1)
+    print("a", a)
+    print("s1 < a", s1 < a)
+    print("set(s1) < set(a)", set(s1) < set(a))
+
+    print("s0 found in [s1, s2]?", s0 in [s1, s2])
+
+    b = a.difference([2, 3])
+    print(b, type(b))

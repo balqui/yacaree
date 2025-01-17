@@ -81,7 +81,8 @@ class Lattice:
         """
         bord = set([])
         self.miner = ClMiner(self.dataset) # supp extra?
-        for (node,supp) in self.miner.mine_closures():
+        # ~ for (node,supp) in self.miner.mine_closures():
+        for itst in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing
             size, hence all subsets of each closure come before it - needed
@@ -92,6 +93,8 @@ class Lattice:
             first node in list is closure of empty set
             union_cover init is always empty
             """
+            supp = itst.supp
+            node = frozenset(itst)
             self.closeds.append(node) # WRONG IF CALLED TWICE
             self.supps[node] = supp
             for pot_cover in [ node.intersection(bord_elem) 

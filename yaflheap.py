@@ -89,6 +89,41 @@ class FlHeap(flheap.FlHeap):
 ##        return m
 
 
+def test_size(stdheap):
+	"""
+	Similar to above, probably with ugly hack, but now for a 
+	standard heap kept in a standard list.
+	"""
+	intsupp = 0
+	# ~ if (self.count > iface.hpar.pend_len_limit or
+		# ~ self.totalsize > iface.hpar.pend_total_limit or
+		# ~ self.pend_clos_size(self.storage) > iface.hpar.pend_mem_limit):
+	if (count := len(stdheap)) > iface.hpar.pend_len_limit:
+		"""
+		too many closures pending expansion: raise
+		the support bound so that about half of the
+		heap becomes discarded.
+		"""
+		lim = count // 2
+		current_supp = stdheap[0].supp
+		current_supp_clos = []
+		new_pend_clos = []
+		new_total_size = 0
+		new_count = 0
+		popped_count = 0
+		while stdheap:
+			itst = heappop(stdheap)
+			popped_count += 1
+			if popped_count > lim: break
+			if itst.supp == current_supp:
+				current_supp_clos.append(itst)
+			else:
+				current_supp = itst.supp
+				intsupp = current_supp
+				new_pend_clos.extend(current_supp_clos)
+				current_supp_clos = [itst]
+		stdheap = new_pend_clos
+	return intsupp
 
 
 if __name__ == "__main__":

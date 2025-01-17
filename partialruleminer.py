@@ -50,7 +50,7 @@ def mine_partial_rules(rminer,cn):
     "check boost wrt smaller antecedents only"
     global heappushcnt
     for an in rminer.latt.allpreds(cn,(rminer.latt.supps[cn]*iface.hpar.scale)/iface.hpar.confthr):
-        rul = Rule(an,cn,rminer.latt)
+        rul = Rule(an,cn) # ,rminer.latt)
         if len(an) == 1: # and len(cn) == 2:
             "boost revision may require to fish back in reserved rules"
             if 1 < rul.lift < rminer.latt.boosthr:

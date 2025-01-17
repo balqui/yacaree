@@ -40,10 +40,11 @@ class RuleMiner: # Does not subclass Lattice anymore
     def minerules(self,safetysupp=0):
         for cn in self.latt.candidate_closures(): 
             "check that suppratio constraint already pushed"
-            for rul in mine_implications(self,cn):
-                yield rul
-            for rul in mine_partial_rules(self,cn):
-                yield rul
+            yield (cn, self.latt.immpreds[cn])
+            # ~ for rul in mine_implications(self,cn):
+                # ~ yield rul
+            # ~ for rul in mine_partial_rules(self,cn):
+                # ~ yield rul
 
 if __name__=="__main__":
 

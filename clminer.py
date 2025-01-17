@@ -1,7 +1,7 @@
 """
 yacaree
 
-Current revision: early Nivose 2024
+Current revision: late Nivose 2025
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -28,9 +28,9 @@ from math import floor
 from iface import IFace
 from itset import ItSet
 from dataset import Dataset
-from yaflheap import FlHeap
+from yaflheap import FlHeap, test_size # test_size variant for standard lists
 
-from heapq import heapify
+from heapq import heapify, heappush, heappop
 
 class ClMiner:
 
@@ -60,117 +60,142 @@ class ClMiner:
         # ~ self.supp_percent = self.to_percent(self.intsupp) # CAN I GET RID OF THIS?
         self.card = 0
         self.negbordsize = 0
-        self.maxnonsupp = 0
-        self.maxitemnonsupp = 0
         self.minsupp = 0
-        IFace.report("Initializing singletons.")
 
-        "pair up items with their support and sort them"
+    def _handle_singletons(self):
+        """
+        Pairs up items with their supports, sorts them, and
+        initializes the heap with the closures of singletons 
+        as ItSet's and returns it.
+        CAVEAT: see if I can work directly on clos_singl and
+        shortcircuit the usage of sorteduniv.
+        """
+        IFace.report("Initializing singletons.")
         sorteduniv = [ (len(self.dataset.occurncs[item]), item)
                        for item in self.dataset.univ ]
-        print(" ===== ", sorteduniv)
         sorteduniv = sorted(sorteduniv, reverse=True)
-        self.maxitemsupp = sorteduniv[0][0]
-        print(" ===== ", sorteduniv)
-        sortedunivalt = sorted([ ItSet([item], len(self.dataset.occurncs[item]))
-                       for item in self.dataset.univ ])
-        print(" ===== ", [str(s) for s in sortedunivalt], "(but need to close them!)")
+        # ~ self.maxitemsupp = sorteduniv[0][0]
+        self.maxitemsupp = 0
+        self.maxnonsupp = 0
+        self.maxitemnonsupp = 0
+        # ~ sortedunivalt = sorted([ ItSet([item], len(self.dataset.occurncs[item]))
+                       # ~ for item in self.dataset.univ ])
+        # ~ print(" ===== ", [str(s) for s in sortedunivalt], "(but need to close them!)")
 
-        self.clos_singl = set([])
-        for (s, it) in sorteduniv:
+        clos_singl = list()
+        # ~ for (s, it) in sorteduniv:
+        for it in self.dataset.univ:
             """
             Find closures of singletons: each has
             support, contents, and set of supporting transactions.
             CAVEAT: actually this process finds single-antecedent
             full implications and may result in implminer doing
             redundant work.
+            CAVEAT: the first if/break discards part of the 
+            negative border of the emptyset, hope that this
+            is harmless, but think.
             """
+            s = len(self.dataset.occurncs[it])
+            self.maxitemsupp = max(self.maxitemsupp, s)
             if s <= self.intsupp:
-                "no items remain with supp > intsupp"
-                self.maxitemnonsupp = s
-                self.maxnonsupp = s
-                break
+                self.maxitemnonsupp = max(self.maxitemnonsupp, s)
+                self.maxnonsupp = max(self.maxnonsupp, s)
+                # ~ break # "no items remain with supp > intsupp NOT ANYMORE AS ITEMS TRAVERSED UNSORTED"
             supportingset = self.dataset.occurncs[it]
-            cl_node = (s,
-                       frozenset(self.dataset.inters(supportingset)),
-                       frozenset(supportingset))
-            print(" ===== cl_node:", cl_node)
-            self.clos_singl.add(cl_node)
-        IFace.report(str(len(self.clos_singl)) +
+            clos = ItSet(self.dataset.inters(supportingset), supportingset)
+            # ~ cl_node = (s,
+                       # ~ frozenset(self.dataset.inters(supportingset)),
+                       # ~ frozenset(supportingset))
+            # ~ print(" ===== cl_node:", cl_node)
+            if clos not in clos_singl:
+                clos_singl.append(clos)
+        IFace.report(str(len(clos_singl)) +
                      " singleton-based closures.")
+        print(" ===== returned clos_singl", clos_singl)
+        return clos_singl
 
-        heapify(sortedunivalt)
-        print(" ===== heap from sortedunivalt:", 
-            [str(s) for s in sortedunivalt])
+        # ~ heapify(sortedunivalt)
+        # ~ print(" ===== heap from sortedunivalt:", 
+            # ~ [str(s) for s in sortedunivalt])
+
 
     def mine_closures(self):
+
+        clos_singl = self._handle_singletons() # gives value to maxitemsupp
 
         if self.maxitemsupp < self.dataset.nrtr:
             "empty set is closed, yield it"
             self.card += 1
-            yield (ItSet([]),self.dataset.nrtr)
+            yield ItSet([], range(self.dataset.nrtr))
 
-        pend_clos = FlHeap() 
-        pend_clos.mpush(self.clos_singl)
+        # ~ pend_clos = FlHeap() 
+        # ~ pend_clos.mpush(self.clos_singl)
+        print(" ===== clos_singl:", [str(e) for e in clos_singl])
+        pend_clos = clos_singl.copy()
+        print(" ===== clos_singl.copy:", [str(e) for e in pend_clos])
+        heapify(pend_clos)
+        print(" ===== heapified:", [str(e) for e in pend_clos])
+        print(" ===== clos_singl again:", [str(e) for e in clos_singl])
+        # ~ pend_clos is now a heap on a standard list !!!
         self.minsupp = self.dataset.nrtr
-        while pend_clos.more() and IFace.running:
+        # ~ while pend_clos.more() and IFace.running:
+        while pend_clos and IFace.running:
             """
             Extract largest-support closure and find subsequent ones,
             possibly after halving the heap through test_size(),
             in which case we got a higher value for the intsupp bound.
             """
-            new_supp = pend_clos.test_size()
+            new_supp = test_size(pend_clos)
             if new_supp > self.intsupp:
                 "support bound grows, heap halved, report"
-
-                # ~ IFace.report("Increasing min support from " +
-                             # ~ str(self.intsupp) +
-                             # ~ (" (%2.3f%%) up to " %
-                              # ~ self.to_percent(self.intsupp)) +
-                             # ~ str(new_supp) +
-                             # ~ (" (%2.3f%%)" %
-                              # ~ self.to_percent(new_supp)) + 
-                            # ~ ".")
-                # ~ IFace.hpar.please_report = True
-
+                IFace.report("Increasing min support from " +
+                             str(self.intsupp) +
+                             (" (%2.3f%%) up to " %
+                              self.to_percent(self.intsupp)) +
+                             str(new_supp) +
+                             (" (%2.3f%%)" %
+                              self.to_percent(new_supp)) + 
+                            ".")
+                IFace.hpar.please_report = True
                 self.intsupp = new_supp
-            cl = pend_clos.pop()
+            cl = heappop(pend_clos)
             print(" +++++ just popped:", cl)
-            spp = cl[0]
+            spp = cl.supp
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
                 break
             if spp < self.minsupp:
                 self.minsupp = spp
             self.card += 1
-            yield (ItSet(cl[1]),spp)
+            yield cl
 
-            # ~ if (IFace.hpar.verbose or IFace.hpar.please_report or 
-                # ~ self.card % IFace.hpar.supp_rep_often == 0):
-                # ~ IFace.hpar.please_report = False
-                # ~ IFace.report(str(self.card) +
-                            # ~ " closures traversed, " +
-                               # ~ str(pend_clos.count) + 
-                            # ~ " further closures found so far; current support " +
-                            # ~ str(spp) + ".")
+            if (IFace.hpar.verbose or IFace.hpar.please_report or 
+                self.card % IFace.hpar.supp_rep_often == 0):
+                IFace.hpar.please_report = False
+                IFace.report(str(self.card) +
+                            " closures traversed, " +
+                               str(pend_clos.count) + 
+                            " further closures found so far; current support " +
+                            str(spp) + ".")
 
-            for ext in self.clos_singl:
+            for ext in clos_singl:
                 "try extending with freq closures of singletons"
-                if not ext[1] <= cl[1]:
-                    supportset = cl[2] & ext[2]
+                if (not set(ext) <= set(cl)
+                and not set(cl) <= set(ext)):
+                    print(" +++++ ext fires:", ext)
+                    supportset = cl.supportset & ext.supportset
                     spp = len(supportset)
                     if spp <= self.intsupp:
+                        "unclear whether storing here would suffice to keep negbord"
                         self.negbordsize += 1
                         if spp > self.maxnonsupp:
                             self.maxnonsupp = spp
                     else:
                         "find closure and test duplicateness"
-                        next_clos = frozenset(self.dataset.inters(supportset))
-                        if (next_clos not in
-                            [ cc[1][1] for cc in pend_clos.storage ]):
-                            cl_node = (len(supportset), next_clos,
-                                       frozenset(supportset))
-                            pend_clos.push(cl_node)
+                        next_clos = ItSet(self.dataset.inters(supportset), supportset)
+                        if next_clos not in pend_clos:
+                            heappush(pend_clos, next_clos)
+                            print(" ===== heapified:", [str(e) for e in pend_clos])
 
     def to_percent(self, anyintsupp):
         """
@@ -199,7 +224,7 @@ if __name__ == "__main__":
     # ~ miner = ClMiner(d, 0.75)
     miner = ClMiner(d)
     for cl in miner.mine_closures():
-        print(cl[0], f' ({cl[1]})')
+        print(cl)
 
     # ~ tr_a = d.occurncs['a']
     # ~ tr_c = d.occurncs['c']
