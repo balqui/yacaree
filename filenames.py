@@ -13,6 +13,7 @@ class FileNames:
 
     def __init__(self, iface):
         """
+        The property setter for filename handles most of the values.
         """
         self.iface = iface
         self._filename = None

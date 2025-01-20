@@ -27,9 +27,7 @@ ToDo:
 from heapq import heapify, heappush, heappop
 from collections import defaultdict
 
-# ~ import statics
-# ~ from choose_iface import iface
-from iface import IFace as iface
+from iface import IFace
 from itset import ItSet
 from dataset import Dataset
 from clminer import ClMiner
@@ -56,9 +54,8 @@ class Lattice:
     and by the garbage collector)?
     """
 
-    def __init__(self, iface, hpar, dataset):
-        # ~ self.iface = iface # maybe I can just declare a fresh one - same in RuleMiner
-        self.dataset = dataset # Dataset(hpar)
+    def __init__(self, dataset):
+        self.dataset = dataset
         self.closeds = []
         self.supps = {}
         self.suppratios = defaultdict(inffloat)
@@ -66,7 +63,7 @@ class Lattice:
         self.immpreds = defaultdict(list)
         self.ready = []
         self.freezer = []
-        self.boosthr = iface.hpar.initialboost
+        self.boosthr = IFace.hpar.initialboost
         self.miner = None
 
     def candidate_closures(self):
@@ -93,6 +90,7 @@ class Lattice:
             first node in list is closure of empty set
             union_cover init is always empty
             """
+            print(" ....... border received:", itst, "of type", type(itst))
             supp = itst.supp
             node = frozenset(itst)
             self.closeds.append(node) # WRONG IF CALLED TWICE
@@ -102,20 +100,32 @@ class Lattice:
                 if node.intersection(self.union_cover[pot_cover]) <= pot_cover:
                     self.immpreds[node].append(pot_cover)
                     if not self.union_cover[pot_cover]:
-                        "first successor of pot_cover: gives supprt"
-                        supprt = float(self.supps[pot_cover])/supp
-                        self.suppratios[pot_cover] = supprt
-                        if supprt >= self.boosthr:
+                        "first successor of pot_cover: gives supprat"
+                        supprat = float(self.supps[pot_cover])/supp
+                        self.suppratios[pot_cover] = supprat
+                        if supprat >= self.boosthr:
+                            print(" ....... to ready:", pot_cover)
                             heappush(self.ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
                         else:
-                            heappush(self.freezer,(-supprt,pot_cover))
+                            """
+                            Let it wait: pushing suppratio constraint"
+                            """
+                            print(" ....... to freezer:", pot_cover)
+                            heappush(self.freezer,(-supprat,pot_cover))
                     self.union_cover[pot_cover].update(node)
+                    print(" ....... take from bord:", pot_cover)
                     bord.discard(pot_cover)
+            print(" ....... put in bord:", node)
             bord.add(node)
 
             while self.ready:
+                """
+                At this point we have the closures and their heaviest
+                predecessor so suppratio correct, but lack other preds
+                """
                 yield heappop(self.ready)[1]
 
+        print(" ....... now pending bord w/ wrong suppratios...")
         for st in bord:
             """
             there remain to yield the positive border (maximal sets) 
@@ -134,12 +144,16 @@ class Lattice:
             supprt = float(self.supps[st])/self.miner.minsupp
             self.suppratios[st] = supprt
             if supprt >= self.boosthr:
+                print(" ....... from bord to ready:", st)
                 heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
             else:
+                print(" ....... from bord to freezer:", st)
                 heappush(self.freezer,(-supprt,st))
             
+        print(" ....... yielding ready leftovers...")
         while self.ready:
             yield heappop(self.ready)[1]
+        print(" ....... left over in freezer:", self.freezer)
 
     def allpreds(self,node,spbd=-1):
         """
@@ -191,15 +205,15 @@ class Lattice:
         current value weights as boostab of the lifts added up
         only to reduce it, and provided it does not get that low
         """
-        s = s + iface.hpar.boostab*self.boosthr
-        n = n + iface.hpar.boostab
+        s = s + IFace.hpar.boostab*self.boosthr
+        n = n + IFace.hpar.boostab
         v = float(s)/n
-        if v < iface.hpar.absoluteboost:
-            v = iface.hpar.absoluteboost
-        if v <= self.boosthr - iface.hpar.boostdecr:
+        if v < IFace.hpar.absoluteboost:
+            v = IFace.hpar.absoluteboost
+        if v <= self.boosthr - IFace.hpar.boostdecr:
             self.boosthr = v
-            iface.report(("Confidence boost bound reduced to %2.3f." % v)) 
-            iface.please_report = True
+            IFace.report(("Confidence boost bound reduced to %2.3f." % v)) 
+            IFace.please_report = True
             while self.freezer:
                 "fish back in closures that reach enough supp ratio now"
                 if -self.freezer[0][0] > self.boosthr:
@@ -208,27 +222,13 @@ class Lattice:
                 else:
                     break
 
-       
+
 if __name__=="__main__":
 
-    
-##    fnm = "lenses_recoded.txt"
+    from filenames import FileNames
+    from hyperparam import HyperParam
 
-    fnm = "data/e14"
-
-##    fnm = "exbordalg"
-##    fnm = "pumsb_star"
-    
-    la = Lattice(fnm+".txt")
-
-##    for a in la.candidate_closures():
-##        print " ===== enum en lattice:", a
-##
-##    exit(2)
-    
-    la.boosthr = 0
-    for a in la.candidate_closures():
-        "This had a 0.1 arg"
+    def printclos(la, a):
         print("\nClosure: ", a, la.supps[a])
         print("imm preds:")
         for e in la.immpreds[a]: print(e, ",") #,
@@ -239,7 +239,34 @@ if __name__=="__main__":
             print("supp ratio:", la.suppratios[a])
         else:
             print("no supp ratio for", a)
-        
+        print("\n\n")
+
+##    fnm = "lenses_recoded.txt"
+
+    # ~ fnm = "data/e14"
+    fnm = "data/toy"
+
+    IFace.hpar = HyperParam()
+    IFace.fn = FileNames(IFace)
+    IFace.opendatafile(fnm)
+    d = Dataset()
+
+##    fnm = "exbordalg"
+##    fnm = "pumsb_star"
+    
+    la = Lattice(d)
+
+    la.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
+    closlist = list()
+    for a in la.candidate_closures():
+        "This had a 0.1 arg"
+        print("\n\nNew closure:")
+        printclos(la, a)
+        closlist.append(a)
+
+    print("At end:")
+    for a in closlist:
+        printclos(la, a)
 
 ##    la.boosthr = 1.25
 ##    for e in la.candClosures():

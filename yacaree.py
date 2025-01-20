@@ -16,7 +16,7 @@ interface replaced the early statics.py now not anymore used.
 
 Must change the report messages in terms of f-strings.
 
-Should review the -a option and clarify the labels on the buttons.
+CAVEAT: Should review the -a option and clarify the labels on the buttons.
 
 """
 
@@ -64,7 +64,7 @@ class Yacaree:
                      str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
         cnt = 0
         for (b, c, r) in sorted(rules):
-            "remove c in case rulecnt is removed"
+            "remove c in case rulecnt is removed" # CAVEAT: THIS LOOP IS EMPTY RIGHT NOW
             cnt += 1
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
             if cnt == self.hpar.maxrules > 0: break
@@ -88,7 +88,7 @@ class Yacaree:
         self.standard_run()
 
 if __name__ == "__main__":
-    
+
     from argparse import ArgumentParser
 
     iface = IFace()
@@ -118,7 +118,7 @@ if __name__ == "__main__":
     argp.add_argument('dataset', nargs = '?', default = None, 
                       help = "name of optional dataset file " + 
                              "(default: none, ask user)")
-    
+
     # ~ argp.add_argument('-t', '--test', action = 'store_true') 
     # ~ # for testing times (???)
 

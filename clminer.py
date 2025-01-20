@@ -6,6 +6,8 @@ Current revision: late Nivose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
+CAVEAT: Remove print trackers
+
 Main method is the iterator that provides, one by one,
  in order of decreasing support, all the closures for a given
  dataset and support bound.
@@ -22,7 +24,7 @@ one, storing already-created ItSet elements which compare
 appropriately.
 """
 
-from math import floor
+from math import floor # only in to_percent, remove when that goes elsewhere
 
 from iface import IFace
 from itset import ItSet
@@ -147,6 +149,8 @@ class ClMiner:
 
         pend_clos = list(clos_singl)
         heapify(pend_clos)
+        print(" ===== heapified:", [str(e) for e in pend_clos])
+
         self.minsupp = self.dataset.nrtr
         while pend_clos and IFace.running:
             """
@@ -190,8 +194,10 @@ class ClMiner:
             for ext in clos_singl:
                 "try extending with freq closures of singletons"
                 print(" +++++ ext tried:", ext)
-                if (not set(ext) <= set(cl)
-                and not set(cl) <= set(ext)):
+                # ~ if (not set(ext) <= set(cl)
+                # ~ and not set(cl) <= set(ext)):
+                if not ext << cl and not cl << ext:
+                    "'subset or eq' overrides lshift"
                     print(" +++++ ext fires!")
                     supportset = cl.supportset & ext.supportset
                     spp = len(supportset)
@@ -208,15 +214,16 @@ class ClMiner:
                             heappush(pend_clos, next_clos)
                             print(" ===== heapified:", [str(e) for e in pend_clos])
 
-    # ~ def to_percent(self, anyintsupp):
-        # ~ """
-        # ~ anyintsupp expected absolute int support bound,
-        # ~ gets translated into percent and truncated according to scale
-        # ~ (e.g. for scale 100000 means three decimal places);
-        # ~ role is only human communication
-        # ~ """
-        # ~ return (floor(IFace.hpar.scale*anyintsupp*100.0/self.dataset.nrtr) /
-                # ~ IFace.hpar.scale)
+    def to_percent(self, anyintsupp):
+        """
+        EMPLOYED IN LINE 64 OF yacaree.py, CAVEAT: PROBABLY OUT OF PLACE
+        anyintsupp expected absolute int support bound,
+        gets translated into percent and truncated according to scale
+        (e.g. for scale 100000 means three decimal places);
+        role is only human communication
+        """
+        return (floor(IFace.hpar.scale*anyintsupp*100.0/self.dataset.nrtr) /
+                IFace.hpar.scale)
         
 # ~ TESTING PHASE TO BE REDESIGNED	
 

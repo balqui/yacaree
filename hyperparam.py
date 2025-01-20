@@ -6,9 +6,12 @@ Current revision: mid / late Frimaire 2024
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
+CAVEAT: Still to be heavily simplified as the refactoring reaches
+the sophisticated algorithms.
+
 Evolution of earlier module encompassing some static objects 
 accessed from everywhere (or: Singleton pattern implemented 
-as module; spoiler: did not work well enough).
+as a module; spoiler: did not work well enough).
 
 please_report - To report every now and then 
 

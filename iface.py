@@ -7,7 +7,7 @@ Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
 Old, to check out: "Close" button does not always work, I believe 
-already in the frozen version.
+already in the frozen version. CAVEAT.
 
 Heavily refactored to bring here all interfaces and take them 
 out of statics.py
@@ -18,7 +18,7 @@ report*: outputs a string message, prepends a line break,
  variants for warnings and errors
 ask_input: user communication
 openfile, storefilename: to set up the data source
-go: calls run method of miner
+go: calls run method of main program
 others: to handle the communication with Tk
 
 Can one combine decorator @classmethod with @property-related?
@@ -48,11 +48,11 @@ from tkinter import font as tkFont
 
 class IFace:
 
-    version = "2.0.0"           # OK TO HAVE THIS HERE?
+    version = "2.0.0"  # OK TO HAVE THIS HERE?
 
     report_period = 30 # seconds between possibly_report calls
 
-    fn = None
+    fn = None          # filename slot
 
     _gui = False
 
@@ -83,8 +83,8 @@ class IFace:
         """
         Might try to move bindings to a regular __init__()
         (this could not be done in the earlier structure).
-        Can't have only hpar as argument, need also 
-        standard_run and standard_run_all to bind to the buttons.
+        But can't have only hpar as argument, need also 
+        standard_run and standard_run_all to bind to the buttons to.
         """
         cls.hpar = yacaree.hpar
         cls.fn = FileNames(cls)
@@ -244,7 +244,7 @@ class IFace:
 
     @classmethod
     def finish(cls):
-        "only on GUI, to bind a button"
+        "only on GUI, to bind a button to"
         if cls._gui:
             if cls._running:
                 "please stop mining ASAP"
@@ -269,6 +269,7 @@ class IFace:
             cls.finish_button.configure(state = Tkinter.NORMAL)
             # ~ refresh datetime in names, 
             # ~ just in case we use the same dataset
+            # ~ (done by the property setter in the FileNames class)
             cls.fn.filename = cls.fn.filename 
 
 
@@ -292,7 +293,7 @@ class IFace:
         else:
             print("[yacaree]" + m, end = '', flush = True)
         if cls.logfile and not cls.logfile.closed:
-            "Remains to report the opening of the log !!!!!!!!!!!" 
+            "Remains to report the opening of the log!" 
             cls.logfile.write(str(datetime.now()) + m)
 
 

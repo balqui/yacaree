@@ -73,14 +73,17 @@ if __name__ == "__main__":
 
     from filenames import FileNames
 
-    fnm = "data/e13"
+    # ~ fnm = "data/e13"
+    fnm = "data/toy"
     # ~ fnm = "data/adultrain"
 
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
-    tr_a = d.occurncs['a']
-    tr_c = d.occurncs['c']
+    a, c = 'A', 'C'
+    # ~ a, c = 'a', 'c'
+    tr_a = d.occurncs[a]
+    tr_c = d.occurncs[c]
     # ~ tr_a = d.occurncs['Black']
     # ~ tr_c = d.occurncs['Doctorate']
     tr = tr_a & tr_c
