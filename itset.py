@@ -25,6 +25,11 @@ the sets themselves.
 First idea was to change the sign of the support so that the heaps
 work as max-heaps but current decision is to hide that into custom
 comparisons.
+Moreover, we need to compare ItSets according to two orderings,
+support-based for the heap and mere subset order. We customize
+"<" as support-based order for the heap and customize the "shift"
+operator "<<" to mean instead the subset-or-equal relation.
+
 
 def __init__(self, contents=[], supp = float("inf")):
     frozenset.__init__(self, contents)
@@ -47,9 +52,12 @@ inheriting from set (try not no use frozensets initially
 as they are no longer to index the supports dict in lattice).
 """
 
-from functools import total_ordering
-        
-@total_ordering
+# ~ from functools import total_ordering
+# ~ @total_ordering 
+# ~ Do we really need it?
+# ~ Also, some preliminary experiments raise doubts whether
+# ~ that decorator would work as I intend in this case.
+
 class ItSet(set):
 
     cnt = 0 # counts created ItSet's to set up the tie_breaker
@@ -62,6 +70,7 @@ class ItSet(set):
         today, I keep it.
         """
         super().__init__(contents)
+        self._hash = hash(frozenset(contents))
         self.supportset = supportset
         self.supp = len(supportset)
         ItSet.cnt += 1
@@ -79,11 +88,25 @@ class ItSet(set):
         are broken arbitrarily by creation time order.  
         Order comparisons must not see ever the contents,
         as set comparison is not total.
-        CAVEAT: a == b does not imply a <= b (nor a >= b either). 
+        CAVEAT: a == b acts in <= and >= as contents set equality. 
         """
         return (self.supp > other.supp or
                 self.supp == other.supp and
                     self.tie_breaker < other.tie_breaker)
+
+    def __lshift__(self, other):
+        """
+        Use "<<" instead to compare ItSet's according to inclusion
+        order on the contents.
+        """
+        return set(self) <= set(other)
+
+    def __hash__(self):
+        """
+        Try to make it hashable so that they can be in set's and
+        index dict's.
+        """
+        return self._hash
 
     def __str__(self):
         return ('{ ' + ', '.join(sorted(str(e) for e in self)) +
@@ -112,11 +135,21 @@ if __name__ == "__main__":
 
     a = ItSet(range(5), range(30))
     print("s1", s1)
+    print("s2", s2)
     print("a", a)
-    print("s1 < a", s1 < a)
-    print("set(s1) < set(a)", set(s1) < set(a))
+    print("s2 < a", s2 < a)
+    print("a < s2", a < s2)
+    print("s2 > a", s2 > a)
+    print("set(s2) == set(a)", set(s2) == set(a))
+    print("s2 == a", s2 == a)
+    print("set(s2) < set(a)", set(s2) < set(a))
+    print("set(s2) <= set(a)", set(s2) <= set(a))
+    print("s2 << a", s2 << a)
+    print("a << s2", a << s2)
 
     print("s0 found in [s1, s2]?", s0 in [s1, s2])
 
     b = a.difference([2, 3])
     print(b, type(b))
+
+    print(set([s0, s1, s2, a]))
