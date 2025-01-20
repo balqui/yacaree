@@ -23,9 +23,9 @@ epsilon: to compare floats to zero, try to avoid using it - TO BE REMOVED
 
 pend_len_limit: limit on the size of the heap of closures pending for expansion - TO BE POSSIBLY REMOVED
 
-pend_total_limit: max total length of info related to the pending closures - TO BE POSSIBLY REMOVED
+pend_total_limit: max total length of info related to the pending closures - REMOVING IT
 
-pend_mem_limit ???
+pend_mem_limit (was never actually implemented, TO BE REMOVED)
 
 boostab: stability of boost, weight of current value in front of lift values coming in - TO STAY
 
@@ -61,8 +61,8 @@ class HyperParam:
         ## standard process:
         
         self.pend_len_limit = 16384 # 1000 # 16384 # 2 to power 14
-        self.pend_total_limit = 100000000 # 100000 # 100000000
-        self.pend_mem_limit = 1000000000 # 1GB
+        # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
+        # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)
         self.confthr = int(0.65 * self.scale)
         self.findrules = 0

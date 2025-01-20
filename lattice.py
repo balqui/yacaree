@@ -22,6 +22,12 @@ ToDo:
  maxnonsupp that is below supp, if it exists, o/w must mine
  load only a part of the closures in the available file, if desired support
  is higher than in the file
+
+CAVEAT: unclear whether pushing the suppratio constraint is not closing
+access to other valid parts of the lattice. Currently there are multiple
+paths to everywhere and not many such cases are likely to exist but when
+ClMiner evolves into Troppus this might become noticeable.
+
 """
 
 from heapq import heapify, heappush, heappop

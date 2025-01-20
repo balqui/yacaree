@@ -81,7 +81,7 @@ class ItSet(set):
         self.supp = len(supportset)
         ItSet.cnt += 1
         self.tie_breaker = ItSet.cnt
-        print(" *** created:", self, self.supportset, self.tie_breaker)
+        # ~ print(" *** created:", self, self.supportset, self.tie_breaker)
 
     # ~ def __eq__(self, other):
         # ~ return self.contents == other.contents

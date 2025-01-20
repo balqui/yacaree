@@ -149,7 +149,7 @@ class ClMiner:
 
         pend_clos = list(clos_singl)
         heapify(pend_clos)
-        print(" ===== heapified:", [str(e) for e in pend_clos])
+        # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
 
         self.minsupp = self.dataset.nrtr
         while pend_clos and IFace.running:
@@ -172,7 +172,7 @@ class ClMiner:
                 IFace.hpar.please_report = True
                 self.intsupp = new_supp
             cl = heappop(pend_clos)
-            print(" +++++ just popped:", cl)
+            # ~ print(" +++++ just popped:", cl)
             spp = cl.supp
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
@@ -193,12 +193,12 @@ class ClMiner:
 
             for ext in clos_singl:
                 "try extending with freq closures of singletons"
-                print(" +++++ ext tried:", ext)
+                # ~ print(" +++++ ext tried:", ext)
                 # ~ if (not set(ext) <= set(cl)
                 # ~ and not set(cl) <= set(ext)):
                 if not ext << cl and not cl << ext:
                     "'subset or eq' overrides lshift"
-                    print(" +++++ ext fires!")
+                    # ~ print(" +++++ ext fires!")
                     supportset = cl.supportset & ext.supportset
                     spp = len(supportset)
                     if spp <= self.intsupp:
@@ -210,9 +210,9 @@ class ClMiner:
                         "find closure and test duplicateness"
                         next_clos = ItSet(self.dataset.inters(supportset), supportset)
                         if next_clos not in pend_clos:
-                            print(" +++++ ext is new.")
+                            # ~ print(" +++++ ext is new.")
                             heappush(pend_clos, next_clos)
-                            print(" ===== heapified:", [str(e) for e in pend_clos])
+                            # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
 
     def to_percent(self, anyintsupp):
         """
