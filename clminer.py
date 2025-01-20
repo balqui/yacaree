@@ -17,9 +17,9 @@ Still pending: handle the neg border,
  consider sending the neg border from this iterator and
   handling these issues in lattice
 
-TOWARDS MAIN CHANGE IN 2025: INSTEAD OF CONSTRUCTING AN ItSet
-TO YIELD WE STORE ALREADY ItSet's IN THE HEAP, SO AS TO USE
-THE STANDARD heapq LIBRARY.
+Main change in Nivose 2025: standard heap instead of dedicated
+one, storing already-created ItSet elements which compare 
+appropriately.
 """
 
 from math import floor
@@ -45,7 +45,8 @@ def test_size(stdheap):
 		"""
 		too many closures pending expansion: raise
 		the support bound so that about half of the
-		heap becomes discarded.
+		heap becomes discarded. Careful that support-tied
+        ItSet's are either all kept or all discarded.
 		"""
 		lim = count // 2
 		current_supp = stdheap[0].supp

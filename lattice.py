@@ -52,8 +52,8 @@ class Lattice:
 
     CAVEAT: Should we dispense with the supportset in ItSet's once
     they have been mined? Then we only need the supp but is the 
-    rescued memory useful enough to spend a bit of time (by our 
-    deletion and by the garbage collector)?
+    rescued memory useful enough to spend that time (by our deletion 
+    and by the garbage collector)?
     """
 
     def __init__(self, iface, hpar, dataset):
