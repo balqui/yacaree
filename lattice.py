@@ -1,4 +1,12 @@
 """
+
+TO THINK ABOUT TOMORROW: EXAMPLE OF FULL UNIV, NOT IMMPRED OF
+ANYTHING, HENCE NO OPTION TO GIVE IT A SUPPRATIO, SIMPLEST
+EXAMPLE OF WHAT HAPPENS WHEN A SET IS NOT IMMPRED OF ANY
+FREQUENT CLOSURE.
+
+
+
 Package: lattice based on Hasse edges, that is, list of
 immediate predecessors for each node
 
@@ -62,10 +70,10 @@ class Lattice:
 
     def __init__(self, dataset):
         self.dataset = dataset
-        self.closeds = []
-        self.supps = {}
-        self.suppratios = defaultdict(inffloat)
-        self.union_cover = defaultdict(set)
+        self.closeds = []                       # to be replaced by immpreds dict, now that it keeps order of arrival
+        self.supps = {}                         # to be replaced by field in ItSet
+        self.suppratios = defaultdict(inffloat) # to be replaced by field in ItSet
+        self.union_cover = defaultdict(set)     # review paper and clarify need
         self.immpreds = defaultdict(list)
         self.ready = []
         self.freezer = []
@@ -83,7 +91,7 @@ class Lattice:
         lie on iterator from ClMiner
         """
         bord = set([])
-        self.miner = ClMiner(self.dataset) # supp extra?
+        self.miner = ClMiner(self.dataset, supp = 0) # use this instead of hpar.genabsupp
         # ~ for (node,supp) in self.miner.mine_closures():
         for itst in self.miner.mine_closures():
             """
@@ -94,16 +102,20 @@ class Lattice:
             closeds and use nodes instead
             suppratios undefined for maximal sets - do we need this?
             first node in list is closure of empty set
-            union_cover init is always empty
+            union_cover init is always empty 
+            (can we make do with a single union_cover instead of a dict?)
             """
-            print(" ....... border received:", itst, "of type", type(itst))
+            print(" ....... miner sent:", itst)
             supp = itst.supp
             node = frozenset(itst)
-            self.closeds.append(node) # WRONG IF CALLED TWICE
+            # ~ node = itst # FAILS, INTERSECT WITH FROZENSET IS NOT FROZENSET BUT SET
+            self.closeds.append(node) # WRONG IF CALLED TWICE / WRONG INDENTS COMING
             self.supps[node] = supp
             for pot_cover in [ node.intersection(bord_elem) 
                                for bord_elem in bord ]:
-                if node.intersection(self.union_cover[pot_cover]) <= pot_cover:
+               # ~ print(" ....... considering", pot_cover, "of type", type(pot_cover), "for", node)
+               if node.intersection(self.union_cover[pot_cover]) <= pot_cover:
+                    print(" ....... found that", pot_cover, "is immpred of", node)
                     self.immpreds[node].append(pot_cover)
                     if not self.union_cover[pot_cover]:
                         "first successor of pot_cover: gives supprat"
@@ -121,7 +133,7 @@ class Lattice:
                     self.union_cover[pot_cover].update(node)
                     print(" ....... take from bord:", pot_cover)
                     bord.discard(pot_cover)
-            print(" ....... put in bord:", node)
+            print(" ....... add", node, "to bord:", bord)
             bord.add(node)
 
             while self.ready:

@@ -115,24 +115,20 @@ class ClMiner:
         clos_singl = set()
         for it in self.dataset.univ:
             """
-            Find closures of singletons: each has
+            Find closures of singletons: as ItSet's so that each has 
             support, contents, and set of supporting transactions.
             CAVEAT: actually this process finds single-antecedent
             full implications and may result in implminer doing
             redundant work.
-            CAVEAT: the first if/break discards part of the 
-            negative border of the emptyset, hope that this
-            is harmless, but think.
             """
             s = len(self.dataset.occurncs[it])
             self.maxitemsupp = max(self.maxitemsupp, s)
             if s <= self.intsupp:
                 self.maxitemnonsupp = max(self.maxitemnonsupp, s)
-                self.maxnonsupp = max(self.maxnonsupp, s)
-                # ~ break # "no items remain with supp > intsupp NOT ANYMORE AS ITEMS TRAVERSED UNSORTED"
             supportingset = self.dataset.occurncs[it]
             clos = ItSet(self.dataset.inters(supportingset), supportingset)
             clos_singl.add(clos)
+        self.maxnonsupp = self.maxitemnonsupp # for now
         IFace.report(str(len(clos_singl)) +
                      " singleton-based closures.")
         return clos_singl
@@ -149,7 +145,7 @@ class ClMiner:
 
         pend_clos = list(clos_singl)
         heapify(pend_clos)
-        # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
+        print(" ===== heapified:", [str(e) for e in pend_clos])
 
         self.minsupp = self.dataset.nrtr
         while pend_clos and IFace.running:
@@ -212,7 +208,7 @@ class ClMiner:
                         if next_clos not in pend_clos:
                             # ~ print(" +++++ ext is new.")
                             heappush(pend_clos, next_clos)
-                            # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
+                            print(" ===== heapified:", [str(e) for e in pend_clos])
 
     def to_percent(self, anyintsupp):
         """

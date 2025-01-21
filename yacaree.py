@@ -47,7 +47,7 @@ class Yacaree:
         if self.hpar.maxrules == 0:
             self.iface.report("Providing all rules as output.")
         self.iface.running = True
-        miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = False) # supprat: push suppratio constraint
+        miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = True) # supprat: push suppratio constraint
         rules = []
         for rul in miner.minerules():
             "if someday Rule has comparison, remove mentions to rulecnt"

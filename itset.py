@@ -36,6 +36,18 @@ support-based for the heap and mere subset order. We customize
 "<" as support-based order for the heap and customize the "shift"
 operator "<<" to mean instead the subset-or-equal relation.
 
+Also: inheriting from frozenset does not work, since init requires
+two parameters but somehow the instantiation mandates only one and
+both one and two parameters raise errors. (Probably something to
+do with __new__, maybe will try to find out some day.)
+
+In Lattice I need to intersect ItSet's and use the outcome to index
+a dict. I could give ItSet an intersect method but it would have to
+construct unions of the lists of transactions, and it is unclear 
+that this is needed. For the time being, I take them down to frozensets
+at the time of intersecting.
+
+Old:
 
 def __init__(self, contents=[], supp = float("inf")):
     frozenset.__init__(self, contents)
@@ -55,7 +67,8 @@ if __name__=="__main__":
 Had a version in @dataclass form, but required looking up
 the contents field to operate and I decided to get back to
 inheriting from set (try not no use frozensets initially
-as they are no longer to index the supports dict in lattice).
+as they are no longer to index the supports dict in lattice...
+but they index other dict's and belong to other set's).
 """
 
 # ~ from functools import total_ordering
@@ -79,6 +92,7 @@ class ItSet(set):
         self._hash = hash(frozenset(contents))
         self.supportset = supportset
         self.supp = len(supportset)
+        self.suppratio = 0 # placeholder for later
         ItSet.cnt += 1
         self.tie_breaker = ItSet.cnt
         # ~ print(" *** created:", self, self.supportset, self.tie_breaker)
@@ -110,7 +124,7 @@ class ItSet(set):
     def __hash__(self):
         """
         Try to make it hashable so that they can be in set's and
-        index dict's.
+        index dict's exactly as the frozenset of the contents.
         """
         return self._hash
 

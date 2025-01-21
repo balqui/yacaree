@@ -47,7 +47,7 @@ class Dataset:
         for line in IFace.datafile:
             isempty = True
             for el in line.strip().split():
-                if len(el)>0:
+                if len(el) > 0:
                     isempty = False
                     self.nrocc += 1
                     self.univ.add(el)
