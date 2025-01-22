@@ -1,7 +1,7 @@
 """
 yacaree
 
-Current revision: mid / late Frimaire 2024
+Current revision: mid / late Frimaire 2024 (but inffloat in Pluviose 2025)
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -59,6 +59,7 @@ class HyperParam:
         # report current support at most that many times # changed concept
 
         self.inffloat = float("inf") # infinite float, e.g. suppratios
+        # ~ unclear whether worth it!
 
         ## standard process:
         

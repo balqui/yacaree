@@ -1,8 +1,26 @@
 """
-Package: lattice based on Hasse edges, that is, list of
-immediate predecessors for each node
+yacaree
+
+Current revision: early Pluviose 2025
+
+Lattice based on Hasse edges, that is, 
+list of immediate predecessors for each node
 
 Programmers: JLB
+
+To take the dicts away (e.g. suppratio) I have the problem
+that the potential covers, intersections of ItSets with border 
+sets, are NOT ItSets right now and I have no idea of their
+supportsets or supports. Can I look this up somewhere? The
+info IS there but is in the keys of dict's such as immpreds,
+the frozenset suffices to access the value of the dict but
+I want to access... the key!?!?!
+
+Postponing decisions and accepting quite an inefficiency
+penalty for now, I move on into a Lattice that is a defaultdict
+of pairs, simplified ItSet with just contents and support
+plus list of immediate predecessors, also simplified ItSet's.
+Put these pairs into a new dataclass, here in the same file.
 
 Offers:
 .very simple init
@@ -55,6 +73,12 @@ from dataset import Dataset
 from clminer import ClMiner
 ##from border_v10 import Border
 
+@dataclass
+class LattItSet:
+    "ItSet's here are simplified, no supportset stored"
+    itst: ItSet 
+    immpreds: list
+
 def inffloat(): # Hope to get rid of it soon
     "functional form for the suppratios defaultdict factory"
     return IFace.hpar.inffloat 
@@ -100,9 +124,9 @@ class Lattice:
         self.miner = ClMiner(self.dataset, supp)
         for itst in self.miner.mine_closures():
             """
-            closures come in either nonincreasing support or nondecreasing
-            size, hence all subsets of each closure come before it - needed
-            for the closure op
+            Closures come in either nonincreasing support or 
+            nondecreasing size, hence all subsets of each closure 
+            come before it - needed for the closure op.
             if dict could be iterated in order of arrival, can dispose of
             closeds and use nodes instead
             suppratios undefined for maximal sets - do we need this?

@@ -6,6 +6,8 @@ Current revision: late Nivose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
+Consider migrating it into a frozen dataclass.
+
 Careful: a hash is defined to use ItSet's as set members and 
 dict keys; ItSet should be handled always as immutable even though
 the program does not control that instances don't change.
@@ -96,7 +98,7 @@ class ItSet(set):
         self._hash = hash(frozenset(contents))
         self.supportset = supportset
         self.supp = len(supportset)
-        self.suppratio = 0 # placeholder for later
+        self.suppratio = float("inf") # default
         ItSet.cnt += 1
         self.tie_breaker = ItSet.cnt
         # ~ print(" *** created:", self, self.supportset, self.tie_breaker)
