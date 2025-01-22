@@ -88,20 +88,16 @@ class Lattice:
         self.boosthr = IFace.hpar.initialboost
         self.miner = None
 
-    def candidate_closures(self):
+    def candidate_closures(self, supp = -1):
         """
-        DO NOT CALL THIS METHOD TWICE
-        (supp extra arg default 0? Think!)
-        iterate over closures that reach support ratio
-        above current value of boosthr
-        and support above supp in [0,1] (?),
-        default as indicated by statics.genabsupp (?)
-        lie on iterator from ClMiner
+        supp == -1: use hpar.genabsupp;
+        o/w, expected in [0, 1]: use it instead.
+        Iterate over closures that reach that support 
+        and support ratio above current value of boosthr.
+        Relies on iterator from ClMiner.
         """
         bord = set([])
-        # ~ self.miner = ClMiner(self.dataset, supp = 1/10) # use this instead of hpar.genabsupp
-        # ~ self.miner = ClMiner(self.dataset, supp = 0) # use this instead of hpar.genabsupp
-        self.miner = ClMiner(self.dataset) # use hpar.genabsupp
+        self.miner = ClMiner(self.dataset, supp)
         for itst in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing
@@ -279,7 +275,7 @@ if __name__=="__main__":
     
     la = Lattice(d)
 
-    la.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
+    # ~ la.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
     closlist = list()
     for a in la.candidate_closures():
         "This had a 0.1 arg"

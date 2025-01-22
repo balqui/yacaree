@@ -1,7 +1,7 @@
 """
 yacaree
 
-Current revision: late Nivose 2025
+Current revision: early Pluviose 2025
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -79,14 +79,14 @@ class ClMiner:
         May receive an external support bound in (0,1];
         otherwise, resorts to IFace.hpar.genabsupp 
         (most often, that is the case). 
-        The evolving support bound is self.intsupp,
-        scaled into int in [0, dataset.nrtr].
+        The evolving support bound is self.intsupp:
+        supp scaled into int in [0, dataset.nrtr].
         Bound usage is always "supp > self.intsupp"
         with a proper inequality.
         Initializes other quantities and starts by 
         finding closures of singletons.
-        CAVEAT: it finishes now at the positive border
-        but should complete the negative border too,
+        CAVEAT: it finishes now yielding the positive border 
+        but might one day complete the negative border too,
         so that the info for computing cboost is there.
         """
         self.dataset = dataset
@@ -96,13 +96,14 @@ class ClMiner:
             self.intsupp = IFace.hpar.genabsupp
         # ~ self.supp_percent = self.to_percent(self.intsupp) # CAN I GET RID OF THIS?
         self.card = 0
-        self.negbordsize = 0
+        # ~ self.negbordsize = 0
         self.minsupp = 0
 
     def _handle_singletons(self):
         """
-        Pairs up items with their supports and returns the set
-        of closures of singletons, to be heapified later. 
+        Pairs up items with their supports and returns the set of
+        closures of singletons, conditioned to sufficient support,
+        to be heapified later,
         """
         IFace.report("Initializing singletons.")
         self.maxitemsupp = 0
@@ -122,12 +123,14 @@ class ClMiner:
             self.maxitemsupp = max(self.maxitemsupp, s)
             if s <= self.intsupp:
                 self.maxitemnonsupp = max(self.maxitemnonsupp, s)
-            supportingset = self.dataset.occurncs[it]
-            clos = ItSet(self.dataset.inters(supportingset), supportingset)
-            clos_singl.add(clos)
+                # ~ print(" ==== closure of:", it, "below support;")
+            else:
+                supportingset = self.dataset.occurncs[it]
+                clos = ItSet(self.dataset.inters(supportingset), supportingset)
+                clos_singl.add(clos)
         self.maxnonsupp = self.maxitemnonsupp # for now
-        IFace.report(str(len(clos_singl)) +
-                     " singleton-based closures.")
+        IFace.report(f"{len(clos_singl)} singleton-generated" + 
+                     f"closures at support above {self.intsupp}.")
         return clos_singl
 
 
@@ -142,7 +145,7 @@ class ClMiner:
 
         pend_clos = list(clos_singl)
         heapify(pend_clos)
-        print(" ===== heapified:", [str(e) for e in pend_clos])
+        # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
 
         self.minsupp = self.dataset.nrtr
         while pend_clos and IFace.running:
@@ -165,7 +168,6 @@ class ClMiner:
                 IFace.hpar.please_report = True
                 self.intsupp = new_supp
             cl = heappop(pend_clos)
-            # ~ print(" +++++ just popped:", cl)
             spp = cl.supp
             if spp < self.intsupp:
                 "maybe intsupp has grown in the meantime (neg border)"
@@ -191,21 +193,20 @@ class ClMiner:
                 # ~ and not set(cl) <= set(ext)):
                 if not ext << cl and not cl << ext:
                     "'subset or eq' overrides lshift"
-                    # ~ print(" +++++ ext fires!")
                     supportset = cl.supportset & ext.supportset
                     spp = len(supportset)
+                    # ~ print(" +++++ ext support:", spp)
                     if spp <= self.intsupp:
                         "unclear whether storing here would suffice to keep negbord"
-                        self.negbordsize += 1
+                        # ~ self.negbordsize += 1
                         if spp > self.maxnonsupp:
                             self.maxnonsupp = spp
                     else:
                         "find closure and test duplicateness"
                         next_clos = ItSet(self.dataset.inters(supportset), supportset)
                         if next_clos not in pend_clos:
-                            # ~ print(" +++++ ext is new.")
                             heappush(pend_clos, next_clos)
-                            print(" ===== heapified:", [str(e) for e in pend_clos])
+                            # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
 
     def to_percent(self, anyintsupp):
         """
@@ -217,8 +218,6 @@ class ClMiner:
         """
         return (floor(IFace.hpar.scale*anyintsupp*100.0/self.dataset.nrtr) /
                 IFace.hpar.scale)
-        
-# ~ TESTING PHASE TO BE REDESIGNED	
 
 if __name__ == "__main__":
 
@@ -226,7 +225,8 @@ if __name__ == "__main__":
     from hyperparam import HyperParam
 
     # ~ fnm = "data/lenses_recoded"
-    fnm = "data/toy"
+    # ~ fnm = "data/toy"
+    fnm = "data/e24t.td"
     # ~ fnm = "data/e13"
     # ~ fnm = "data/adultrain"
 
@@ -234,8 +234,11 @@ if __name__ == "__main__":
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
+    # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
+    # ~ miner = ClMiner(d, 3/24)
     miner = ClMiner(d)
+    print(miner.intsupp)
     for cl in miner.mine_closures():
         print(cl)
 

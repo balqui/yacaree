@@ -10,6 +10,10 @@ Careful: a hash is defined to use ItSet's as set members and
 dict keys; ItSet should be handled always as immutable even though
 the program does not control that instances don't change.
 
+A simplified version might be handy where we only keep contents 
+and supp, forgetting supportset and suppratio once they have 
+fulfilled their roles.
+
 History:
 
 Programmed as

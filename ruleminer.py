@@ -28,7 +28,7 @@ class RuleMiner: # Does not subclass Lattice anymore
         "some codes, reserved rules, and average lift so far"
         self.latt = Lattice(dataset)
         if not supprat:
-            self.latt.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
+            self.latt.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH, BUT DO IT SOMEHOW ELSE
         self.count = 0
         self.DISCARD = -1
         self.reserved = []
@@ -39,9 +39,13 @@ class RuleMiner: # Does not subclass Lattice anymore
         self.sumlifts += lft
         self.numlifts += 1
 
-    def minerules(self,safetysupp=0):
-        for cn in self.latt.candidate_closures(): 
-            "check that suppratio constraint already pushed"
+    def minerules(self, supp = -1):
+        """
+        supp == -1: use hpar.genabsupp;
+        o/w, expected in [0, 1]: use it instead.
+        Early version had an undocumented 'safetysupp' instead.
+        """
+        for cn in self.latt.candidate_closures(supp): 
             yield (cn, self.latt.immpreds[cn])
             # ~ for rul in mine_implications(self,cn):
                 # ~ yield rul
