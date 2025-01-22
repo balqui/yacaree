@@ -88,9 +88,6 @@ class ClMiner:
         CAVEAT: it finishes now at the positive border
         but should complete the negative border too,
         so that the info for computing cboost is there.
-        CAVEAT: A good part of this is not init material 
-        but mineclosures material (initmine to be called
-        from mineclosures once the heap is there)
         """
         self.dataset = dataset
         if supp > -1:

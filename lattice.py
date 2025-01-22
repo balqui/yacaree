@@ -1,12 +1,4 @@
 """
-
-TO THINK ABOUT TOMORROW: EXAMPLE OF FULL UNIV, NOT IMMPRED OF
-ANYTHING, HENCE NO OPTION TO GIVE IT A SUPPRATIO, SIMPLEST
-EXAMPLE OF WHAT HAPPENS WHEN A SET IS NOT IMMPRED OF ANY
-FREQUENT CLOSURE.
-
-
-
 Package: lattice based on Hasse edges, that is, list of
 immediate predecessors for each node
 
@@ -36,6 +28,22 @@ access to other valid parts of the lattice. Currently there are multiple
 paths to everywhere and not many such cases are likely to exist but when
 ClMiner evolves into Troppus this might become noticeable.
 
+About the wrong suppratio at positive border: 
+skipped at v1.0, v1.1 approximates it 
+assuming minsupp for closures below thr but then supprt==1 too often
+supprt = float(self.supps[st])/self.miner.minsupp
+Plans to get their correct suppratio
+out of the negative border - NOT THAT EASY! 
+(and what if no neg border exists?)
+tried 2 (a sort of infinity), then tried the absolute 
+boost threshold supprt = statics.absoluteboost
+so that only relevant in case the boost threshold really 
+drops to the limit - both unconvincing
+Got back for 1.2.1 to the same strategy as in 1.1
+The formal solution is infinity due to the condition on
+support in the formal definition of suppratio in the paper:
+bigger sets will not be mined so the rules that would force
+down the cboost due to suppratio will not be shown anyway.
 """
 
 from heapq import heapify, heappush, heappop
@@ -47,9 +55,9 @@ from dataset import Dataset
 from clminer import ClMiner
 ##from border_v10 import Border
 
-def inffloat():
-    "infinite float for the suppratios defaultdict factory"
-    return float("inf")
+def inffloat(): # Hope to get rid of it soon
+    "functional form for the suppratios defaultdict factory"
+    return IFace.hpar.inffloat 
 
 class Lattice:
     """
@@ -91,8 +99,9 @@ class Lattice:
         lie on iterator from ClMiner
         """
         bord = set([])
-        self.miner = ClMiner(self.dataset, supp = 0) # use this instead of hpar.genabsupp
-        # ~ for (node,supp) in self.miner.mine_closures():
+        # ~ self.miner = ClMiner(self.dataset, supp = 1/10) # use this instead of hpar.genabsupp
+        # ~ self.miner = ClMiner(self.dataset, supp = 0) # use this instead of hpar.genabsupp
+        self.miner = ClMiner(self.dataset) # use hpar.genabsupp
         for itst in self.miner.mine_closures():
             """
             closures come in either nonincreasing support or nondecreasing
@@ -143,35 +152,31 @@ class Lattice:
                 """
                 yield heappop(self.ready)[1]
 
-        print(" ....... now pending bord w/ wrong suppratios...")
+        print(" ....... now pending bord w/o suppratios")
         for st in bord:
-            """
-            there remain to yield the positive border (maximal sets) 
-            wrong suppratio there, skipped at v1.0, v1.1 approximates it 
-            assuming minsupp for closures below thr but then supprt==1 too often
-            supprt = float(self.supps[st])/self.miner.minsupp
-            next version of yacaree should get their correct suppratio
-            out of the negative border - NOT THAT EASY! 
-            (and what if no neg border exists?)
-            tried 2 (a sort of infinity), then tried the absolute 
-            boost threshold supprt = statics.absoluteboost
-            so that only relevant in case the boost threshold really 
-            drops to the limit - both unconvincing
-            now getting back for 1.2.1 to the same strategy as in 1.1
-            """
-            supprt = float(self.supps[st])/self.miner.minsupp
-            self.suppratios[st] = supprt
-            if supprt >= self.boosthr:
-                print(" ....... from bord to ready:", st)
-                heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
-            else:
-                print(" ....... from bord to freezer:", st)
-                heappush(self.freezer,(-supprt,st))
+            yield st
+
+        # ~ print(" ....... now pending bord w/ wrong suppratios...")
+        # ~ for st in bord:
+            # ~ """
+            # ~ There remain to yield the positive border (maximal sets).
+            # ~ Earlier versions still tried to split them into ready and
+            # ~ freezer but freezing them due to an approximate suppratio
+            # ~ does not fit the formal definition in the ToKD paper.
+            # ~ """
+            # ~ supprt = float(self.supps[st])/self.miner.minsupp
+            # ~ self.suppratios[st] = supprt
+            # ~ if supprt >= self.boosthr:
+                # ~ print(" ....... from bord to ready:", st)
+                # ~ heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
+            # ~ else:
+                # ~ print(" ....... from bord to freezer:", st)
+                # ~ heappush(self.freezer,(-supprt,st))
             
-        print(" ....... yielding ready leftovers...")
-        while self.ready:
-            yield heappop(self.ready)[1]
-        print(" ....... left over in freezer:", self.freezer)
+        # ~ print(" ....... yielding ready leftovers...")
+        # ~ while self.ready:
+            # ~ yield heappop(self.ready)[1]
+        # ~ print(" ....... left over in freezer:", self.freezer)
 
     def allpreds(self,node,spbd=-1):
         """

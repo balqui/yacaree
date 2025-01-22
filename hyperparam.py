@@ -57,7 +57,9 @@ class HyperParam:
         self.boostab = 5
         self.supp_rep_often = 100 # every that many closures unless verbose
         # report current support at most that many times # changed concept
-        
+
+        self.inffloat = float("inf") # infinite float, e.g. suppratios
+
         ## standard process:
         
         self.pend_len_limit = 16384 # 1000 # 16384 # 2 to power 14
