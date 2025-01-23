@@ -73,9 +73,9 @@ from dataset import Dataset
 from clminer import ClMiner
 ##from border_v10 import Border
 
-def inffloat(): # Hope to get rid of it soon
-    "functional form for the suppratios defaultdict factory"
-    return IFace.hpar.inffloat 
+# ~ def inffloat(): # Hope to get rid of it soon
+    # ~ "functional form for the suppratios defaultdict factory"
+    # ~ return IFace.hpar.inffloat 
 
 class Lattice(dict):
     """
@@ -85,6 +85,7 @@ class Lattice(dict):
     then can be accessed from either the frozenset alone or
     the whole ItSet. Values are pairs: whole ItSet to complete
     info from frozenset of contents and list of predecessors.
+    As now dict ensures to keep arrival order, it is support order.
 
     Previous docstring from version 1.*:
     Lattice implemented as explicit list of closures from clminer
@@ -105,11 +106,11 @@ class Lattice(dict):
     def __init__(self, dataset):
         super().__init__(self)
         self.dataset = dataset
-        self.closeds = []                       # to be replaced by inherited dict, now that it keeps order of arrival
-        self.supps = {}                         # to be replaced by field in ItSet
-        self.suppratios = defaultdict(inffloat) # to be replaced by field in ItSet
+        # ~ self.closeds = [] # to be replaced by inherited dict, now that it keeps order of arrival
+        # ~ self.supps = {}                         # to be replaced by field in ItSet
+        # ~ self.suppratios = defaultdict(inffloat) # to be replaced by field in ItSet
         self.union_cover = defaultdict(set)     # review paper and clarify need
-        self.immpreds = defaultdict(list)       # to be replaced by inherited dict
+        # ~ self.immpreds = defaultdict(list)   # to be replaced by inherited dict
         # ~ self.ready = []
         # ~ self.freezer = []
         self.boosthr = IFace.hpar.initialboost
@@ -141,13 +142,13 @@ class Lattice(dict):
             union_cover init is always empty 
             (can we make do with a single union_cover instead of a dict?)
             """
-            print(" ....... miner sent:", itst)
+            print(" .... miner sent:", itst)
             supp = itst.supp
             # ~ node = frozenset(itst)
             # ~ node = itst
             self[frozenset(itst)] = (itst, list()) # repeated contents, unavoidable I guess
-            self.closeds.append(itst) # TO BE REMOVED
-            self.supps[itst] = supp
+            # ~ self.closeds.append(itst) # TO BE REMOVED
+            # ~ self.supps[itst] = supp
             for pot_cover, bord_elem in [ (itst.intersection(bord_elem), bord_elem) 
                                for bord_elem in bord ]:
                 "seems that some of these intersections are repeated, no error since different union_cover"
@@ -158,22 +159,24 @@ class Lattice(dict):
                 print(" ....... comparing", itst.intersection(self.union_cover[pot_cover]), "with", pot_cover)
                 if itst.intersection(self.union_cover[pot_cover]) <= pot_cover:
                     print(" ....... found that", pot_cover.fullstr(), "is immpred of", itst.fullstr())
-                    self.immpreds[itst].append(pot_cover)
+                    self[itst][1].append(pot_cover)
                     if not self.union_cover[pot_cover]:
-                        "first successor of pot_cover: gives supprat"
-                        supprat = float(self.supps[pot_cover])/supp
-                        self.suppratios[pot_cover] = supprat
-                        if supprat >= self.boosthr:
+                        "first successor of pot_cover: gives its suppratio"
+                        pot_cover.suppratio = float(pot_cover.supp)/supp
+                        # ~ self.suppratios[pot_cover] = supprat
+                        if pot_cover.suppratio >= self.boosthr:
                             print(" ....... to ready:", pot_cover)
                             # ~ heappush(self.ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
-                            heappush(ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
+                            # ~ heappush(ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
+                            heappush(ready, pot_cover)
+                            print(" .... ready:", ' '.join(str(e) for e in ready))
                         else:
                             """
                             Let it wait: pushing suppratio constraint"
                             """
                             print(" ....... to freezer:", pot_cover)
                             # ~ heappush(self.freezer,(-supprat,pot_cover))
-                            heappush(freezer,(-supprat,pot_cover))
+                            heappush(freezer, (-pot_cover.suppratio, pot_cover))
                     self.union_cover[pot_cover].update(itst)
                     print(" ....... take from bord:", pot_cover)
                     bord.discard(pot_cover)
@@ -187,7 +190,7 @@ class Lattice(dict):
                 predecessor so suppratio correct, but lack other preds
                 """
                 # ~ yield heappop(self.ready)[1]
-                yield heappop(ready)[1]
+                yield heappop(ready)
 
         print(" ....... now pending bord w/o suppratios")
         for st in bord:
@@ -225,31 +228,32 @@ class Lattice(dict):
         """
         if spbd < 0:
             spbd = self.dataset.nrtr
-        pending = [ e for e in self.immpreds[node] if self.supps[e] <= spbd ]
+        pending = [ e for e in self[node][1] if e.supp <= spbd ]
         handled = set(pending)
         while pending:
             p = pending.pop()
             yield p
-            for q in self.immpreds[p]:
-                if self.supps[q] <= spbd and q not in handled:
+            for q in self[p][1]:
+                if q.supp <= spbd and q not in handled:
                     handled.add(q)
                     pending.append(q)
 
-    def close(self,st):
-        "closure of set st according to current closures list"
-        fst = ItSet(st)
-        if fst in self.immpreds:
-            "fast to test with hash, little expense may save a lot"
-            return fst
-        for node in self.closeds:
-            "linear search - risks being slow"
-            if st <= node:
-                "largest support closure containing st"
-                break
-        else:
-            "should check that node is included in universe"
-            node = ItSet(self.dataset.univ)
-        return node
+# ~ Make sure whether I really need it, then refactor and avoid closeds
+    # ~ def close(self,st):
+        # ~ "closure of set st according to current closures list"
+        # ~ fst = ItSet(st)
+        # ~ if fst in self.immpreds:
+            # ~ "fast to test with hash, little expense may save a lot"
+            # ~ return fst
+        # ~ for node in self.closeds:
+            # ~ "linear search - risks being slow"
+            # ~ if st <= node:
+                # ~ "largest support closure containing st"
+                # ~ break
+        # ~ else:
+            # ~ "should check that node is included in universe"
+            # ~ node = ItSet(self.dataset.univ)
+        # ~ return node
 
 # ~ set2node undefined - luckily isclosed never called
     # ~ def isclosed(self,st):
@@ -258,8 +262,9 @@ class Lattice(dict):
 
     def __str__(self):
         s = ""
-        for e in sorted(self.closeds):
-            s += str(e) + "\n"
+        for e in self:
+            s += str(self[e][0]) + f" {self[e][0].suppratio:2.3f} " \
+              + ' '.join(str(p) for p in self[e][1]) + "\n"
         return s
 
     def reviseboost(self,s,n):
@@ -279,8 +284,9 @@ class Lattice(dict):
             while self.freezer:
                 "fish back in closures that reach enough supp ratio now"
                 if -self.freezer[0][0] > self.boosthr:
-                    (spp,st) = heappop(self.freezer)
-                    heappush(self.ready,(self.dataset.nrtr-self.supps[st],st))
+                    (spprt,st) = heappop(self.freezer)
+                    assert spprt == -st.suppratio
+                    heappush(self.ready, st)
                 else:
                     break
 
@@ -291,22 +297,23 @@ if __name__=="__main__":
     from hyperparam import HyperParam
 
     def printclos(la, a):
-        print("\nClosure: ", a, la.supps[a])
+        print("\nClosure: ", a, a.supp)
         print("imm preds:")
-        for e in la.immpreds[a]: print(e, ",") #,
+        for e in la[a][1]: print(e, ",") #,
         print()
         print("all preds:")
         for e in la.allpreds(a): print(e, ",") #,
-        if a in la.suppratios:
-            print("supp ratio:", la.suppratios[a])
-        else:
-            print("no supp ratio for", a)
+        print("supp ratio:", a.suppratio)
+        # ~ if a in la.suppratios:
+            # ~ print("supp ratio:", la.suppratios[a])
+        # ~ else:
+            # ~ print("no supp ratio for", a)
         print("\n\n")
 
     # ~ fnm = "data/e13"
-    fnm = "data/e24t.td"
+    # ~ fnm = "data/e24t.td"
     # ~ fnm = "data/toy"
-    # ~ fnm = "data/lenses_recoded.txt"
+    fnm = "data/lenses_recoded.txt"
 
 
     IFace.hpar = HyperParam()
@@ -321,7 +328,7 @@ if __name__=="__main__":
 
     # ~ la.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
     closlist = list()
-    for a in la.candidate_closures():
+    for a in la.candidate_closures(0):
         "This had a 0.1 arg"
         print("\n\nNew closure:")
         printclos(la, a)
@@ -330,6 +337,8 @@ if __name__=="__main__":
     print("At end:")
     for a in closlist:
         printclos(la, a)
+
+    print(la)
 
 ##    la.boosthr = 1.25
 ##    for e in la.candClosures():
