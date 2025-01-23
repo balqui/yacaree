@@ -10,10 +10,16 @@ Consider migrating it into a frozen dataclass.
 
 NEED TO LEARN ABOUT __slots__ AND __new__
 (write to JD about the "trickyness" in 
-https://docs.python.org/3/glossary.html#term-__slots__)
+https://docs.python.org/3/glossary.html#term-__slots__ see also
+https://stackoverflow.com/questions/50180735/how-can-dataclasses-be-made-to-work-better-with-slots/69661861#69661861)
+
+Cannot manage: frozenness applies already at the time of
+running __post_init__ and disallows the late init of supp.
+
 """
 
 from dataclasses import dataclass, field
+from autoincr import AIncr
 
 @dataclass(frozen = True)
 class ItSet:
@@ -21,22 +27,15 @@ class ItSet:
 	supportset: set = field(default_factory=set)
 	supp: int = -1
 	suppratio: float = float("inf")
-	tie_breaker: int = 0
+	tie_breaker: int = AIncr.label
 
 	def __post_init__(self):
 		if self.supp < 0 and self.supportset:
-			self.supp = len(self.supportset) # and now handle the tie breaker
+			self.supp = len(self.supportset)
 
 	def __eq__(self, other):
-		pass
+		return self.contents == other.contents
 
-	@classmethod
-	def _adv_cnt(cls):
-		pass
-
-
-
-    # ~ cnt = 0 # counts created ItSet's to set up the tie_breaker
 
     # ~ def __init__(self, contents = set(), supportset = []):
         # ~ """

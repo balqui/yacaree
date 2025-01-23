@@ -6,11 +6,12 @@ Current revision: late Nivose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
-Consider migrating it into a frozen dataclass.
-
 Careful: a hash is defined to use ItSet's as set members and 
 dict keys; ItSet should be handled always as immutable even though
 the program does not control that instances don't change.
+
+Consider migrating it into a frozen dataclass - TRIED but couldn't
+make it work, see file in scaff folder.
 
 A simplified version might be handy where we only keep contents 
 and supp, forgetting supportset and suppratio once they have 
@@ -85,9 +86,9 @@ but they index other dict's and belong to other set's).
 
 class ItSet(set):
 
-    cnt = 0 # counts created ItSet's to set up the tie_breaker
+    cnt = 0 # counts created ItSet's to set up the tie-breaking label
 
-    def __init__(self, contents = set(), supportset = []):
+    def __init__(self, contents = set(), infosupp = -1):
         """
         Current closure miner puts in heap pending closures with
         their supporting set of transactions. Maybe one day I can
@@ -96,11 +97,16 @@ class ItSet(set):
         """
         super().__init__(contents)
         self._hash = hash(frozenset(contents))
-        self.supportset = supportset
-        self.supp = len(supportset)
+        if type(infosupp) == int:
+            self.supp = infosupp
+            self.supportset = None
+        else:
+            "assumed something with a length"
+            self.supp = len(infosupp)
+            self.supportset = infosupp
         self.suppratio = float("inf") # default
         ItSet.cnt += 1
-        self.tie_breaker = ItSet.cnt
+        self.label = ItSet.cnt
         # ~ print(" *** created:", self, self.supportset, self.tie_breaker)
 
     # ~ def __eq__(self, other):
@@ -118,7 +124,7 @@ class ItSet(set):
         """
         return (self.supp > other.supp or
                 self.supp == other.supp and
-                    self.tie_breaker < other.tie_breaker)
+                    self.label < other.label)
 
     def __lshift__(self, other):
         """
@@ -138,9 +144,28 @@ class ItSet(set):
         return ('{ ' + ', '.join(sorted(str(e) for e in self)) +
                        ' } [' +  str(self.supp) + ']')
 
+    def fullstr(self):
+        s = '[X]' if self.supportset is None else str(sorted(self.supportset))
+        return str(self) + ' / ' + s
+
     def difference(self, anything):
         "returns a plain set, not an ItSet, as we lack supp"
         return self - set(anything)
+
+# ~ WRONG!:
+    # ~ def intersect(self, other):
+        # ~ bad = None
+        # ~ if self.supportset is None:
+            # ~ bad = self
+        # ~ if other.supportset is None:
+            # ~ bad = other
+        # ~ if bad is None:
+            # ~ "fall back into frozenset intersection"
+            # ~ return ItSet(self.intersection(other),
+                # ~ self.supportset.union(other.supportset))
+        # ~ else:
+            # ~ "temporary until seeing whether this happens and how"
+            # ~ raise ValueError(f"Intersect not possible: {bad} lacks support info.")
 
 if __name__ == "__main__":
 

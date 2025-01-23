@@ -73,18 +73,20 @@ from dataset import Dataset
 from clminer import ClMiner
 ##from border_v10 import Border
 
-@dataclass
-class LattItSet:
-    "ItSet's here are simplified, no supportset stored"
-    itst: ItSet 
-    immpreds: list
-
 def inffloat(): # Hope to get rid of it soon
     "functional form for the suppratios defaultdict factory"
     return IFace.hpar.inffloat 
 
-class Lattice:
+class Lattice(dict):
     """
+    Lattice is mainly the ordered dict of closures with their
+    predecessors. Keys are the frozenset of the contents
+    (CAVEAT: might instead think of using the autoincr label?):
+    then can be accessed from either the frozenset alone or
+    the whole ItSet. Values are pairs: whole ItSet to complete
+    info from frozenset of contents and list of predecessors.
+
+    Previous docstring from version 1.*:
     Lattice implemented as explicit list of closures from clminer
     with a dict of closed immediate predecessors for each closure.
     Also iterator on the basis of support and support ratio.
@@ -101,16 +103,17 @@ class Lattice:
     """
 
     def __init__(self, dataset):
+        super().__init__(self)
         self.dataset = dataset
-        self.closeds = []                       # to be replaced by immpreds dict, now that it keeps order of arrival
+        self.closeds = []                       # to be replaced by inherited dict, now that it keeps order of arrival
         self.supps = {}                         # to be replaced by field in ItSet
         self.suppratios = defaultdict(inffloat) # to be replaced by field in ItSet
         self.union_cover = defaultdict(set)     # review paper and clarify need
-        self.immpreds = defaultdict(list)
-        self.ready = []
-        self.freezer = []
+        self.immpreds = defaultdict(list)       # to be replaced by inherited dict
+        # ~ self.ready = []
+        # ~ self.freezer = []
         self.boosthr = IFace.hpar.initialboost
-        self.miner = None
+        # ~ self.miner = None
 
     def candidate_closures(self, supp = -1):
         """
@@ -120,9 +123,13 @@ class Lattice:
         and support ratio above current value of boosthr.
         Relies on iterator from ClMiner.
         """
+        ready = []
+        freezer = []
         bord = set([])
-        self.miner = ClMiner(self.dataset, supp)
-        for itst in self.miner.mine_closures():
+        # ~ self.miner = ClMiner(self.dataset, supp)
+        miner = ClMiner(self.dataset, supp)
+        # ~ for itst in self.miner.mine_closures():
+        for itst in miner.mine_closures():
             """
             Closures come in either nonincreasing support or 
             nondecreasing size, hence all subsets of each closure 
@@ -136,45 +143,57 @@ class Lattice:
             """
             print(" ....... miner sent:", itst)
             supp = itst.supp
-            node = frozenset(itst)
-            # ~ node = itst # FAILS, INTERSECT WITH FROZENSET IS NOT FROZENSET BUT SET
-            self.closeds.append(node) # WRONG IF CALLED TWICE / WRONG INDENTS COMING
-            self.supps[node] = supp
-            for pot_cover in [ node.intersection(bord_elem) 
+            # ~ node = frozenset(itst)
+            # ~ node = itst
+            self[frozenset(itst)] = (itst, list()) # repeated contents, unavoidable I guess
+            self.closeds.append(itst) # TO BE REMOVED
+            self.supps[itst] = supp
+            for pot_cover, bord_elem in [ (itst.intersection(bord_elem), bord_elem) 
                                for bord_elem in bord ]:
-               # ~ print(" ....... considering", pot_cover, "of type", type(pot_cover), "for", node)
-               if node.intersection(self.union_cover[pot_cover]) <= pot_cover:
-                    print(" ....... found that", pot_cover, "is immpred of", node)
-                    self.immpreds[node].append(pot_cover)
+                "seems that some of these intersections are repeated, no error since different union_cover"
+                pot_cover = self[frozenset(pot_cover)][0]
+                print(" ....... considering", pot_cover.fullstr(), "of type", type(pot_cover))
+                print(" ....... for", itst, "due to", bord_elem)
+                print(" ....... as union_cover is", self.union_cover[pot_cover])
+                print(" ....... comparing", itst.intersection(self.union_cover[pot_cover]), "with", pot_cover)
+                if itst.intersection(self.union_cover[pot_cover]) <= pot_cover:
+                    print(" ....... found that", pot_cover.fullstr(), "is immpred of", itst.fullstr())
+                    self.immpreds[itst].append(pot_cover)
                     if not self.union_cover[pot_cover]:
                         "first successor of pot_cover: gives supprat"
                         supprat = float(self.supps[pot_cover])/supp
                         self.suppratios[pot_cover] = supprat
                         if supprat >= self.boosthr:
                             print(" ....... to ready:", pot_cover)
-                            heappush(self.ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
+                            # ~ heappush(self.ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
+                            heappush(ready,(self.dataset.nrtr-self.supps[pot_cover],pot_cover))
                         else:
                             """
                             Let it wait: pushing suppratio constraint"
                             """
                             print(" ....... to freezer:", pot_cover)
-                            heappush(self.freezer,(-supprat,pot_cover))
-                    self.union_cover[pot_cover].update(node)
+                            # ~ heappush(self.freezer,(-supprat,pot_cover))
+                            heappush(freezer,(-supprat,pot_cover))
+                    self.union_cover[pot_cover].update(itst)
                     print(" ....... take from bord:", pot_cover)
                     bord.discard(pot_cover)
-            print(" ....... add", node, "to bord:", bord)
-            bord.add(node)
+            print(" ....... add", itst.fullstr(), "to bord:", bord)
+            bord.add(itst)
 
-            while self.ready:
+            # ~ while self.ready:
+            while ready:
                 """
                 At this point we have the closures and their heaviest
                 predecessor so suppratio correct, but lack other preds
                 """
-                yield heappop(self.ready)[1]
+                # ~ yield heappop(self.ready)[1]
+                yield heappop(ready)[1]
 
         print(" ....... now pending bord w/o suppratios")
         for st in bord:
             yield st
+
+        print(" ....... freezer:", freezer)
 
         # ~ print(" ....... now pending bord w/ wrong suppratios...")
         # ~ for st in bord:
@@ -284,10 +303,11 @@ if __name__=="__main__":
             print("no supp ratio for", a)
         print("\n\n")
 
-##    fnm = "lenses_recoded.txt"
+    # ~ fnm = "data/e13"
+    fnm = "data/e24t.td"
+    # ~ fnm = "data/toy"
+    # ~ fnm = "data/lenses_recoded.txt"
 
-    # ~ fnm = "data/e14"
-    fnm = "data/toy"
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)

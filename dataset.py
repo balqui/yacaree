@@ -62,7 +62,7 @@ class Dataset:
                      str(self.nrits) + " different items, with a total of " +
                      str(self.nrocc) + " item occurrences.")
 
-    def inters(self,lstr):
+    def inters(self, lstr):
         "for iterable of transactions lstr, return their intersection"
         items = self.univ.copy()
         for t in lstr:

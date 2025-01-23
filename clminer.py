@@ -12,7 +12,9 @@ Main method is the iterator that provides, one by one,
  in order of decreasing support, all the closures for a given
  dataset and support bound.
 
-Still pending: handle the neg border,
+CAVEAT: Still pending: handle the neg border! Warn of doubtful cboost values
+
+Previous plan:
  find max non support
  set correct value to the support ratios of the
   maximal sets
