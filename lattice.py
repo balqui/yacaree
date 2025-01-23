@@ -8,6 +8,10 @@ list of immediate predecessors for each node
 
 Programmers: JLB
 
+NEXT: CLEAN UP both commented-out lines and print statements,
+and somehow think about the boosthr reduction (method reduceboost
+here below) and the fishing back closures from the freezer.
+
 To take the dicts away (e.g. suppratio) I have the problem
 that the potential covers, intersections of ItSets with border 
 sets, are NOT ItSets right now and I have no idea of their
@@ -21,6 +25,7 @@ penalty for now, I move on into a Lattice that is a defaultdict
 of pairs, simplified ItSet with just contents and support
 plus list of immediate predecessors, also simplified ItSet's.
 Put these pairs into a new dataclass, here in the same file.
+SHORTLY AFTER TOOK ALL THAT BACK.
 
 Offers:
 .very simple init
@@ -44,7 +49,9 @@ ToDo:
 CAVEAT: unclear whether pushing the suppratio constraint is not closing
 access to other valid parts of the lattice. Currently there are multiple
 paths to everywhere and not many such cases are likely to exist but when
-ClMiner evolves into Troppus this might become noticeable.
+ClMiner evolves into Troppus this might become noticeable. WELL NO PROBLEM,
+the freezer is only for purpose of yielding closures to the miner but
+the closures themselves remain in the lattice.
 
 About the wrong suppratio at positive border: 
 skipped at v1.0, v1.1 approximates it 
@@ -82,10 +89,11 @@ class Lattice(dict):
     Lattice is mainly the ordered dict of closures with their
     predecessors. Keys are the frozenset of the contents
     (CAVEAT: might instead think of using the autoincr label?):
-    then can be accessed from either the frozenset alone or
-    the whole ItSet. Values are pairs: whole ItSet to complete
-    info from frozenset of contents and list of predecessors.
-    As now dict ensures to keep arrival order, it is support order.
+    then can be accessed from either the frozenset alone 
+    (provided it is a closed set!) or the whole ItSet. 
+    Values are pairs: whole ItSet to complete info from 
+    frozenset of contents and list of predecessors. As now 
+    dict ensures to keep arrival order, it is support order.
 
     Previous docstring from version 1.*:
     Lattice implemented as explicit list of closures from clminer
@@ -106,11 +114,11 @@ class Lattice(dict):
     def __init__(self, dataset):
         super().__init__(self)
         self.dataset = dataset
-        # ~ self.closeds = [] # to be replaced by inherited dict, now that it keeps order of arrival
-        # ~ self.supps = {}                         # to be replaced by field in ItSet
-        # ~ self.suppratios = defaultdict(inffloat) # to be replaced by field in ItSet
-        self.union_cover = defaultdict(set)     # review paper and clarify need
-        # ~ self.immpreds = defaultdict(list)   # to be replaced by inherited dict
+        # ~ self.closeds = []                   # replaced by self-dict
+        # ~ self.supps = {}                     # repl by field in ItSet
+        # ~ self.suppratios = defaultdict(inffloat) # ditto
+        self.union_cover = defaultdict(set)  # review paper and clarify need
+        # ~ self.immpreds = defaultdict(list)   # replaced by self-dict
         # ~ self.ready = []
         # ~ self.freezer = []
         self.boosthr = IFace.hpar.initialboost
@@ -220,15 +228,16 @@ class Lattice(dict):
             # ~ yield heappop(self.ready)[1]
         # ~ print(" ....... left over in freezer:", self.freezer)
 
-    def allpreds(self,node,spbd=-1):
+    def allpreds(self, itst, spbd = -1):
         """
         iterator for all predecessors, dfs
         uses a set to avoid dups
-        only return preds of absolute support at most spbd, default return all
+        only return preds of absolute support at most spbd, 
+        default return all
         """
         if spbd < 0:
             spbd = self.dataset.nrtr
-        pending = [ e for e in self[node][1] if e.supp <= spbd ]
+        pending = [ e for e in self[itst][1] if e.supp <= spbd ]
         handled = set(pending)
         while pending:
             p = pending.pop()
@@ -267,7 +276,7 @@ class Lattice(dict):
               + ' '.join(str(p) for p in self[e][1]) + "\n"
         return s
 
-    def reviseboost(self,s,n):
+    def reviseboost(self, s, n):
         """
         current value weights as boostab of the lifts added up
         only to reduce it, and provided it does not get that low
