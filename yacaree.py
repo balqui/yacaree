@@ -60,9 +60,10 @@ class Yacaree:
                           " searched for rules of confidence boost" + 
                          (" at least %1.3f." % miner.latt.boosthr)) 
         self.iface.report(("Total of %d Rules obtained from " % miner.count) +
-                     ("%d closures of support at least " % miner.latt.miner.card) +
-                     str(miner.latt.miner.minsupp) + " (" +
-                     str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
+                     ("%d closures of support at least " % len(miner.latt)) +
+                     str(miner.latt.minsupp))
+                      # ~ + " (" +
+                     # ~ str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
         cnt = 0
         for (b, c, r) in sorted(rules):
             "remove c in case rulecnt is removed" # CAVEAT: THIS LOOP IS EMPTY RIGHT NOW

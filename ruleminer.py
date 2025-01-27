@@ -46,7 +46,7 @@ class RuleMiner: # Does not subclass Lattice anymore
         Early version had an undocumented 'safetysupp' instead.
         """
         for cn in self.latt.candidate_closures(supp): 
-            yield (cn, self.latt.immpreds[cn])
+            yield (cn, self.latt[cn])
             # ~ for rul in mine_implications(self,cn):
                 # ~ yield rul
             # ~ for rul in mine_partial_rules(self,cn):
@@ -57,18 +57,18 @@ if __name__=="__main__":
 ##    fnm = "pumsb_star"
 ##    fnm = "cmc-full"
 ##    fnm = "adultrain"
-    fnm = "e13"
+    # ~ fnm = "e13"
     
-    miner = RuleMiner(fnm)
-    for rul in miner.minerules(0.05):
-        iface.report(str(miner.count) + "/ " + str(rul))
-        ans = iface.ask_input("More? (<CR> to finish) ")
-        if len(ans)==0: break
+    # ~ miner = RuleMiner(fnm)
+    # ~ for rul in miner.minerules(0.05):
+        # ~ iface.report(str(miner.count) + "/ " + str(rul))
+        # ~ ans = iface.ask_input("More? (<CR> to finish) ")
+        # ~ if len(ans)==0: break
 
-    iface.report("Proposed " + str(miner.count) + " rules.")
-    iface.endreport()
+    # ~ iface.report("Proposed " + str(miner.count) + " rules.")
+    # ~ iface.endreport()
 
 ## send ruleminer to garbage collector and recover free memory
-    ruleminer = None
+    # ~ ruleminer = None
     exit(0)
 

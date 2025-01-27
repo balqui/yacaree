@@ -8,6 +8,12 @@ list of immediate predecessors for each node
 
 Programmers: JLB
 
+iPred condition: 
+
+x ∈ lc(z) if and only if
+x ∩ (⋃y∈Y y) ⊆ z, where Y is the set of lower covers of z already found;
+
+
 NEXT: CLEAN UP both commented-out lines and print statements,
 and somehow think about the boosthr reduction (method reduceboost
 here below) and the fishing back closures from the freezer.
@@ -117,12 +123,13 @@ class Lattice(dict):
         # ~ self.closeds = []                   # replaced by self-dict
         # ~ self.supps = {}                     # repl by field in ItSet
         # ~ self.suppratios = defaultdict(inffloat) # ditto
-        self.union_cover = defaultdict(set)  # review paper and clarify need
+        # ~ self.union_cover = defaultdict(set) # moved to local var
         # ~ self.immpreds = defaultdict(list)   # replaced by self-dict
         # ~ self.ready = []
         # ~ self.freezer = []
         self.boosthr = IFace.hpar.initialboost
         # ~ self.miner = None
+        self.minsupp = None # slot for the end
 
     def candidate_closures(self, supp = -1):
         """
@@ -135,6 +142,7 @@ class Lattice(dict):
         ready = []
         freezer = []
         bord = set([])
+        union_covers = defaultdict(set)
         # ~ self.miner = ClMiner(self.dataset, supp)
         miner = ClMiner(self.dataset, supp)
         # ~ for itst in self.miner.mine_closures():
@@ -143,11 +151,11 @@ class Lattice(dict):
             Closures come in either nonincreasing support or 
             nondecreasing size, hence all subsets of each closure 
             come before it - needed for the closure op.
-            if dict could be iterated in order of arrival, can dispose of
-            closeds and use nodes instead
-            suppratios undefined for maximal sets - do we need this?
+            As dict is now iterated in order of arrival, can dispose of
+            closeds.
+            suppratios undefined for maximal sets - what to do?
             first node in list is closure of empty set
-            union_cover init is always empty 
+            union_covers init is always empty 
             (can we make do with a single union_cover instead of a dict?)
             """
             print(" .... miner sent:", itst)
@@ -157,18 +165,20 @@ class Lattice(dict):
             self[frozenset(itst)] = (itst, list()) # repeated contents, unavoidable I guess
             # ~ self.closeds.append(itst) # TO BE REMOVED
             # ~ self.supps[itst] = supp
-            for pot_cover, bord_elem in [ (itst.intersection(bord_elem), bord_elem) 
-                               for bord_elem in bord ]:
-                "seems that some of these intersections are repeated, no error since different union_cover"
-                pot_cover = self[frozenset(pot_cover)][0]
-                print(" ....... considering", pot_cover.fullstr(), "of type", type(pot_cover))
-                print(" ....... for", itst, "due to", bord_elem)
-                print(" ....... as union_cover is", self.union_cover[pot_cover])
-                print(" ....... comparing", itst.intersection(self.union_cover[pot_cover]), "with", pot_cover)
-                if itst.intersection(self.union_cover[pot_cover]) <= pot_cover:
+            # ~ for pot_cover, bord_elem in [ (itst.intersection(bord_elem), bord_elem) 
+                               # ~ for bord_elem in bord ]:
+                # ~ "seems that some of these intersections are repeated, no error since different union_cover - THE PAPER USES A SET"
+            for pot_cover in set( frozenset(itst.intersection(bord_elem)) for bord_elem in bord ):
+                pot_cover = self[pot_cover][0] # to complete it
+                print(" ....... considering", pot_cover.fullstr())
+                print(" ....... for", itst)
+                print(" ....... as union_cover is", union_covers[pot_cover])
+                print(" ....... comparing", itst.intersection(union_covers[pot_cover]), "with", pot_cover)
+                if itst.intersection(union_covers[pot_cover]) <= pot_cover:
+                    "this is the iPred condition"
                     print(" ....... found that", pot_cover.fullstr(), "is immpred of", itst.fullstr())
                     self[itst][1].append(pot_cover)
-                    if not self.union_cover[pot_cover]:
+                    if not union_covers[pot_cover]:
                         "first successor of pot_cover: gives its suppratio"
                         pot_cover.suppratio = float(pot_cover.supp)/supp
                         # ~ self.suppratios[pot_cover] = supprat
@@ -185,7 +195,7 @@ class Lattice(dict):
                             print(" ....... to freezer:", pot_cover)
                             # ~ heappush(self.freezer,(-supprat,pot_cover))
                             heappush(freezer, (-pot_cover.suppratio, pot_cover))
-                    self.union_cover[pot_cover].update(itst)
+                    union_covers[pot_cover].update(itst)
                     print(" ....... take from bord:", pot_cover)
                     bord.discard(pot_cover)
             print(" ....... add", itst.fullstr(), "to bord:", bord)
@@ -200,11 +210,14 @@ class Lattice(dict):
                 # ~ yield heappop(self.ready)[1]
                 yield heappop(ready)
 
-        print(" ....... now pending bord w/o suppratios")
+        print("\n\n ....... now pending bord w/o suppratios")
+        print(" ....... highest unreached supp:", supp - 1)
         for st in bord:
+            print(" ......... yielding:", st, "suppratio bound:", st.supp, "/", supp - 1, "=", st.supp/(supp - 1))
             yield st
 
         print(" ....... freezer:", freezer)
+        self.minsupp = miner.minsupp # for reporting at end
 
         # ~ print(" ....... now pending bord w/ wrong suppratios...")
         # ~ for st in bord:
@@ -280,6 +293,10 @@ class Lattice(dict):
         """
         current value weights as boostab of the lifts added up
         only to reduce it, and provided it does not get that low
+        PLAN 2025: STOP DEPENDING ON LIFT AS IT REQUIRES COMPUTING
+        CLOSURES OF CONSEQUENTS, COMPARE QUANTITY OF RULES PASSING
+        THE CBOOST THRESHOLD WITH QUANTITY OF CLOSURES IN FREEZER
+        NOT PASSING THE SUPPRATIO THRESHOLD.
         """
         s = s + IFace.hpar.boostab*self.boosthr
         n = n + IFace.hpar.boostab
@@ -320,9 +337,9 @@ if __name__=="__main__":
         print("\n\n")
 
     # ~ fnm = "data/e13"
-    # ~ fnm = "data/e24t.td"
+    fnm = "data/e24t.td"
     # ~ fnm = "data/toy"
-    fnm = "data/lenses_recoded.txt"
+    # ~ fnm = "data/lenses_recoded.txt"
 
 
     IFace.hpar = HyperParam()
@@ -337,7 +354,7 @@ if __name__=="__main__":
 
     # ~ la.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
     closlist = list()
-    for a in la.candidate_closures(0):
+    for a in la.candidate_closures(0.2):
         "This had a 0.1 arg"
         print("\n\nNew closure:")
         printclos(la, a)

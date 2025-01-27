@@ -132,7 +132,7 @@ class ClMiner:
                 clos_singl.add(clos)
         self.maxnonsupp = self.maxitemnonsupp # for now
         IFace.report(f"{len(clos_singl)} singleton-generated" + 
-                     f"closures at support above {self.intsupp}.")
+                     f" closures at support above {self.intsupp}.")
         return clos_singl
 
 
@@ -210,16 +210,16 @@ class ClMiner:
                             heappush(pend_clos, next_clos)
                             # ~ print(" ===== heapified:", [str(e) for e in pend_clos])
 
-    def to_percent(self, anyintsupp):
-        """
-        EMPLOYED IN LINE 64 OF yacaree.py, CAVEAT: PROBABLY OUT OF PLACE
-        anyintsupp expected absolute int support bound,
-        gets translated into percent and truncated according to scale
-        (e.g. for scale 100000 means three decimal places);
-        role is only human communication
-        """
-        return (floor(IFace.hpar.scale*anyintsupp*100.0/self.dataset.nrtr) /
-                IFace.hpar.scale)
+    # ~ def to_percent(self, anyintsupp):
+        # ~ """
+        # ~ EMPLOYED NEAR LINE 65 OF yacaree.py, CAVEAT: PROBABLY OUT OF PLACE
+        # ~ anyintsupp expected absolute int support bound,
+        # ~ gets translated into percent and truncated according to scale
+        # ~ (e.g. for scale 100000 means three decimal places);
+        # ~ role is only human communication
+        # ~ """
+        # ~ return (floor(IFace.hpar.scale*anyintsupp*100.0/self.dataset.nrtr) /
+                # ~ IFace.hpar.scale)
 
 if __name__ == "__main__":
 

@@ -73,6 +73,6 @@ class HyperParam:
         self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         self.initialboost = 1.15
         self.absoluteboost = 1.05
-        self.genabsupp = 5 # absolute number of transactions
+        self.genabsupp = 1 # 5 # absolute number of transactions
         self.boostdecr = 0.001 # minimal boost decrease allowed
 
