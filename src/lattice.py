@@ -128,8 +128,8 @@ class Lattice(dict):
         # ~ self.ready = []
         # ~ self.freezer = []
         self.boosthr = IFace.hpar.initialboost
-        # ~ self.miner = None
-        self.minsupp = None # slot for the end
+        self.miner = None   # to access miner.minsupp later
+        self.minsupp = None # among closures with known suppratio
 
     def candidate_closures(self, supp = -1):
         """
@@ -143,8 +143,9 @@ class Lattice(dict):
         freezer = []
         bord = set([])
         union_covers = defaultdict(set)
-        # ~ self.miner = ClMiner(self.dataset, supp)
-        miner = ClMiner(self.dataset, supp)
+        self.miner = ClMiner(self.dataset, supp)
+        miner = self.miner
+        # ~ miner = ClMiner(self.dataset, supp)
         # ~ for itst in self.miner.mine_closures():
         for itst in miner.mine_closures():
             """
@@ -208,6 +209,7 @@ class Lattice(dict):
                 predecessor so suppratio correct, but lack other preds
                 """
                 # ~ yield heappop(self.ready)[1]
+                self.minsupp = ready[0].supp
                 yield heappop(ready)
 
         print("\n\n ....... now pending bord w/o suppratios")
@@ -336,10 +338,10 @@ if __name__=="__main__":
             # ~ print("no supp ratio for", a)
         print("\n\n")
 
-    # ~ fnm = "data/e13"
-    fnm = "data/e24t.td"
-    # ~ fnm = "data/toy"
-    # ~ fnm = "data/lenses_recoded.txt"
+    # ~ fnm = "../data/e13"
+    # ~ fnm = "../data/e24t.td"
+    fnm = "../data/toy"
+    # ~ fnm = "../data/lenses_recoded.txt"
 
 
     IFace.hpar = HyperParam()

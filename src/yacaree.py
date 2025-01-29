@@ -50,9 +50,9 @@ class Yacaree:
         miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = True) # supprat: push suppratio constraint
         rules = []
         # ~ for rul in miner.minerules():
-        for cl, preds in miner.minerules():
+        for thing in miner.minerules():
             "if someday Rule has comparison, remove mentions to rulecnt"
-            print("At main loop of yacaree:", list(cl), list(list(pr) for pr in preds)) # currently pair closure/immpreds
+            print("At main loop of yacaree:", thing) # list(cl), list(list(pr) for pr in preds)
             # ~ rulecnt += 1
             # ~ rules.append((-rul.cboo, rulecnt, rul))
             # ~ if miner.count == self.hpar.findrules > 0: break

@@ -148,24 +148,11 @@ class ItSet(set):
         s = '[X]' if self.supportset is None else str(sorted(self.supportset))
         return str(self) + ' / ' + s
 
-    def difference(self, anything):
-        "returns a plain set, not an ItSet, as we lack supp"
-        return self - set(anything)
+# ~ CAN WE DO WITHOUT? WOULD REQUIRE A SEARCH ON THE CLOSURES TO FIND SUPPORT
+    # ~ def difference(self, anything):
+        # ~ "returns a plain set, not an ItSet, as we lack supp"
+        # ~ return self - set(anything)
 
-# ~ WRONG!:
-    # ~ def intersect(self, other):
-        # ~ bad = None
-        # ~ if self.supportset is None:
-            # ~ bad = self
-        # ~ if other.supportset is None:
-            # ~ bad = other
-        # ~ if bad is None:
-            # ~ "fall back into frozenset intersection"
-            # ~ return ItSet(self.intersection(other),
-                # ~ self.supportset.union(other.supportset))
-        # ~ else:
-            # ~ "temporary until seeing whether this happens and how"
-            # ~ raise ValueError(f"Intersect not possible: {bad} lacks support info.")
 
 if __name__ == "__main__":
 

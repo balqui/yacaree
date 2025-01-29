@@ -6,6 +6,16 @@ Current revision: early Pluviose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
+Mid Pluviose 2025:
+  - decision NOT to push suppratio constraint into the mining anymore
+    - forces to wait until first superset, whose support might be low
+    - if so low as to be below minsupp, suppratio is unreliable
+    - leads to smaller supports with higher-supported supersets
+      showing up earlier than larger supports
+    - plan: reconsider the cboost threshold tuning and avoid lift
+    - plan: move on into the Troppus algorithm, unclear constraint push
+  - then rethink about the negative border
+
 CAVEAT: Remove print trackers
 
 Main method is the iterator that provides, one by one,
@@ -40,6 +50,7 @@ def test_size(stdheap):
 	"""
 	Similar to test_size in yaflheap, probably with ugly hack, 
     but now for a standard heap kept in a standard list.
+    CAVEAT: FULLY UNTESTED AS OF NOW.
 	"""
 	intsupp = 0
 	# ~ if (self.count > iface.hpar.pend_len_limit or
@@ -75,6 +86,8 @@ def test_size(stdheap):
 
 
 class ClMiner:
+    """
+    """
 
     def __init__(self, dataset, supp=-1):
         """

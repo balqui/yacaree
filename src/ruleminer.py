@@ -1,4 +1,11 @@
 """
+yacaree
+
+Current revision: mid Pluviose 2025
+
+Programmers: JLB
+
+Previous version docstring:
 Relies on implminer and partialruleminer for the actual mining.
 Each of these needs its own different checkrule (with or without closures).
 Here we keep the Lattice and the tracking of the boost threshold.
@@ -20,7 +27,7 @@ from lattice import Lattice
 
 from implminer import mine_implications
 
-from partialruleminer import mine_partial_rules
+# ~ from partialruleminer import mine_partial_rules
 
 class RuleMiner: # Does not subclass Lattice anymore
 
@@ -28,16 +35,16 @@ class RuleMiner: # Does not subclass Lattice anymore
         "some codes, reserved rules, and average lift so far"
         self.latt = Lattice(dataset)
         if not supprat:
-            self.latt.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH, BUT DO IT SOMEHOW ELSE
+            self.latt.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
         self.count = 0
         self.DISCARD = -1
         self.reserved = []
         self.sumlifts = 0.0
         self.numlifts = 0
 
-    def addlift(self,lft):
-        self.sumlifts += lft
-        self.numlifts += 1
+    # ~ def addlift(self,lft):
+        # ~ self.sumlifts += lft
+        # ~ self.numlifts += 1
 
     def minerules(self, supp = -1):
         """
@@ -46,13 +53,16 @@ class RuleMiner: # Does not subclass Lattice anymore
         Early version had an undocumented 'safetysupp' instead.
         """
         for cn in self.latt.candidate_closures(supp): 
-            yield (cn, self.latt[cn])
-            # ~ for rul in mine_implications(self,cn):
-                # ~ yield rul
+            # ~ yield (cn, self.latt[cn])
+            if cn:
+                for rul in mine_implications(self.latt, cn):
+                    yield rul
+            else:
+                print(" === skipping emptyset:", cn)
             # ~ for rul in mine_partial_rules(self,cn):
                 # ~ yield rul
 
-if __name__=="__main__":
+# ~ if __name__=="__main__":
 
 ##    fnm = "pumsb_star"
 ##    fnm = "cmc-full"
@@ -70,5 +80,5 @@ if __name__=="__main__":
 
 ## send ruleminer to garbage collector and recover free memory
     # ~ ruleminer = None
-    exit(0)
+    # ~ exit(0)
 
