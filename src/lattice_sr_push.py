@@ -13,17 +13,10 @@ iPred condition:
 x ∈ lc(z) if and only if
 x ∩ (⋃y∈Y y) ⊆ z, where Y is the set of lower covers of z already found;
 
-Mid Pluviose 2025:
-  - decision NOT to push suppratio constraint into the mining anymore
-    - forces to wait until first superset, whose support might be low
-    - if so low as to be below minsupp, suppratio is unreliable
-    - leads to smaller supports with higher-supported supersets
-      showing up earlier than larger supports
-    - plan: reconsider the cboost threshold tuning and avoid lift
-    - plan: move on into the Troppus algorithm, unclear constraint push
-  - rethink about the negative border
-  - rethink about the boosthr reduction (method reviseboost
-    here below) and the fishing back closures from the freezer.
+
+NEXT: CLEAN UP both commented-out lines and print statements,
+and somehow think about the boosthr reduction (method reduceboost
+here below) and the fishing back closures from the freezer.
 
 To take the dicts away (e.g. suppratio) I have the problem
 that the potential covers, intersections of ItSets with border 
