@@ -1,0 +1,33 @@
+
+Try to make sense again of the Troppus algorithm and related things:
+
+- the algorithm proper and the little detail about what gets into the heap
+- the validating theorems
+- the theoretical discussion comparing with Boros y etc
+- the C implementation
+- the Python implementation to insert it in the next round of yacaree
+
+Start with the last.
+
+In ~/Cloud Storage/svn_cs/balqui/ongoing_papers/clos_order/trunk/sw/python
+there are a bunch of files implementing Troppus along a line comparable
+with the early yacaree closure miner, but one may need quite some work
+to align it with the modern one.
+
+Files:
+- Boros_et_al.py, implementation of the algorithm left implicit in that
+paper, unnecessary for the time being.
+- comparison.py: compares Troppus with early yacaree, I don't remember why
+we had to do it so complicated.
+- dataset.py: reads the data as per the early yacaree approach.
+- flheap.py: heap as per the early yacaree approach.
+- itset.py: just inherits from frozenset and adds a __str__.
+- statics.py: as per the early yacaree.
+- suppcounter: inherits fom dataset and handles many counts and extra info.
+- troppus02.py: should be the new algorithm.
+- troppus02timing.py: interation with profiler.
+- flheap.py: heap as per the early yacaree approach.
+- yclminer.py: algorithm in the early yacaree approach.
+
+Try to make do with only troppus02.py, see if I need to pick up any
+other file along later on.
