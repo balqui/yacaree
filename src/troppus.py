@@ -1,9 +1,12 @@
 # ORIGINALLY FILE troppus02.py AS DESCRIBED IN late_pluviose.txt
 
 
-from suppcounter import SuppCounter
-import flheap
+# ~ from suppcounter import SuppCounter
+from dataset import Dataset
+import flheap_old_repe as flheap
 import argparse
+
+SuppCounter = Dataset
 
 
 class FlHeap(flheap.FlHeap):
