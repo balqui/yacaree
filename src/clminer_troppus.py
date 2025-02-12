@@ -167,7 +167,7 @@ class ClMiner_y:
                 IFace.hpar.please_report = False
                 IFace.report(str(self.card) +
                             " closures traversed, " +
-                               str(pend_clos.count) + 
+                               str(len(pend_clos)) + 
                             " further closures found so far; current support " +
                             str(spp) + ".")
 
@@ -335,6 +335,7 @@ if __name__ == "__main__":
 
     from filenames import FileNames
     from hyperparam import HyperParam
+    from time import time
 
     # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
@@ -349,16 +350,25 @@ if __name__ == "__main__":
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
-    m_t = ClMiner_t(d, 0.5)
-    m_y = ClMiner_y(d, 0.5)
-    
+    m_t = ClMiner_t(d, 0.1)
+    m_y = ClMiner_y(d, 0.1)
+    # ~ m_t = ClMiner_t(d, 0)
+    # ~ m_y = ClMiner_y(d, 0)
+
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
     # ~ miner = ClMiner(d, 3/24)
     # ~ miner = ClMiner(d)
     # ~ print(miner.intsupp)
-    for cl in m_y.mine_closures():
-        print(cl)
-    for cl in m_t.mine_closures():
-        print(cl)
+    t0 = time()
+    c_y = list( cl for cl in m_y.mine_closures() )
+    t1 = time()
+    c_t = list( cl for cl in m_t.mine_closures() )
+    t2 = time()
+    # ~ for cl in c_y:
+        # ~ print(cl)
+    # ~ for cl in c_t:
+        # ~ print(cl)
+    print("Time y:", t1 - t0, "seconds", len(c_y), "closures")
+    print("Time t:", t2 - t1, "seconds", len(c_t), "closures")
 
