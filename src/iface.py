@@ -84,7 +84,8 @@ class IFace:
         Might try to move bindings to a regular __init__()
         (this could not be done in the earlier structure).
         But can't have only hpar as argument, need also 
-        standard_run and standard_run_all to bind to the buttons to.
+        standard_run and standard_run_all already existing
+        so as to bind the buttons to.
         """
         cls.hpar = yacaree.hpar
         cls.fn = FileNames(cls)

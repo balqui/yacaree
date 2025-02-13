@@ -187,6 +187,19 @@ class ClMiner_y:
                         if next_clos not in pend_clos:
                             heappush(pend_clos, next_clos)
 
+
+
+def count_it(nst, ds):
+    exact = False
+    transcontain = list()
+    for tr in ds.transcns:
+        if nst <= ds.transcns[tr]:
+            transcontain.append(tr)
+            if ds.transcns[tr] <= nst:
+                exact = True
+    return transcontain, exact
+
+
 class ClMiner_t:
     """
     troppus miner under reconstruction
@@ -206,23 +219,28 @@ class ClMiner_t:
 
         closempty = set()
         sorteditems = list()
+        localdict = dict() # temporary dict of precomputed closures for exploration
 
         for it in self.dataset.univ:
             if len(self.dataset.occurncs[it]) == self.dataset.nrtr:
                 closempty.add(it)
             else:
-                sorteditems.append(it)
+                sorteditems.append(
+                    it
+                    # ~ ItSet([it], self.dataset.occurncs[it])
+                )
 
         closempty = ItSet(closempty, range(self.dataset.nrtr))
         pend_clos = [ closempty ]
 
-        sorteditems.sort() # stability: item order if same support 
-        sorteditems.sort(reverse = True, 
-                    key = lambda it: len(self.dataset.occurncs[it]))
+        sorteditems.sort()
+        # ~ sorteditems.sort() # planned item order if same support using stability but now they are ItSets
+        # ~ sorteditems.sort(reverse = True, 
+                    # ~ key = lambda it: len(self.dataset.occurncs[it]))
 
         # ~ print(" ==== closure of empty:", closempty)
         # ~ print(" ==== sorted rest:", sorteditems)
-        # ~ for it in sorteditems: print(" ==== ", it, len(self.dataset.occurncs[it]))
+        # ~ for it in sorteditems: print(" ==== ", it) #, len(self.dataset.occurncs[it]))
 
         # ~ heapify(pend_clos)
 
@@ -235,7 +253,7 @@ class ClMiner_t:
             pclos = set(clos)  # mutable copy of closure
             # Iterating with reverse we start with highest support closure
             for i in sorteditems:
-                # ~ print(" ==== ", i)
+                print(" ==== ", i)
                 if first_level:
                     "set at previous loop: no further i can clear mxsupp"
                     # ~ print(" ======== prev loop set firstlevel")
@@ -246,7 +264,7 @@ class ClMiner_t:
                 else:
                     nst = pclos.copy()  # copy to modify
                     nst.add(i)
-                    # ~ print(" ==== nst", nst)
+                    print(" ==== nst", nst)
                     # ~ sp = self.d.count(nst)
                     # ncl = self.d.close(nst) # moved off
                     exact = False
@@ -256,20 +274,22 @@ class ClMiner_t:
                             transcontain.append(tr)
                             if self.dataset.transcns[tr] <= nst:
                                 exact = True
+                    print(transcontain, exact, count_it(nst, self.dataset))
+                    # ~ transcontain, exact = count_it(nst, self.dataset)
                     if not pclos:
                         "nst a singleton: back down to singletons level"
                         first_level = True
                     sp = len(transcontain)
-                    # ~ print(" ==== nst sp vs mxsupp", sp, mxsupp)
+                    print(" ==== nst sp vs mxsupp", sp, mxsupp)
                     if sp > mxsupp:
                         # ~ ncl = self.d.close(nst)  # bring here for improvement
                         if exact:
                             ncl = ItSet(nst, transcontain)
                         else:
                             ncl = ItSet(self.dataset.inters(transcontain), transcontain)
-                        # ~ print(" ==== ncl, exact", ncl, exact)
+                        print(" ==== ncl, exact", ncl, exact)
                         for j in ncl:
-                            # ~ print(" ======== in ncl:", j)                        
+                            print(" ======== in ncl:", j)                        
                             if (j not in clos and
                                     # ~ self.d.before((i,), (j,))):
                                 (len(self.dataset.occurncs[i]) >
@@ -278,58 +298,16 @@ class ClMiner_t:
                                 len(self.dataset.occurncs[j]) and i > j)):
                                 break
                         else:
-                            # ~ print(" ======== all in ncl valid, sp, ncl.supp", sp, ncl.supp)                            
+                            print(" ======== all in ncl valid, sp, ncl.supp", sp, ncl.supp)                            
                             if sp > clos.supp:
                                 break
                             elif sp > self.intsupp:
-                                # ~ print(" ==== pushing", ncl)
+                                print(" ==== pushing", ncl)
                                 heappush(pend_clos, ncl)
-                                # ~ print(" ==== mxsupp from/to", mxsupp, sp)
+                                print(" ==== mxsupp from/to", mxsupp, sp)
                                 mxsupp = sp
 
             
-
-
-
-    # ~ def dec_supp_cl(self):
-        # ~ while self.pend.more():
-            # ~ clos = self.pend.pop()
-            # ~ yield clos  # pair (support,closure)
-            # ~ first_level = False  # unless we find otherwise later on
-            # ~ mxsupp = 0
-            # ~ pclos = [i for i in clos[1]]  # mutable copy of closure
-            # ~ # Iterating with reverse we start with highest support closure
-            # ~ for i in reversed(self.d.items):
-                # ~ if first_level:
-                    # ~ "set at previous loop: no further i can clear mxsupp"
-                    # ~ break
-                # ~ if i in pclos:
-                    # ~ "remove this i as required for all future i's"
-                    # ~ pclos.pop()
-                # ~ else:
-                    # ~ nst = pclos * 1  # copy to modify
-                    # ~ nst.append(i)
-                    # ~ sp = self.d.count(nst)
-                    # ~ # ncl = self.d.close(nst) # moved off
-                    # ~ if not pclos:
-                        # ~ "nst a singleton: back down to singletons level"
-                        # ~ first_level = True
-                    # ~ if sp > mxsupp:
-                        # ~ ncl = self.d.close(nst)  # bring here for improvement
-                        # ~ for j in ncl:
-                            # ~ if (j not in clos[1] and
-                                    # ~ self.d.before((i,), (j,))):
-                                # ~ break
-                        # ~ else:
-                            # ~ if sp > clos[0]:
-                                # ~ break
-                            # ~ else:
-                                # ~ self.pend.push((sp, ncl))
-                                # ~ mxsupp = sp
-
-
-        # ~ print(" ==== closure of empty:", closempty)
-
 
 if __name__ == "__main__":
 
@@ -339,36 +317,46 @@ if __name__ == "__main__":
 
     # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
-    # ~ fnm = "../data/e24.td"
+    fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
-    fnm = "../data/adultrain"
+    # ~ fnm = "../data/adultrain"
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
-    m_t = ClMiner_t(d, 0.1)
-    m_y = ClMiner_y(d, 0.1)
-    # ~ m_t = ClMiner_t(d, 0)
-    # ~ m_y = ClMiner_y(d, 0)
+    # ~ for z in range(4):
+        # ~ sss = 0.2 - z/100
+        # ~ m_t = ClMiner_t(d, sss)
+        # ~ m_y = ClMiner_y(d, sss)
+        # ~ t0 = time()
+        # ~ c_y = list( cl for cl in m_y.mine_closures() )
+        # ~ t1 = time()
+        # ~ c_t = list( cl for cl in m_t.mine_closures() )
+        # ~ t2 = time()
+        # ~ print(f"Time y: {t1 - t0} seconds, {len(c_y)} closures, {sss:1.2f} support")
+        # ~ print(f"Time t: {t2 - t1} seconds, {len(c_t)} closures, {sss:1.2f} support")
+
+    sss = 0
+    m_t = ClMiner_t(d, sss)
+    m_y = ClMiner_y(d, sss)
+    t0 = time()
+    c_y = list( cl for cl in m_y.mine_closures() )
+    t1 = time()
+    c_t = list( cl for cl in m_t.mine_closures() )
+    t2 = time()
+    print(f"Time y: {t1 - t0} seconds, {len(c_y)} closures, {sss:1.2f} support")
+    print(f"Time t: {t2 - t1} seconds, {len(c_t)} closures, {sss:1.2f} support")
 
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
     # ~ miner = ClMiner(d, 3/24)
     # ~ miner = ClMiner(d)
     # ~ print(miner.intsupp)
-    t0 = time()
-    c_y = list( cl for cl in m_y.mine_closures() )
-    t1 = time()
-    c_t = list( cl for cl in m_t.mine_closures() )
-    t2 = time()
     # ~ for cl in c_y:
         # ~ print(cl)
     # ~ for cl in c_t:
         # ~ print(cl)
-    print("Time y:", t1 - t0, "seconds", len(c_y), "closures")
-    print("Time t:", t2 - t1, "seconds", len(c_t), "closures")
-

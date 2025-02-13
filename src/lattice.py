@@ -100,13 +100,17 @@ from clminer_y import ClMiner
 class Lattice(dict):
     """
     Lattice is mainly the ordered dict of closures with their
-    predecessors. Keys are the frozenset of the contents
-    (CAVEAT: might instead think of using the autoincr label?):
-    then can be accessed from either the frozenset alone 
-    (provided it is a closed set!) or the whole ItSet. 
+    predecessors. Keys are (the frozenset of) the contents as
+    follows from the definition of __hash__ in ItSet:
+    then, can be accessed from either the frozenset alone 
+    or the whole ItSet. 
+    (Might instead think of using some autoincr label?):
     Values are pairs: whole ItSet to complete info from 
     frozenset of contents and list of predecessors. As now 
     dict ensures to keep arrival order, it is support order.
+    The first part of the pair is under refactoring, being
+    moved to a similar dict underlying ClMiner. (But: also
+    nonclosed itemsets along the way?)
 
     Previous docstring from version 1.*:
     Lattice implemented as explicit list of closures from clminer
@@ -170,7 +174,8 @@ class Lattice(dict):
             supp = itst.supp
             # ~ node = frozenset(itst)
             # ~ node = itst
-            self[frozenset(itst)] = (itst, list()) # repeated contents, unavoidable I guess
+            # ~ self[frozenset(itst)] = (itst, list()) # repeated contents, unavoidable I guess
+            self[itst] = (itst, list()) # TEST THIS
             # ~ self.closeds.append(itst) # TO BE REMOVED
             # ~ self.supps[itst] = supp
             # ~ for pot_cover, bord_elem in [ (itst.intersection(bord_elem), bord_elem) 

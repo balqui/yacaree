@@ -1,13 +1,22 @@
 
-Try to make sense again of the Troppus algorithm and related things:
+Back to the Troppus algorithm and related things:
+
+- take the Python implementation in the SVN and insert it 
+into the next round of yacaree (folder below).
+
+Need to "close" arbitrary sets as we are no longer considering
+each time an existing closure plus an item (which the yacaree
+clminer could use to compute an intersection of support sets).
+
+Then, decide that the ItSet part of the Lattice dict is to be
+the ClMiner instead.
+
+Must not forget to revise again:
 
 - the algorithm proper and the little detail about what gets into the heap
 - the validating theorems
 - the theoretical discussion comparing with Boros y etc
 - the C implementation
-- the Python implementation to insert it in the next round of yacaree
-
-Start with the last.
 
 In ~/Cloud Storage/svn_cs/balqui/ongoing_papers/clos_order/trunk/sw/python
 there are a bunch of files implementing Troppus along a line comparable
