@@ -219,15 +219,15 @@ class ClMiner_t:
 
         closempty = set()
         sorteditems = list()
-        localdict = dict() # temporary dict of precomputed closures for exploration
+        localclos = dict() # temporary dict of precomputed closures for exploration
 
         for it in self.dataset.univ:
             if len(self.dataset.occurncs[it]) == self.dataset.nrtr:
                 closempty.add(it)
             else:
                 sorteditems.append(
-                    it
-                    # ~ ItSet([it], self.dataset.occurncs[it])
+                    # ~ it
+                    ItSet([it], self.dataset.occurncs[it])
                 )
 
         closempty = ItSet(closempty, range(self.dataset.nrtr))
@@ -239,7 +239,7 @@ class ClMiner_t:
                     # ~ key = lambda it: len(self.dataset.occurncs[it]))
 
         # ~ print(" ==== closure of empty:", closempty)
-        # ~ print(" ==== sorted rest:", sorteditems)
+        print(" ==== sorted rest:", sorteditems)
         # ~ for it in sorteditems: print(" ==== ", it) #, len(self.dataset.occurncs[it]))
 
         # ~ heapify(pend_clos)
@@ -252,7 +252,9 @@ class ClMiner_t:
             mxsupp = 0
             pclos = set(clos)  # mutable copy of closure
             # Iterating with reverse we start with highest support closure
-            for i in sorteditems:
+            for itt in sorteditems:
+                i = set(itt).pop()
+                # ~ i = itt
                 print(" ==== ", i)
                 if first_level:
                     "set at previous loop: no further i can clear mxsupp"
@@ -267,15 +269,22 @@ class ClMiner_t:
                     print(" ==== nst", nst)
                     # ~ sp = self.d.count(nst)
                     # ncl = self.d.close(nst) # moved off
-                    exact = False
-                    transcontain = list()
-                    for tr in self.dataset.transcns:
-                        if nst <= self.dataset.transcns[tr]:
-                            transcontain.append(tr)
-                            if self.dataset.transcns[tr] <= nst:
-                                exact = True
-                    print(transcontain, exact, count_it(nst, self.dataset))
-                    # ~ transcontain, exact = count_it(nst, self.dataset)
+                    # ~ exact = False
+                    # ~ transcontain = list()
+                    # ~ for tr in self.dataset.transcns:
+                        # ~ if nst <= self.dataset.transcns[tr]:
+                            # ~ transcontain.append(tr)
+                            # ~ if self.dataset.transcns[tr] <= nst:
+                                # ~ exact = True
+                    fnst = frozenset(nst)
+                    if fnst in localclos:
+                        transcontain, exact = localclos[fnst]
+                        print("localclos + for", nst, transcontain, exact)
+                    else:
+                    # ~ if True:
+                        transcontain, exact = count_it(nst, self.dataset)
+                        localclos[fnst] = transcontain, exact
+                        print("localclos - for", nst, transcontain, exact)
                     if not pclos:
                         "nst a singleton: back down to singletons level"
                         first_level = True
