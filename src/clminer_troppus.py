@@ -189,15 +189,15 @@ class ClMiner_y:
 
 
 
-def count_it(nst, ds):
-    exact = False
-    transcontain = list()
-    for tr in ds.transcns:
-        if nst <= ds.transcns[tr]:
-            transcontain.append(tr)
-            if ds.transcns[tr] <= nst:
-                exact = True
-    return transcontain, exact
+# ~ def count_it(nst, ds):
+    # ~ exact = False
+    # ~ transcontain = list()
+    # ~ for tr in ds.transcns:
+        # ~ if nst <= ds.transcns[tr]:
+            # ~ transcontain.append(tr)
+            # ~ if ds.transcns[tr] <= nst:
+                # ~ exact = True
+    # ~ return transcontain, exact
 
 
 class ClMiner_t(dict):
@@ -219,15 +219,39 @@ class ClMiner_t(dict):
         self.minsupp = 0
 
 
-    def supp_step(self, itst, nit):
+    def supp_step(self, itst, nitt):
         "find support and store on self if necessary"
-        if fsu := frozenset(itst.union({nit}) in self:
+        itstfs = frozenset(itst)
+        itstfsu = frozenset(itst.union(nitt))
+        if itstfsu in self:
             "supp of union is supp of its closure"
-            return self[fsu].supp
-        if frozenset(itst) in self:
+            print(" ==== in local dict", set(itstfsu))
+            return self[itstfsu].supp
+        if itstfs in self:
             "intersect support sets and store"
-            pass
-
+            print(" ==== in local dict", set(itstfs), "for", nitt)
+            ncl_supps = set(self[itstfs].supportset) & nitt.supportset
+            ncl = ItSet(self.dataset.inters(ncl_supps), ncl_supps)
+            self[itstfsu] = ncl
+            return ncl.supp
+        # neither on store, compute closure on data
+        print(" ==== not in local dict", set(itstfs), "for", nitt)
+        exact = False
+        transcontain = list()
+        for tr in self.dataset.transcns:
+            if itstfsu <= self.dataset.transcns[tr]:
+                transcontain.append(tr)
+                if self.dataset.transcns[tr] <= nst:
+                    exact = True
+        if exact:
+            "matches a transaction, no need to intersect"
+            ncl = ItSet(itstfsu, transcontain)
+            ncl.matches_tr = True
+        else:
+            ncl = ItSet(self.dataset.inters(transcontain), transcontain)
+        ncl.is_closed = True
+        self[itstfsu] = ncl
+        return ncl.supp
 
     def mine_closures(self):
 
@@ -273,10 +297,7 @@ class ClMiner_t(dict):
                     pclos.remove(i)
                 else:
                     nst = pclos.copy()  # copy to modify
-                    self.step(nst, i)
-
-
-                    print(" ==== nst", nst)
+                    sp = self.supp_step(nst, itt)
                     # ~ sp = self.d.count(nst)
                     # ncl = self.d.close(nst) # moved off
                     # ~ exact = False
@@ -295,19 +316,14 @@ class ClMiner_t(dict):
                         # ~ transcontain, exact = count_it(nst, self.dataset)
                         # ~ localclos[fnst] = transcontain, exact
                         # ~ print("localclos - for", nst, transcontain, exact)
-                    exit(1)  # halfway through the use of the dict
+                    # ~ exit(1)  # halfway through the use of the dict
                     if not pclos:
                         "nst a singleton: back down to singletons level"
                         first_level = True
-                    sp = len(transcontain)
+                    # ~ sp = len(transcontain)
                     print(" ==== nst sp vs mxsupp", sp, mxsupp)
                     if sp > mxsupp:
-                        # ~ ncl = self.d.close(nst)  # bring here for improvement
-                        if exact:
-                            ncl = ItSet(nst, transcontain)
-                        else:
-                            ncl = ItSet(self.dataset.inters(transcontain), transcontain)
-                        print(" ==== ncl, exact", ncl, exact)
+                        ncl = self[frozenset(nst.union(itt))]
                         for j in ncl:
                             print(" ======== in ncl:", j)                        
                             if (j not in clos and
@@ -316,6 +332,7 @@ class ClMiner_t(dict):
                                 len(self.dataset.occurncs[j])) or 
                                 (len(self.dataset.occurncs[i]) == 
                                 len(self.dataset.occurncs[j]) and i > j)):
+                                "can simplify?"
                                 break
                         else:
                             print(" ======== all in ncl valid, sp, ncl.supp", sp, ncl.supp)                            
