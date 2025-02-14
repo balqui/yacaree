@@ -1,7 +1,7 @@
 """
 yacaree
 
-Current revision: late Nivose 2025
+Current revision: late Pluviose 2025
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -42,8 +42,10 @@ work as max-heaps but current decision is to hide that into custom
 comparisons.
 Moreover, we need to compare ItSets according to two orderings,
 support-based for the heap and mere subset order. We customize
-"<" as support-based order for the heap and customize the "shift"
-operator "<<" to mean instead the subset-or-equal relation.
+"<" as support-based order for the heap but leave "<=" inherited
+from frozenset so that it has the standard meaning. At some point
+in time I had customized instead the "shift" operator "<<" to mean 
+subset-or-equal but not anymore.
 
 Also: inheriting from frozenset does not work, since init requires
 two parameters but somehow the instantiation mandates only one and
@@ -80,15 +82,10 @@ as they are no longer to index the supports dict in lattice...
 but they index other dict's and belong to other set's).
 """
 
-# ~ from functools import total_ordering
-# ~ @total_ordering 
-# ~ Do we really need it?
-# ~ Also, some preliminary experiments raise doubts whether
-# ~ that decorator would work as I intend in this case.
-
 class ItSet(set):
 
     cnt = 0 # counts created ItSet's to set up the tie-breaking label
+
 
     def __init__(self, contents = set(), infosupp = -1):
         """
@@ -106,45 +103,53 @@ class ItSet(set):
             "assumed something with a length"
             self.supp = len(infosupp)
             self.supportset = infosupp
-        self.suppratio = float("inf") # default
+        # ~ self.suppratio = float("inf") # default
         ItSet.cnt += 1
         self.label = ItSet.cnt
-        # ~ print(" *** created:", self, self.supportset, self.tie_breaker)
+        self.is_closed = False
+        self.matches_tr = False # matches a transaction? implies closed
 
-    # ~ def __eq__(self, other):
-        # ~ return self.contents == other.contents
-        # ~ inherited from super instead
+
+    def _break_tie(self, other):
+        "We end up needing that singletons compare the items."
+        if len(self) == 1 == len(other):
+            return list(self) < list(other)
+        else:
+            return self.label < other.label
+
 
     def __lt__(self, other):
         """
         For heap purposes, ItSet-smaller itemsets will come out first,
         hence these must be the ones with larger supports. Support ties
-        are broken arbitrarily by creation time order.  
-        Order comparisons must not see ever the contents,
-        as set comparison is not total.
-        CAVEAT: a == b acts in <= and >= as contents set equality. 
+        are broken arbitrarily by creation time order except singletons.
+        Rest of order comparisons are set-theoretic on the contents BUT
+        be careful as set comparison is not total.
         """
         return (self.supp > other.supp or
-                self.supp == other.supp and
-                    self.label < other.label)
+                self.supp == other.supp and self._break_tie(other))
 
-    def __lshift__(self, other):
-        """
-        Use "<<" instead to compare ItSet's according to inclusion
-        order on the contents.
-        """
-        return set(self) <= set(other)
+    # ~ def __lshift__(self, other):
+        # ~ """
+        # ~ Use "<<" instead to compare ItSet's according to inclusion
+        # ~ order on the contents.
+        # ~ UNNECESSARY. USE STANDARD <= INSTEAD.
+        # ~ """
+        # ~ return set(self) <= set(other)
+
 
     def __hash__(self):
         """
-        Try to make it hashable so that they can be in set's and
+        Make it hashable so that they can be in set's and
         index dict's exactly as the frozenset of the contents.
         """
         return self._hash
 
+
     def __str__(self):
         return ('{ ' + ', '.join(sorted(str(e) for e in self)) +
                        ' } [' +  str(self.supp) + ']')
+
 
     def fullstr(self):
         s = '[X]' if self.supportset is None else str(sorted(self.supportset))

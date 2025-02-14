@@ -173,8 +173,8 @@ class ClMiner_y:
 
             for ext in clos_singl:
                 "try extending with freq closures of singletons"
-                if not ext << cl and not cl << ext:
-                    "'subset or eq' overrides lshift"
+                if not ext <= cl and not cl <= ext:
+                    "'subset or eq' is separate from '<' inequality"
                     supportset = cl.supportset & ext.supportset
                     spp = len(supportset)
                     if spp <= self.intsupp:
@@ -200,12 +200,16 @@ def count_it(nst, ds):
     return transcontain, exact
 
 
-class ClMiner_t:
+class ClMiner_t(dict):
     """
-    troppus miner under reconstruction
+    troppus miner under reconstruction, miner is simultaneously
+    a dict from frozensets of items (closed or not) to their 
+    closing ItSet's. At some point, the ItSet part in the Lattice
+    dict is to be replaced by this one.
     """
 
     def __init__(self, dataset, supp=-1):
+        super().__init__()
         self.dataset = dataset
         if supp > -1:
             self.intsupp = int(supp * dataset.nrtr)
@@ -215,31 +219,36 @@ class ClMiner_t:
         self.minsupp = 0
 
 
+    def supp_step(self, itst, nit):
+        "find support and store on self if necessary"
+        if fsu := frozenset(itst.union({nit}) in self:
+            "supp of union is supp of its closure"
+            return self[fsu].supp
+        if frozenset(itst) in self:
+            "intersect support sets and store"
+            pass
+
+
     def mine_closures(self):
 
         closempty = set()
         sorteditems = list()
-        localclos = dict() # temporary dict of precomputed closures for exploration
 
         for it in self.dataset.univ:
             if len(self.dataset.occurncs[it]) == self.dataset.nrtr:
                 closempty.add(it)
             else:
                 sorteditems.append(
-                    # ~ it
                     ItSet([it], self.dataset.occurncs[it])
                 )
+
+        sorteditems.sort() # decr supp, break tie by item, see ItSet
 
         closempty = ItSet(closempty, range(self.dataset.nrtr))
         pend_clos = [ closempty ]
 
-        sorteditems.sort()
-        # ~ sorteditems.sort() # planned item order if same support using stability but now they are ItSets
-        # ~ sorteditems.sort(reverse = True, 
-                    # ~ key = lambda it: len(self.dataset.occurncs[it]))
-
         # ~ print(" ==== closure of empty:", closempty)
-        print(" ==== sorted rest:", sorteditems)
+        # ~ print(" ==== sorted rest:", sorteditems)
         # ~ for it in sorteditems: print(" ==== ", it) #, len(self.dataset.occurncs[it]))
 
         # ~ heapify(pend_clos)
@@ -247,14 +256,13 @@ class ClMiner_t:
         self.minsupp = self.dataset.nrtr
         while pend_clos and IFace.running:
             clos = heappop(pend_clos)
+            pclos = set(clos)  # mutable copy of contents
+            self[frozenset(pclos)] = clos
             yield clos
             first_level = False  # unless we find otherwise later on
             mxsupp = 0
-            pclos = set(clos)  # mutable copy of closure
-            # Iterating with reverse we start with highest support closure
             for itt in sorteditems:
-                i = set(itt).pop()
-                # ~ i = itt
+                (i,) = itt # extract item
                 print(" ==== ", i)
                 if first_level:
                     "set at previous loop: no further i can clear mxsupp"
@@ -265,7 +273,9 @@ class ClMiner_t:
                     pclos.remove(i)
                 else:
                     nst = pclos.copy()  # copy to modify
-                    nst.add(i)
+                    self.step(nst, i)
+
+
                     print(" ==== nst", nst)
                     # ~ sp = self.d.count(nst)
                     # ncl = self.d.close(nst) # moved off
@@ -276,15 +286,16 @@ class ClMiner_t:
                             # ~ transcontain.append(tr)
                             # ~ if self.dataset.transcns[tr] <= nst:
                                 # ~ exact = True
-                    fnst = frozenset(nst)
-                    if fnst in localclos:
-                        transcontain, exact = localclos[fnst]
-                        print("localclos + for", nst, transcontain, exact)
-                    else:
-                    # ~ if True:
-                        transcontain, exact = count_it(nst, self.dataset)
-                        localclos[fnst] = transcontain, exact
-                        print("localclos - for", nst, transcontain, exact)
+                    # ~ fnst = frozenset(nst)
+                    # ~ if fnst in self:
+                        # ~ transcontain, exact = localclos[fnst]
+                        # ~ transcontain = self[fnst].supportset
+                        # ~ print("localclos + for", nst, transcontain, exact)
+                    # ~ else:
+                        # ~ transcontain, exact = count_it(nst, self.dataset)
+                        # ~ localclos[fnst] = transcontain, exact
+                        # ~ print("localclos - for", nst, transcontain, exact)
+                    exit(1)  # halfway through the use of the dict
                     if not pclos:
                         "nst a singleton: back down to singletons level"
                         first_level = True
