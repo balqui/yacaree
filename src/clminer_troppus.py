@@ -283,11 +283,12 @@ class ClMiner_t(dict):
             pclos = set(clos)  # mutable copy of contents
             self[frozenset(pclos)] = clos
             yield clos
+            print("        ", pend_clos)
             first_level = False  # unless we find otherwise later on
             mxsupp = 0
             for itt in sorteditems:
                 (i,) = itt # extract item
-                print(" ==== ", i)
+                print(" ==== ", i, "to extend", clos)
                 if first_level:
                     "set at previous loop: no further i can clear mxsupp"
                     # ~ print(" ======== prev loop set firstlevel")
@@ -335,7 +336,7 @@ class ClMiner_t(dict):
                                 "can simplify?"
                                 break
                         else:
-                            print(" ======== all in ncl valid, sp, ncl.supp", sp, ncl.supp)                            
+                            print(" ======== all in ncl valid, sp, ncl.supp", sp, clos.supp)                            
                             if sp > clos.supp:
                                 break
                             elif sp > self.intsupp:
