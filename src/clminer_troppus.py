@@ -360,14 +360,16 @@ if __name__ == "__main__":
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
-    fnm = "../data/adultrain"
+    # ~ fnm = "../data/adultrain"
+    fnm = "../data/cmc-full"
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
-    for z in range(19):
-        sss = 0.2 - z/100
+    for z in range(21):
+        # ~ sss = 0.2 - z/100 # adultrain, z in range(19)
+        sss = 0.05 - z/500 # cmc
         m_t = ClMiner_t(d, sss)
         m_y = ClMiner_y(d, sss)
         t0 = time()
@@ -378,7 +380,7 @@ if __name__ == "__main__":
         print(f"Time y: {t1 - t0} seconds, {len(c_y)} closures, {sss:1.2f} support")
         print(f"Time t: {t2 - t1} seconds, {len(c_t)} closures, {sss:1.2f} support")
 
-    # ~ sss = 0
+    # ~ sss = 5/1440
     # ~ m_t = ClMiner_t(d, sss)
     # ~ m_y = ClMiner_y(d, sss)
     # ~ t0 = time()
