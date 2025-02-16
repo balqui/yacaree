@@ -189,15 +189,15 @@ class ClMiner_y:
 
 
 
-# ~ def count_it(nst, ds):
-    # ~ exact = False
-    # ~ transcontain = list()
-    # ~ for tr in ds.transcns:
-        # ~ if nst <= ds.transcns[tr]:
-            # ~ transcontain.append(tr)
-            # ~ if ds.transcns[tr] <= nst:
-                # ~ exact = True
-    # ~ return transcontain, exact
+def count_it(nst, ds):
+    exact = False
+    transcontain = list()
+    for tr in ds.transcns:
+        if nst <= ds.transcns[tr]:
+            transcontain.append(tr)
+            if ds.transcns[tr] <= nst:
+                exact = True
+    return transcontain, exact
 
 
 class ClMiner_t(dict):
@@ -236,13 +236,14 @@ class ClMiner_t(dict):
             return ncl.supp
         # neither on store, compute closure on data
         # ~ print(" ==== not in local dict", set(itstfs), "for", nitt)
-        exact = False
-        transcontain = list()
-        for tr in self.dataset.transcns:
-            if itstfsu <= self.dataset.transcns[tr]:
-                transcontain.append(tr)
-                if self.dataset.transcns[tr] <= itstfsu:
-                    exact = True
+        transcontain, exact = count_it(itstfsu, self.dataset)
+        # ~ exact = False
+        # ~ transcontain = list()
+        # ~ for tr in self.dataset.transcns:
+            # ~ if itstfsu <= self.dataset.transcns[tr]:
+                # ~ transcontain.append(tr)
+                # ~ if self.dataset.transcns[tr] <= itstfsu:
+                    # ~ exact = True
         if exact:
             "matches a transaction, no need to intersect"
             ncl = ItSet(itstfsu, transcontain)
@@ -345,13 +346,37 @@ class ClMiner_t(dict):
                                 # ~ print(" ==== mxsupp from/to", mxsupp, sp)
                                 mxsupp = sp
 
-            
+
+
+def to_prof():
+    fnm = "../data/adultrain"
+    # ~ fnm = "../data/cmc-full"
+    IFace.hpar = HyperParam()
+    IFace.fn = FileNames(IFace)
+    IFace.opendatafile(fnm)
+    d = Dataset()
+    # ~ sss = 5/1440
+    sss = 0.02
+    m_t = ClMiner_t(d, sss)
+    m_y = ClMiner_y(d, sss)
+    t0 = time()
+    c_y = list( cl for cl in m_y.mine_closures() )
+    t1 = time()
+    c_t = list( cl for cl in m_t.mine_closures() )
+    t2 = time()
+    print(len(c_y), len(c_t))
+    # ~ print(f"Time y: {t1 - t0} seconds, {len(c_y)} closures, {sss:1.2f} support")
+    # ~ print(f"Time t: {t2 - t1} seconds, {len(c_t)} closures, {sss:1.2f} support")        
 
 if __name__ == "__main__":
 
     from filenames import FileNames
     from hyperparam import HyperParam
     from time import time
+    import cProfile
+
+    cProfile.run("to_prof()")
+    exit(1)
 
     # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
@@ -367,18 +392,18 @@ if __name__ == "__main__":
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
-    for z in range(21):
-        # ~ sss = 0.2 - z/100 # adultrain, z in range(19)
-        sss = 0.05 - z/500 # cmc
-        m_t = ClMiner_t(d, sss)
-        m_y = ClMiner_y(d, sss)
-        t0 = time()
-        c_y = list( cl for cl in m_y.mine_closures() )
-        t1 = time()
-        c_t = list( cl for cl in m_t.mine_closures() )
-        t2 = time()
-        print(f"Time y: {t1 - t0} seconds, {len(c_y)} closures, {sss:1.2f} support")
-        print(f"Time t: {t2 - t1} seconds, {len(c_t)} closures, {sss:1.2f} support")
+    # ~ for z in range(21):
+        # ~ # sss = 0.2 - z/100 # adultrain, z in range(19)
+        # ~ sss = 0.05 - z/500 # cmc
+        # ~ m_t = ClMiner_t(d, sss)
+        # ~ m_y = ClMiner_y(d, sss)
+        # ~ t0 = time()
+        # ~ c_y = list( cl for cl in m_y.mine_closures() )
+        # ~ t1 = time()
+        # ~ c_t = list( cl for cl in m_t.mine_closures() )
+        # ~ t2 = time()
+        # ~ print(f"Time y: {t1 - t0} seconds, {len(c_y)} closures, {sss:1.2f} support")
+        # ~ print(f"Time t: {t2 - t1} seconds, {len(c_t)} closures, {sss:1.2f} support")
 
     # ~ sss = 5/1440
     # ~ m_t = ClMiner_t(d, sss)
