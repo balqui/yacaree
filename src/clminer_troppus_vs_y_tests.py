@@ -4,12 +4,9 @@ Current date: late Pluviose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
-Conjoining the current clminer from refactored yacaree with the
-code from troppus of old to try and get a working alternative.
-
-Main method is the iterator that provides, one by one,
- in order of decreasing support, all the closures for a given
- dataset and support bound.
+Timing and profiling tests comparing the current clminer from 
+refactored yacaree with an evolution from troppus of old to try 
+and get a working alternative.
 """
 
 
