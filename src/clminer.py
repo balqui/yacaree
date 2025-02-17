@@ -68,17 +68,17 @@ class ClMiner(dict):
         return clos.supp
 
 
-# FROM V1.*, almost verbatim
     def test_size(self, stdheap):
         """
-        Similar to test_size in yaflheap, probably with ugly hack, 
-        but now for a standard heap kept in a standard list.
-        CAVEAT: must test further and see whether self is useful.
+        Similar to test_size in yaflheap, with the so-called ugly hack, 
+        but now for a standard heap kept in a standard list; other
+        than that, very close to version 1.*.
+        Does not need to be a method of this class currently.
         """
-        intsupp = 0
+        intsupp = 0 # return 0 if supp unchanged o/w return new supp
         if (count := len(stdheap)) > IFace.hpar.pend_len_limit:
             """
-            too many closures pending expansion: raise
+            Too many closures pending expansion: raise
             the support bound so that about half of the
             heap becomes discarded. Careful that support-tied
             ItSet's are either all kept or all discarded.
@@ -118,7 +118,7 @@ class ClMiner(dict):
                     ItSet([it], self.dataset.occurncs[it])
                 )
 
-        sorteditems.sort() # decr supp, break tie by item, see ItSet.__lt__
+        sorteditems.sort() # decr supp, item tie-break, see ItSet.__lt__
 
         closempty = ItSet(closempty, range(self.dataset.nrtr))
         pend_clos = [ closempty ]
@@ -133,24 +133,18 @@ class ClMiner(dict):
             yield clos
             if self.card % IFace.hpar.supp_rep_often == 0:
                 "Report and consider raising support."
-                IFace.report(str(self.card) +
-                            " closures traversed, " +
-                               str(len(pend_clos)) + 
-                            " further closures pending; current support " +
-                            str(clos.supp) + ".")
+                IFace.report(
+                  f"{self.card} closures traversed, " +
+                  f"{len(pend_clos)} further closures pending; " +
+                  f"current support {clos.supp}.")
                 new_supp = self.test_size(pend_clos)
                 if new_supp > self.intsupp:
-                    "support bound grows, heap halved, report"
-                    IFace.report("Increasing min support from " +
-                                 str(self.intsupp) +
-                                 # ~ (" (%2.3f%%)" %
-                                 " up to " + 
-                                  # ~ self.to_percent(self.intsupp)) +
-                                 str(new_supp) +
-                                 # ~ (" (%2.3f%%)" %
-                                  # ~ self.to_percent(new_supp)) + 
-                                ".")
-                    # ~ IFace.hpar.please_report = True
+                    "support bound grew, heap halved, report"
+                    IFace.report(
+                      f"Increasing min support from {self.intsupp} " +
+                      f"({self.intsupp*100/self.dataset.nrtr:5.3f}%) " + 
+                      f"up to {new_supp} " + 
+                      f"({new_supp*100/self.dataset.nrtr:5.3f}%).")
                     self.intsupp = new_supp
 
             first_level = False  # unless we find otherwise later on
