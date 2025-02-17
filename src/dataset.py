@@ -69,6 +69,22 @@ class Dataset:
             items &= self.transcns[t]
         return items
 
+    def slow_supp(self, st):
+        """
+        Find the supporting set of st in ds by means of a full scan.
+        Hopefully it is infrequent to need to resort to this slow way.
+        Consider keeping a count of calls to this method.
+        """
+        exact = False # did it match exactly some transaction?
+        transcontain = list()
+        for tr in self.transcns:
+            if st <= self.transcns[tr]:
+                transcontain.append(tr)
+                if self.transcns[tr] <= st:
+                    exact = True
+        return transcontain, exact
+
+
 if __name__ == "__main__":
 
     from filenames import FileNames

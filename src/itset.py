@@ -107,7 +107,6 @@ class ItSet(set):
         ItSet.cnt += 1
         self.label = ItSet.cnt
         self.is_closed = False
-        self.matches_tr = False # matches a transaction? implies closed
 
 
     def _break_tie(self, other):
