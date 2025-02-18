@@ -1,0 +1,168 @@
+"""
+LATTICE DOCSTRINGS BY LATE PLUVIÔSE 2025
+
+MODULE DOCSTRING
+
+yacaree
+
+Current revision: early Pluviose 2025
+
+Lattice based on Hasse edges, that is, 
+list of immediate predecessors for each node
+
+Programmers: JLB
+
+iPred condition: 
+
+x ∈ lc(z) if and only if
+x ∩ (⋃y∈Y y) ⊆ z, where Y is the set of lower covers of z already found;
+
+Mid Pluviose 2025:
+  - decision NOT to push suppratio constraint into the mining anymore
+    - forces to wait until first superset, whose support might be low
+    - if so low as to be below minsupp, suppratio is unreliable
+    - leads to smaller supports with higher-supported supersets
+      showing up earlier than larger supports
+    - plan: reconsider the cboost threshold tuning and avoid lift
+    - plan: move on into the Troppus algorithm, unclear constraint push
+  - rethink about the negative border
+  - rethink about the boosthr reduction (method reviseboost
+    here below) and the fishing back closures from the freezer.
+
+To take the dicts away (e.g. suppratio) I have the problem
+that the potential covers, intersections of ItSets with border 
+sets, are NOT ItSets right now and I have no idea of their
+supportsets or supports. Can I look this up somewhere? The
+info IS there but is in the keys of dict's such as immpreds,
+the frozenset suffices to access the value of the dict but
+I want to access... the key!?!?!
+
+Postponing decisions and accepting quite an inefficiency
+penalty for now, I move on into a Lattice that is a defaultdict
+of pairs, simplified ItSet with just contents and support
+plus list of immediate predecessors, also simplified ItSet's.
+Put these pairs into a new dataclass, here in the same file.
+SHORTLY AFTER TOOK ALL THAT BACK.
+
+Offers:
+.very simple init
+.construction from clminer - expect it to establish the following invariant:
+ if x is a proper subset of y, then x comes before y in the list of closures
+.compute all preds
+.compute closure op / test whether closed
+.to string
+
+ToDo:
+
+.handle negative border issues
+.migrate the heaps into flheaps
+.read it in from XML file, edges included
+ xml filename should include in the name not the supp but the maxnonsupp
+ get it from neg border and then glob files and pick the one with highest
+ maxnonsupp that is below supp, if it exists, o/w must mine
+ load only a part of the closures in the available file, if desired support
+ is higher than in the file
+
+CAVEAT: unclear whether pushing the suppratio constraint is not closing
+access to other valid parts of the lattice. Currently there are multiple
+paths to everywhere and not many such cases are likely to exist but when
+ClMiner evolves into Troppus this might become noticeable. WELL NO PROBLEM,
+the freezer is only for purpose of yielding closures to the miner but
+the closures themselves remain in the lattice.
+
+About the wrong suppratio at positive border: 
+skipped at v1.0, v1.1 approximates it 
+assuming minsupp for closures below thr but then supprt==1 too often
+supprt = float(self.supps[st])/self.miner.minsupp
+Plans to get their correct suppratio
+out of the negative border - NOT THAT EASY! 
+(and what if no neg border exists?)
+tried 2 (a sort of infinity), then tried the absolute 
+boost threshold supprt = statics.absoluteboost
+so that only relevant in case the boost threshold really 
+drops to the limit - both unconvincing
+Got back for 1.2.1 to the same strategy as in 1.1
+The formal solution is infinity due to the condition on
+support in the formal definition of suppratio in the paper:
+bigger sets will not be mined so the rules that would force
+down the cboost due to suppratio will not be shown anyway.
+"""
+
+    """
+    CLASS DOCSTRING
+
+    Lattice is mainly the ordered dict of closures with their
+    predecessors. Keys are (the frozenset of) the contents as
+    follows from the definition of __hash__ in ItSet:
+    then, can be accessed from either the frozenset alone 
+    or the whole ItSet. 
+    (Might instead think of using some autoincr label?):
+    Values are pairs: whole ItSet to complete info from 
+    frozenset of contents and list of predecessors. As now 
+    dict ensures to keep arrival order, it is support order.
+    The first part of the pair is under refactoring, being
+    moved to a similar dict underlying ClMiner. (But: also
+    nonclosed itemsets along the way?)
+
+    Previous docstring from version 1.*:
+    Lattice implemented as explicit list of closures from clminer
+    with a dict of closed immediate predecessors for each closure.
+    Also iterator on the basis of support and support ratio.
+    Closures expected ordered in the list by decreasing supports
+    or increasing sizes
+    union_cover is the union of all immediate successors seen so far
+
+    URGENT: closeds UNNECESSARY SINCE 3.7 WHEN DICTS KEPT ORDER
+
+    CAVEAT: Should we dispense with the supportset in ItSet's once
+    they have been mined? Then we only need the supp but is the 
+    rescued memory useful enough to spend that time (by our deletion 
+    and by the garbage collector)?
+
+    FIELDS TAKEN OUT:
+
+        # ~ self.closeds = []                   # replaced by self-dict
+        # ~ self.supps = {}                     # repl by field in ItSet
+        # ~ self.suppratios = defaultdict(inffloat) # ditto
+        # ~ self.union_cover = defaultdict(set) # moved to local var
+        # ~ self.immpreds = defaultdict(list)   # replaced by self-dict
+        # ~ self.ready = []
+        # ~ self.freezer = []
+
+
+    """
+
+        """
+        METHOD candidate_closures DOCSTRING
+
+        supp == -1: use hpar.genabsupp;
+        o/w, expected in [0, 1]: use it instead.
+        Iterate over closures that reach that support 
+        and support ratio above current value of boosthr.
+        Relies on iterator from ClMiner.
+        """
+
+            """
+            LOOP miner.mine_closures DOCSTRING
+
+            Closures come in either nonincreasing support or 
+            nondecreasing size, hence all subsets of each closure 
+            come before it - needed for the closure op.
+            As dict is now iterated in order of arrival, can dispose of
+            closeds.
+            suppratios undefined for maximal sets - what to do?
+            first node in list is closure of empty set
+            union_covers init is always empty 
+            (can we make do with a single union_cover instead of a dict?)
+            """
+
+        """
+        METHOD reviseboost DOCSTRING
+
+        current value weights as boostab of the lifts added up
+        only to reduce it, and provided it does not get that low
+        PLAN 2025: STOP DEPENDING ON LIFT AS IT REQUIRES COMPUTING
+        CLOSURES OF CONSEQUENTS, COMPARE QUANTITY OF RULES PASSING
+        THE CBOOST THRESHOLD WITH QUANTITY OF CLOSURES IN FREEZER
+        NOT PASSING THE SUPPRATIO THRESHOLD.
+        """

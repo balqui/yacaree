@@ -55,8 +55,7 @@ class HyperParam:
         # self.scale = 100000
         # self.epsilon = 100.0/self.scale
         self.boostab = 5
-        self.supp_rep_often = 2500 # every that many closures unless verbose
-        # report current support at most that many times # changed concept
+        self.report_often = 1500 # report every that many closures
 
         self.inffloat = float("inf") # infinite float, e.g. suppratios
         # ~ unclear whether worth it!
@@ -64,6 +63,8 @@ class HyperParam:
         ## standard process:
         
         self.pend_len_limit = 16384 # 8192 # 1000 # 16384 # 2 to power 14
+        self.tot_len_limit = 100000000 # guess :( - may require maybe 4GB to 6GB of core
+        self.genabsupp = 5 # 5 # absolute number of transactions
         # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
         # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)
@@ -73,6 +74,5 @@ class HyperParam:
         # ~ self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         # ~ self.initialboost = 1.15
         # ~ self.absoluteboost = 1.05
-        self.genabsupp = 5 # 5 # absolute number of transactions
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
 

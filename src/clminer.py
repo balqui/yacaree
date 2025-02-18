@@ -32,6 +32,8 @@ class ClMiner(dict):
         else:
             self.intsupp = IFace.hpar.genabsupp
         self.card = 0
+        self.totlen = 0
+        self.pend_clos = list()
         # ~ self.minsupp = 0
 
 
@@ -65,43 +67,44 @@ class ClMiner(dict):
                 clos = self.dataset.inters(supp)
         clos = ItSet(clos, supp)
         self[itstadd] = clos
+        self.totlen += len(supp)
         return clos.supp
 
 
-    def test_size(self, stdheap):
+    def test_size(self):
         """
         Similar to test_size in yaflheap, with the so-called ugly hack, 
         but now for a standard heap kept in a standard list; other
         than that, very close to version 1.*.
-        Does not need to be a method of this class currently.
         """
         intsupp = 0 # return 0 if supp unchanged o/w return new supp
-        if (count := len(stdheap)) > IFace.hpar.pend_len_limit:
+        if ((count := len(self.pend_clos)) > IFace.hpar.pend_len_limit
+          or self.totlen > IFace.hpar.tot_len_limit):
             """
             Too many closures pending expansion: raise
             the support bound so that about half of the
             heap becomes discarded. Careful that support-tied
             ItSet's are either all kept or all discarded.
+            Trying to control as well tot_len_limit.
             """
             lim = count // 2
-            current_supp = stdheap[0].supp
+            current_supp = self.pend_clos[0].supp
             current_supp_clos = []
             new_pend_clos = []
-            new_total_size = 0
             new_count = 0
             popped_count = 0
-            while stdheap:
-                itst = heappop(stdheap)
+            while self.pend_clos:
+                itst = heappop(self.pend_clos)
                 popped_count += 1
                 if popped_count > lim: break
                 if itst.supp == current_supp:
                     current_supp_clos.append(itst)
                 else:
-                    current_supp = itst.supp
                     intsupp = current_supp
                     new_pend_clos.extend(current_supp_clos)
+                    current_supp = itst.supp
                     current_supp_clos = [itst]
-            stdheap = new_pend_clos
+            self.pend_clos = new_pend_clos
         return intsupp
 
 
@@ -121,23 +124,24 @@ class ClMiner(dict):
         sorteditems.sort() # decr supp, item tie-break, see ItSet.__lt__
 
         closempty = ItSet(closempty, range(self.dataset.nrtr))
-        pend_clos = [ closempty ]
+        self.pend_clos = [ closempty ]
 
         self.minsupp = self.dataset.nrtr
-        while pend_clos and IFace.running:
+        while self.pend_clos and IFace.running:
             "Yield next closure and handle extensions."
-            clos = heappop(pend_clos)
+            clos = heappop(self.pend_clos)
             pclos = set(clos)  # mutable copy of contents
-            self[frozenset(pclos)] = clos
+            if frozenset(pclos) not in self:
+                self[frozenset(pclos)] = clos
             self.card += 1
             yield clos
-            if self.card % IFace.hpar.supp_rep_often == 0:
+            if self.card % IFace.hpar.report_often == 0:
                 "Report and consider raising support."
                 IFace.report(
                   f"{self.card} closures traversed, " +
-                  f"{len(pend_clos)} further closures pending; " +
+                  f"{len(self.pend_clos)} further closures pending; " +
                   f"current support {clos.supp}.")
-                new_supp = self.test_size(pend_clos)
+                new_supp = self.test_size()
                 if new_supp > self.intsupp:
                     "support bound grew, heap halved, report"
                     IFace.report(
@@ -175,7 +179,7 @@ class ClMiner(dict):
                             if sp > clos.supp:
                                 break
                             elif sp > self.intsupp:
-                                heappush(pend_clos, ncl)
+                                heappush(self.pend_clos, ncl)
                                 mxsupp = sp
 
 
@@ -192,7 +196,10 @@ if __name__ == "__main__":
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
-    fnm = "../data/adultrain"
+    # ~ fnm = "../data/adultrain"
+    fnm = "../data/chess.td"   # Fills memory with small heap size
+    # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
+                                   # size and less than 5000 closures
     # ~ fnm = "../data/cmc-full"
 
     IFace.hpar = HyperParam()
@@ -203,13 +210,16 @@ if __name__ == "__main__":
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
     # ~ miner = ClMiner(d, 3/24)
-    miner = ClMiner(d)
-    print("Int support:", miner.intsupp)
+    miner = ClMiner(d, 0)
+    # ~ print("Int support:", miner.intsupp)
     lcl = list()
     for cl in miner.mine_closures():
         lcl.append(cl)
+        # ~ if miner.card > IFace.hpar.clos_num_limit:
+            # ~ break
         # ~ print(cl)
-    print("# cl", len(lcl), miner.card)
+    print(f"Number of closures: {len(lcl)} of " + 
+          f"support {cl.supp} of more; total lengths {miner.totlen}.") # or miner.card
     # ~ print("In dict:")
     # ~ for fs in miner:
         # ~ if miner[fs].supp == 0:

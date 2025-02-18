@@ -103,7 +103,7 @@ class ItSet(set):
             "assumed something with a length"
             self.supp = len(infosupp)
             self.supportset = infosupp
-        # ~ self.suppratio = float("inf") # default
+        self.suppratio = float("inf") # default
         ItSet.cnt += 1
         self.label = ItSet.cnt
         self.is_closed = False
