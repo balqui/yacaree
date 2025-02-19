@@ -1,15 +1,23 @@
 '''
 yacaree
 
-Current revision: mid Pluviose 2025, VERY UGLY INHERITED HACKS
+Current revision: early Ventose 2025
 
 Programmers: JLB
 
-Earlier docstring to revise:
+Warns if TyTra unavailable, falls back to old transversal code; 
+CAVEAT: HyTra untested for many years.
+
+
+
+
+
+Earlier docstrings to revise:
+
+VERY UGLY INHERITED HACKS
 
 Before anything: reporting of hytra unavailability is on statics.iface
 which does not work anymore, so this must run with hytra installed.
-
 
 Current usage of heappush might compare Rule's if supports coincide
 On the CPython version of Python2 this was harmless
@@ -19,6 +27,31 @@ the heap through heappush so that comparison never arrives to the
 Rule's themselves
 Probably a decent solution would come from using my own heaps
 See also partialruleminer.py
+
+
+in mine_implications(latt, cn):
+    
+    cn closure of sufficient suppratio, find implications there but:
+    - mingens of length 1 are replicating work from the clausures of 
+    singletons
+    - if all supersets below minsupp, suppratio not known, closure 
+    does not make it to here
+    - if all supersets with low supp even if some above minsupp.
+    closure may take loooong to make it to here and others with
+    smaller support may be seen before
+
+Additional comment:
+
+ in case the implication fails the boost thr, goes into rminer.reserved
+ like all the others, and will be fished back in from the partial rule 
+ miner if a decrease of the boost thr leads to it
+
+ MAJOR REFACTORING needed: this to become a class keeping 
+ the "reserved" rules, filling that heap by calling on the
+ coming closure just as above, and updating the conf boost thr 
+ on the basis of all rules - keeps the highest reserved cboost 
+ and starts yielding upon decreases
+
 '''
 
 
@@ -60,7 +93,7 @@ def warn_potential_deprecation():
         IFace.reportwarning("Please pip install hytra at some point.")
         IFace.reportwarning("Falling back on deprecated hypergraph_old code.")
 
-heappushcnt = 0 # see above
+# ~ heappushcnt = 0 # see above
 
 def _faces(itst, listpred):
         "listpred immediate preds of itst - make hypergraph of differences"
@@ -90,14 +123,8 @@ def _faces(itst, listpred):
 
 def mine_implications(latt, cn):
     """
-    cn closure of sufficient suppratio, find implications there but:
-    - mingens of length 1 are replicating work from the clausures of 
-    singletons
-    - if all supersets below minsupp, suppratio not known, closure 
-    does not make it to here
-    - if all supersets with low supp even if some above minsupp.
-    closure may take loooong to make it to here and others with
-    smaller support may be seen before
+    Gets a closure cn, with suppratio if known: find implications there.
+    If all supersets below minsupp, suppratio not known.
     """
     warn_potential_deprecation()
     # ~ global heappushcnt
@@ -109,13 +136,13 @@ def mine_implications(latt, cn):
         # ~ hyedges is actually a list but this might change
     # ~ print(" == search for mingens of", cn)
     mingens = list( m for m in transv(_faces(cn, latt[cn])).hyedges )
-    # ~ print(" == mingens of", cn, ":", mingens)
+    print(" == mingens of", cn, ":", mingens)
     if len(cn) == len(mingens[0]):
         "o/w no rules as cn is a free set and its own unique mingen"
         pass
     else:
         for an in mingens:
-            # ~ print(" == making a rule out of", an, "and", latt[cn])
+            print(" == making a rule out of", an, "and", latt[cn])
             an = frozenset(an)
             if an in latt:
                 print(an, "ALREADY IN lattice, then something wrong I believe")
@@ -134,15 +161,6 @@ def mine_implications(latt, cn):
                     yield (set(an), set(cn))
 
 
-## in case the implication fails the boost thr, goes into rminer.reserved
-## like all the others, and will be fished back in from the partial rule 
-## miner if a decrease of the boost thr leads to it
-
-## MAJOR REFACTORING needed: this to become a class keeping 
-## the "reserved" rules, filling that heap by calling on the
-## coming closure just as above, and updating the conf boost thr 
-## on the basis of all rules - keeps the highest reserved cboost 
-## and starts yielding upon decreases
 
 
 
