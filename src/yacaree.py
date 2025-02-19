@@ -52,9 +52,9 @@ class Yacaree:
         rules = []
         for rul in miner.minerules():
             "if someday Rule has comparison, remove mentions to rulecnt"
-            # ~ if len(thing[0]) == 1:
-            print("At main loop of yacaree:", thing) # list(cl), list(list(pr) for pr in preds)
-            # ~ rulecnt += 1
+            if len(rul[0]) <= 2:
+                print("At main loop of yacaree:", rul) # list(cl), list(list(pr) for pr in preds)
+            rulecnt += 1
             # ~ rules.append((-rul.cboo, rulecnt, rul))
             # ~ if miner.count == self.hpar.findrules > 0: break
         # ~ print(miner.latt)
@@ -101,13 +101,15 @@ if __name__ == "__main__":
 
     # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
-    fnm = "../data/e24.td"
+    # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
+    # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
+    fnm = "../data/votesTr" 
     # The next work thanks to the limit on the total support set lengths
     # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
