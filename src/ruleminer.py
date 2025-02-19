@@ -57,8 +57,8 @@ class RuleMiner: # Does not subclass Lattice anymore
             if cn:
                 for rul in mine_implications(self.latt, cn):
                     yield rul
-            else:
-                print(" === skipping emptyset:", cn)
+            # ~ else:
+                # ~ print(" === skipping emptyset:", cn)
             # ~ for rul in mine_partial_rules(self,cn):
                 # ~ yield rul
 

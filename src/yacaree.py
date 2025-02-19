@@ -35,8 +35,8 @@ class Yacaree:
         self.iface.go(self)
 
     def standard_run(self):
-        if self.hpar.maxrules == 0:
-            self.iface.report("CLI call requested all rules as output.")
+        # ~ if self.hpar.maxrules == 0:
+            # ~ self.iface.report("CLI call requested all rules as output.")
         if not self.dataset:
             self.dataset = Dataset() # reads in from iface.datafile
         self.iface.openauxfiles()
@@ -44,21 +44,25 @@ class Yacaree:
         rulecnt = 0 # avoid comparing rules of same cb in sorted(rules) 
         results_file = self.iface.rulesfile
         self.iface.get_ready_for_run()
-        if self.hpar.maxrules == 0:
-            self.iface.report("Providing all rules as output.")
+        # ~ if self.hpar.maxrules == 0:
+            # ~ self.iface.report("Providing all rules as output.")
         self.iface.running = True
-        miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = True) # supprat: push suppratio constraint
+        # ~ miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = True) # supprat: push suppratio constraint
+        miner = RuleMiner(self.iface, self.hpar, self.dataset)
         rules = []
         # ~ for rul in miner.minerules():
-        for thing in miner.minerules():
-            "if someday Rule has comparison, remove mentions to rulecnt"
-            print("At main loop of yacaree:", thing) # list(cl), list(list(pr) for pr in preds)
+        for thing in miner.minerules(0):
+            # ~ "if someday Rule has comparison, remove mentions to rulecnt"
+            # ~ if len(thing[0]) == 1:
+                print("At main loop of yacaree:", thing) # list(cl), list(list(pr) for pr in preds)
             # ~ rulecnt += 1
             # ~ rules.append((-rul.cboo, rulecnt, rul))
             # ~ if miner.count == self.hpar.findrules > 0: break
+        # ~ print(miner.latt)
         self.iface.report("Mining process terminated;" + 
                           " searched for rules of confidence boost" + 
-                         (" at least %1.3f." % miner.latt.boosthr)) 
+                          '...' )
+                         # ~ (" at least %1.3f." % miner.latt.boosthr)) 
         self.iface.report(("Total of %d Rules obtained from " % miner.count) +
                      ("%d closures of support at least " % len(miner.latt)) +
                      str(miner.latt.minsupp))
@@ -71,8 +75,9 @@ class Yacaree:
             results_file.write("\n" + str(cnt) + "/\n" + str(r))
             if cnt == self.hpar.maxrules > 0: break
         results_file.close()
-        self.iface.report("Confidence threshold was %2.3f."
-                     % (float(self.hpar.confthr)/self.hpar.scale))
+        self.iface.report("Confidence threshold was..." # %2.3f."
+                     # ~ % (float(self.hpar.confthr)/self.hpar.scale))
+                     )
         self.iface.report(str(cnt) + " rules chosen according to their " +
                      "confidence boost written to file " + self.iface.rulesfile.name + ".") 
         self.iface.report("End of process of dataset in file " + 
@@ -81,7 +86,7 @@ class Yacaree:
                      self.iface.version + " finished.")
         self.iface.logfile.close()
         self.iface.get_ready_for_new_run()
-        self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
+        # ~ self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
         self.iface.sound_bell()
 
     def standard_run_all(self):
@@ -91,6 +96,56 @@ class Yacaree:
 
 if __name__ == "__main__":
 
+    from filenames import FileNames
+    from hyperparam import HyperParam
+    from time import time
+
+    # ~ fnm = "../data/lenses_recoded"
+    # ~ fnm = "../data/toy"
+    fnm = "../data/e24.td"
+    # ~ fnm = "../data/e24t.td"
+    # ~ fnm = "../data/e13"
+    # ~ fnm = "../data/e13a"
+    # ~ fnm = "../data/e13b"
+    # ~ fnm = "../data/adultrain"
+    # ~ fnm = "../data/cmc-full"
+    # The next work thanks to the limit on the total support set lengths
+    # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
+    # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
+                                   # size and less than 5000 closures
+
+    iface = IFace()
+    hpar = HyperParam()
+
+    IFace.fn = FileNames(IFace)
+    IFace.opendatafile(fnm)
+    # ~ d = Dataset()
+
+    y = Yacaree(iface, hpar, fnm)
+
+    # ~ miner = ClMiner(d, 0.084)
+    # ~ miner = ClMiner(d, 0.75)
+    # ~ miner = ClMiner(d, 3/24)
+    # ~ miner = ClMiner(d, 0)
+    # ~ print("Int support:", miner.intsupp)
+    # ~ lcl = list()
+    # ~ for cl in miner.mine_closures():
+        # ~ lcl.append(cl)
+        # ~ if miner.card > IFace.hpar.clos_num_limit:
+            # ~ break
+        # ~ print(cl)
+    # ~ print(f"Number of closures: {len(lcl)} of " + 
+          # ~ f"support {cl.supp} of more; total lengths {miner.totlen}.") # or miner.card
+    # ~ print("In dict:")
+    # ~ for fs in miner:
+        # ~ if miner[fs].supp == 0:
+            # ~ print(fs, miner[fs])
+
+
+
+    exit(1)
+
+	# TRUE MAIN:
     from argparse import ArgumentParser
 
     iface = IFace()
@@ -104,10 +159,10 @@ if __name__ == "__main__":
         prog = "python[3] yacaree.py or just ./yacaree"
         )
 
-    argp.add_argument('-a', '--all', action = 'store_true', 
-                      help = "output with no rule limit " + 
-                             "(default: limit to " 
-                             + str(hpar.maxrules) + " rules)")
+    # ~ argp.add_argument('-a', '--all', action = 'store_true', 
+                      # ~ help = "output with no rule limit " + 
+                             # ~ "(default: limit to " 
+                             # ~ + str(hpar.maxrules) + " rules)")
     argp.add_argument('-g', '--gui', action = 'store_true', 
                       help = "launch GUI (default: remain in " + 
                              "command line interface - CLI)")
@@ -126,8 +181,8 @@ if __name__ == "__main__":
 
     args = argp.parse_args()
 
-    if args.all:
-        hpar.maxrules = 0
+    # ~ if args.all:
+        # ~ hpar.maxrules = 0
 
     if args.verbose:
         hpar.verbose = True

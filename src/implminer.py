@@ -107,15 +107,15 @@ def mine_implications(latt, cn):
         # ~ Maybe don't need it in Itset form yet
         # ~ but need to compute them first to check for free sets;
         # ~ hyedges is actually a list but this might change
-    print(" == search for mingens of", cn)
-    mingens = list( m for m in transv(_faces(cn, latt[cn][1])).hyedges )
-    print(" == mingens of", cn, ":", mingens)
+    # ~ print(" == search for mingens of", cn)
+    mingens = list( m for m in transv(_faces(cn, latt[cn])).hyedges )
+    # ~ print(" == mingens of", cn, ":", mingens)
     if len(cn) == len(mingens[0]):
         "o/w no rules as cn is a free set and its own unique mingen"
         pass
     else:
         for an in mingens:
-            print(" == making a rule out of", an, "and", latt[cn])
+            # ~ print(" == making a rule out of", an, "and", latt[cn])
             an = frozenset(an)
             if an in latt:
                 print(an, "ALREADY IN lattice, then something wrong I believe")

@@ -190,17 +190,18 @@ if __name__ == "__main__":
     from time import time
 
     # ~ fnm = "../data/lenses_recoded"
-    # ~ fnm = "../data/toy"
+    fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/adultrain"
-    fnm = "../data/chess.td"   # Fills memory with small heap size
+    # ~ fnm = "../data/cmc-full"
+    # The next work thanks to the limit on the total support set lengths
+    # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
                                    # size and less than 5000 closures
-    # ~ fnm = "../data/cmc-full"
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)
@@ -217,7 +218,7 @@ if __name__ == "__main__":
         lcl.append(cl)
         # ~ if miner.card > IFace.hpar.clos_num_limit:
             # ~ break
-        # ~ print(cl)
+        print(cl)
     print(f"Number of closures: {len(lcl)} of " + 
           f"support {cl.supp} of more; total lengths {miner.totlen}.") # or miner.card
     # ~ print("In dict:")

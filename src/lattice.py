@@ -56,7 +56,7 @@ class Lattice(dict):
             union_covers init is always empty 
             (can we make do with a single union_cover instead of a dict?)
             """
-            print(" .... miner sent:", itst)
+            # ~ print(" .... miner sent:", itst)
             supp = itst.supp
             self[itst] = list()
             for pot_cover in set( 
@@ -66,31 +66,35 @@ class Lattice(dict):
                 if itst.intersection(union_covers[pot_cover]) <= pot_cover:
                     "this is the iPred condition"
                     self[itst].append(pot_cover)
-                    # ~ if not union_covers[pot_cover]:
-                        # ~ "first successor of pot_cover: gives its suppratio - REMOVE THIS PART?"
-                        # ~ pot_cover.suppratio = float(pot_cover.supp)/supp
+                    if not union_covers[pot_cover]:
+                        "first successor of pot_cover: gives its suppratio"
+                        pot_cover.suppratio = float(pot_cover.supp)/supp
                         # ~ if pot_cover.suppratio >= self.boosthr:
-                            # ~ heappush(ready, pot_cover)
-                    heappush(ready, pot_cover)
+                        # NOT PUSHING ANYMORE THE suppratio CONSTRAINT
+                        heappush(ready, pot_cover)
                     union_covers[pot_cover].update(itst)
                     bord.discard(pot_cover)
             bord.add(itst)
 
             # ~ while self.ready:
-            print(" .... ready:", ' '.join(str(e) for e in ready))
+            # ~ print(" .... ready:", ' '.join(str(e) for e in ready))
             while ready:
                 """
                 At this point we have the closures and their heaviest
                 predecessor so suppratio correct, but lack other preds
                 """
-                # ~ yield heappop(self.ready)[1]
                 self.minsupp = ready[0].supp
                 yield heappop(ready)
 
         print("\n\n ....... now pending bord w/o suppratios")
         print(" ....... highest unreached supp:", supp - 1)
         for st in bord:
-            print(" ......... yielding:", st, "suppratio bound:", st.supp, "/", supp - 1, "=", st.supp/(supp - 1))
+            # ~ print(" ......... yielding:", st, "suppratio bound:", st.supp, "/", supp - 1, "=", end = ' ')
+            # ~ if supp > 1: 
+                # ~ print(st.supp/(supp - 1))
+            # ~ else:
+                # ~ print("inf")
+            self.minsupp = st.supp
             yield st
 
         # ~ print(" ....... freezer:", freezer)
@@ -162,36 +166,36 @@ class Lattice(dict):
     def __str__(self):
         s = ""
         for e in self:
-            s += (str(self.miner[e]) # + f" {self[e][0].suppratio:2.3f} " 
+            s += (str(self.miner[e]) + f" {self.miner[e].suppratio:2.3f} " 
               + ' '.join(str(p) for p in self[e]) + "\n")
         return s
 
-    def reviseboost(self, s, n):
-        """
-        current value weights as boostab of the lifts added up
-        only to reduce it, and provided it does not get that low
-        PLAN 2025: STOP DEPENDING ON LIFT AS IT REQUIRES COMPUTING
-        CLOSURES OF CONSEQUENTS, COMPARE QUANTITY OF RULES PASSING
-        THE CBOOST THRESHOLD WITH QUANTITY OF CLOSURES IN FREEZER
-        NOT PASSING THE SUPPRATIO THRESHOLD.
-        """
-        s = s + IFace.hpar.boostab*self.boosthr
-        n = n + IFace.hpar.boostab
-        v = float(s)/n
-        if v < IFace.hpar.absoluteboost:
-            v = IFace.hpar.absoluteboost
-        if v <= self.boosthr - IFace.hpar.boostdecr:
-            self.boosthr = v
-            IFace.report(("Confidence boost bound reduced to %2.3f." % v)) 
-            IFace.please_report = True
-            while self.freezer:
-                "fish back in closures that reach enough supp ratio now"
-                if -self.freezer[0][0] > self.boosthr:
-                    (spprt,st) = heappop(self.freezer)
-                    assert spprt == -st.suppratio
-                    heappush(self.ready, st)
-                else:
-                    break
+    # ~ def reviseboost(self, s, n):
+        # ~ """
+        # ~ current value weights as boostab of the lifts added up
+        # ~ only to reduce it, and provided it does not get that low
+        # ~ PLAN 2025: STOP DEPENDING ON LIFT AS IT REQUIRES COMPUTING
+        # ~ CLOSURES OF CONSEQUENTS, COMPARE QUANTITY OF RULES PASSING
+        # ~ THE CBOOST THRESHOLD WITH QUANTITY OF CLOSURES IN FREEZER
+        # ~ NOT PASSING THE SUPPRATIO THRESHOLD.
+        # ~ """
+        # ~ s = s + IFace.hpar.boostab*self.boosthr
+        # ~ n = n + IFace.hpar.boostab
+        # ~ v = float(s)/n
+        # ~ if v < IFace.hpar.absoluteboost:
+            # ~ v = IFace.hpar.absoluteboost
+        # ~ if v <= self.boosthr - IFace.hpar.boostdecr:
+            # ~ self.boosthr = v
+            # ~ IFace.report(("Confidence boost bound reduced to %2.3f." % v)) 
+            # ~ IFace.please_report = True
+            # ~ while self.freezer:
+                # ~ "fish back in closures that reach enough supp ratio now"
+                # ~ if -self.freezer[0][0] > self.boosthr:
+                    # ~ (spprt,st) = heappop(self.freezer)
+                    # ~ assert spprt == -st.suppratio
+                    # ~ heappush(self.ready, st)
+                # ~ else:
+                    # ~ break
 
 
 if __name__=="__main__":
@@ -214,8 +218,8 @@ if __name__=="__main__":
         print("\n\n")
 
     # ~ fnm = "../data/e13"
-    # ~ fnm = "../data/e24t.td"
-    fnm = "../data/toy"
+    fnm = "../data/e24t.td"
+    # ~ fnm = "../data/toy"
     # ~ fnm = "../data/lenses_recoded.txt"
 
 
@@ -231,7 +235,7 @@ if __name__=="__main__":
 
     # ~ la.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
     closlist = list()
-    for a in la.candidate_closures(0.2):
+    for a in la.candidate_closures(0):
         print("\n\nNew closure:")
         printclos(la, a)
         closlist.append(a)
