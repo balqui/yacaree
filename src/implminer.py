@@ -160,7 +160,8 @@ def mine_implications(latt, cn):
                 # ~ else:
                     # ~ rminer.count += 1
                     # ~ yield rul
-                    yield (set(an), set(cn))
+                    # ~ yield (set(an), set(cn))
+                    yield (an, cn) # REMEMBER, cn is an ItSet but an just a frozenset
 
 
 
@@ -174,9 +175,9 @@ if __name__=="__main__":
     from lattice import Lattice
     from dataset import Dataset
 
-    # ~ fnm = "../data/e13"
+    fnm = "../data/e13"
     # ~ fnm = "../data/e24t.td"
-    fnm = "../data/toy"
+    # ~ fnm = "../data/toy"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/lenses_recoded.txt"
 
@@ -194,7 +195,7 @@ if __name__=="__main__":
         if cn:
             for rul in mine_implications(la, cn):
                 impls.append(rul)
-    if input(f"Show {len(impls)} rules?"):
+    if input(f"Show {len(impls)} implications? "):
         for rul in impls:
             print(rul[0], "=>", rul[1].difference(rul[0]))
 

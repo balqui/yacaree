@@ -17,10 +17,11 @@ Plan is to change this into two (or more?) separate processes (tricky).
 
 # ~ import statics
 # ~ from choose_iface import iface
-from iface import IFace as iface
+from iface import IFace
+# ~ from iface import IFace as iface
 ##from itset import ItSet
 from lattice import Lattice
-##from rule import Rule
+from rule import Rule
 
 ##from heapq import heapify, heappush, heappop
 ##from collections import defaultdict
@@ -31,7 +32,7 @@ from partialruleminer import mine_partial_rules
 
 class RuleMiner: # Does not subclass Lattice anymore
 
-    def __init__(self, iface, hpar, dataset, supprat = True):
+    def __init__(self, hpar, dataset, supprat = True):
         "some codes, reserved rules, and average lift so far"
         self.latt = Lattice(dataset)
         if not supprat:
@@ -54,36 +55,33 @@ class RuleMiner: # Does not subclass Lattice anymore
         """
         for cn in self.latt.candidate_closures(supp): 
             # ~ yield (cn, self.latt[cn])
-            # ~ if cn:
-                # ~ for rul in mine_implications(self.latt, cn):
-                    # ~ yield rul
-            # ~ else:
-                # ~ print(" === skipping emptyset:", cn)
-            for rul in mine_partial_rules(self, cn):
-                yield rul
+            if cn:
+                for rul in mine_implications(self.latt, cn):
+                    yield Rule(*rul, full_impl = True)
+                for rul in mine_partial_rules(self, cn):
+                    rul = Rule(*rul)
+                    if rul.conf > IFace.hpar.confthr:
+                        yield rul
+            else:
+                print(" === skipping emptyset:", cn)
 
 if __name__=="__main__":
 
-    from iface import IFace
     from hyperparam import HyperParam
     from filenames import FileNames
     from dataset import Dataset
-
-
-
-
 
 ##    fnm = "pumsb_star"
 ##    fnm = "cmc-full"
 ##    fnm = "adultrain"
     # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
-    fnm = "../data/e24.td"
+    # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
-    # ~ fnm = "../data/adultrain"
+    fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
     # ~ fnm = "../data/votesTr" 
@@ -98,17 +96,19 @@ if __name__=="__main__":
     d = Dataset()
     
     # ~ miner = RuleMiner(fnm)
-    miner = RuleMiner(IFace, IFace.hpar, d)
-    for rul in miner.minerules(0.05):
-        iface.report(str(miner.count) + "/ " + str(rul[0]) + " --> " + 
-        str(rul[1]) +
-        " c: " + str(rul[1].supp/rul[0].supp) )
+    miner = RuleMiner(IFace.hpar, d)
+    for rul in miner.minerules(0.15):
+        if rul.conf == 1:
+            IFace.report(str(miner.count) + "/ " + str(rul))
+        # ~ iface.report(str(miner.count) + "/ " + str(rul[0]) + " --> " + 
+        # ~ str(rul[1]) +
+        # ~ " c: " + str(rul[1].supp/rul[0].supp) )
         # ~ ans = iface.ask_input("More? (<CR> to finish) ")
         # ~ if len(ans)==0: break
 
-    print("Lattice:")
-    for a in miner.latt:
-        print(a)
+    # ~ print("Lattice:")
+    # ~ for a in miner.latt:
+        # ~ print(a)
 
     # ~ iface.report("Proposed " + str(miner.count) + " rules.")
     # ~ iface.endreport()
