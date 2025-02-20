@@ -5,6 +5,8 @@ Current revision: early Ventose 2025
 
 Programmers: JLB
 
+CAVEAT: As of today it constructs the Pasquier basis, not the GD.
+
 Warns if TyTra unavailable, falls back to old transversal code; 
 CAVEAT: HyTra untested for many years.
 
@@ -164,4 +166,39 @@ def mine_implications(latt, cn):
 
 
 
+
+if __name__=="__main__":
+
+    from filenames import FileNames
+    from hyperparam import HyperParam
+    from lattice import Lattice
+    from dataset import Dataset
+
+    # ~ fnm = "../data/e13"
+    # ~ fnm = "../data/e24t.td"
+    fnm = "../data/toy"
+    # ~ fnm = "../data/adultrain"
+    # ~ fnm = "../data/lenses_recoded.txt"
+
+
+    IFace.hpar = HyperParam()
+    IFace.fn = FileNames(IFace)
+    IFace.opendatafile(fnm)
+    d = Dataset()
+
+    la = Lattice(d)
+    supp = 0
+    impls = list()
+
+    for cn in la.candidate_closures(supp): 
+        if cn:
+            for rul in mine_implications(la, cn):
+                impls.append(rul)
+    if input(f"Show {len(impls)} rules?"):
+        for rul in impls:
+            print(rul[0], "=>", rul[1].difference(rul[0]))
+
+    print("Lattice:")
+    for a in la:
+        print(a)
 

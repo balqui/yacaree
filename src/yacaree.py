@@ -96,11 +96,10 @@ class Yacaree:
 if __name__ == "__main__":
 
     from filenames import FileNames
-    from hyperparam import HyperParam
-    from time import time
+    # ~ from time import time
 
     # ~ fnm = "../data/lenses_recoded"
-    # ~ fnm = "../data/toy"
+    fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
@@ -109,7 +108,7 @@ if __name__ == "__main__":
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
-    fnm = "../data/votesTr" 
+    # ~ fnm = "../data/votesTr" 
     # The next work thanks to the limit on the total support set lengths
     # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap

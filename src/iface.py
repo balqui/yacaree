@@ -338,7 +338,8 @@ class IFace:
 
     @classmethod
     def sound_bell(cls):
-        if cls._gui:
-            cls.console.bell()
-        else:
-            print('\a', end = '', flush = True)
+        pass
+        # ~ if cls._gui:
+            # ~ cls.console.bell()
+        # ~ else:
+            # ~ print('\a', end = '', flush = True)
