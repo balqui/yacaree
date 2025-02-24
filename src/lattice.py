@@ -3,8 +3,13 @@ yacaree
 
 Current revision: early Ventose 2025
 
-Lattice based on Hasse edges, that is, 
-list of immediate predecessors for each node
+Lattice based on Hasse edges, that is, list of immediate 
+predecessors for each node.
+A dict that follows the support order of the closure miner.
+However, the local generator shuffles the order due to 
+waiting for the first superset to compute the support 
+ratio, even though the support ratio constraint is not
+pushed anymore into the mining algorithm.
 
 Programmers: JLB
 

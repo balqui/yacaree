@@ -57,10 +57,12 @@ class RuleMiner: # Does not subclass Lattice anymore
             # ~ yield (cn, self.latt[cn])
             if cn:
                 for rul in mine_implications(self.latt, cn):
+                    self.count += 1
                     yield Rule(*rul, full_impl = True)
                 for rul in mine_partial_rules(self, cn):
                     rul = Rule(*rul)
                     if rul.conf > IFace.hpar.confthr:
+                        self.count += 1
                         yield rul
             else:
                 print(" === skipping emptyset:", cn)
@@ -81,7 +83,8 @@ if __name__=="__main__":
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
-    fnm = "../data/adultrain"
+    fnm = "../data/e5b"
+    # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
     # ~ fnm = "../data/votesTr" 
@@ -97,8 +100,9 @@ if __name__=="__main__":
     
     # ~ miner = RuleMiner(fnm)
     miner = RuleMiner(IFace.hpar, d)
-    for rul in miner.minerules(0.15):
+    for rul in miner.minerules(0):
         if rul.conf == 1:
+        # ~ if rul.an == set(['a', 'b']):
             IFace.report(str(miner.count) + "/ " + str(rul))
         # ~ iface.report(str(miner.count) + "/ " + str(rul[0]) + " --> " + 
         # ~ str(rul[1]) +

@@ -112,6 +112,7 @@ class ItSet(set):
     def _break_tie(self, other):
         "We end up needing that singletons compare the items."
         if len(self) == 1 == len(other):
+            "cannot compare directly as sets but avoid extracting items"
             return list(self) < list(other)
         else:
             return self.label < other.label

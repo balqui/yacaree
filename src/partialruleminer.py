@@ -87,6 +87,5 @@ def mine_partial_rules(rminer,cn):
             # ~ heappushcnt -= 1
             # ~ heappush(rminer.reserved,(-rul.supp,heappushcnt,rul))
         # ~ else:
-            rminer.count += 1
             yield (an, cn)
 

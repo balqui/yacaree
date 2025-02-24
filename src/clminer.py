@@ -1,10 +1,12 @@
 """
-Current date: late Pluviose 2025
+Current date: early Ventose 2025
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
 Closure miner based on the Troppus algorithm.
+
+CAVEAT: MUST REVIEW SEVERAL THINGS MARKED "CAVEAT".
 """
 
 
@@ -17,11 +19,9 @@ from heapq import heapify, heappush, heappop
 
 class ClMiner(dict):
     """
-    Troppus-based miner. It is a dict from frozensets of itemsets 
+    Troppus-based miner. It is a dict from (frozen)sets of items 
     (closed or not) to their closing ItSet's. Has a mine_closures 
     generator of course to be called from Lattice.
-    CAVEAT: At some point, the ItSet part in the Lattice
-    dict is to be replaced by this one.
     """
 
     def __init__(self, dataset, supp=-1):
@@ -128,13 +128,17 @@ class ClMiner(dict):
 
         self.minsupp = self.dataset.nrtr
         while self.pend_clos and IFace.running:
-            "Yield next closure and handle extensions."
+            """
+            Yield next closure and handle extensions.
+            CAVEAT: IFace.running condition still fully untested.
+            """
             clos = heappop(self.pend_clos)
             pclos = set(clos)  # mutable copy of contents
             if frozenset(pclos) not in self:
                 self[frozenset(pclos)] = clos
             self.card += 1
             yield clos
+
             if self.card % IFace.hpar.report_often == 0:
                 "Report and consider raising support."
                 IFace.report(
@@ -155,30 +159,47 @@ class ClMiner(dict):
             mxsupp = 0
             for itt in sorteditems:
                 (i,) = itt # extract the item in the singleton ItSet
-                if first_level:
-                    "set at previous loop: no further i can clear mxsupp"
-                    break
+                # ~ if first_level:
+                    # ~ """
+                    # ~ set at previous loop: no further i can clear mxsupp
+                    # ~ CAVEAT: I don't fully understand these conditions
+                    # ~ """
+                    # ~ break
                 if i in pclos:
                     "remove this i as required for all future i's"
+                    # ~ print(" --- take", i, "out from", pclos)
                     pclos.remove(i)
                 else:
                     nst = pclos.copy() # copy to modify
                     sp = self.supp_adding(nst, itt)
+                    # ~ print(" --- try:", nst, i, "sp", sp, "mxsupp", mxsupp)
                     if not pclos:
-                        "nst a singleton: back down to singletons level"
+                        """
+                        nst a singleton: back down to singletons level
+                        CAVEAT: I don't fully understand these conditions
+                        """
+                        # ~ print(" --- first level set")
                         first_level = True
                     if sp > mxsupp:
                         ncl = self[frozenset(nst.union(itt))]
+                        # ~ print(" --- closure of:", nst, i, "is", ncl)
                         for j in ncl:
                             jtt = ItSet({j}, self.dataset.occurncs[j])
-                            if (j not in clos and
-                               (itt.supp > jtt.supp or
-                               (itt.supp == jtt.supp and i > j))):
+                            # ~ if (j not in clos and
+                               # ~ (itt.supp > jtt.supp or
+                               # ~ (itt.supp == jtt.supp and i > j))):
+                            if (j not in clos and itt < jtt):
+                                "CAVEAT: I don't fully understand these conditions"
+                                # ~ print(" --- discard as:", jtt, ">", itt)
                                 break
                         else:
                             if sp > clos.supp:
+                                # ~ print(" --- break:", ncl, ">", clos.supp)
                                 break
                             elif sp > self.intsupp:
+                                # ~ print(" --- heap:", self.pend_clos)
+                                # ~ print(" --- add:", ncl)
+                                # ~ print(" --- due to:", nst, i)
                                 heappush(self.pend_clos, ncl)
                                 mxsupp = sp
 
@@ -190,10 +211,11 @@ if __name__ == "__main__":
     from time import time
 
     # ~ fnm = "../data/lenses_recoded"
-    fnm = "../data/toy"
+    # ~ fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
+    fnm = "../data/e5b"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/adultrain"

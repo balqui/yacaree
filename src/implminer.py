@@ -139,6 +139,8 @@ def mine_implications(latt, cn):
     # ~ print(" == search for mingens of", cn)
     mingens = list( m for m in transv(_faces(cn, latt[cn])).hyedges )
     # ~ print(" == mingens of", cn, ":", mingens)
+    if not mingens:
+        print(" == No mingens:", cn, latt[cn])
     if len(cn) == len(mingens[0]):
         "o/w no rules as cn is a free set and its own unique mingen"
         pass
