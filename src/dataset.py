@@ -76,6 +76,9 @@ class Dataset:
         Hopefully it is infrequent to need to resort to this slow way.
         Consider keeping a count of calls to this method.
         """
+        IFace.reportwarning(
+            "(Possibly unexpected?) Dataset traversal to find " +
+           f"the closure of { {' '.join(str(e) for e in st)} }." )
         exact = False # did it match exactly some transaction?
         transcontain = list()
         for tr in self.transcns:

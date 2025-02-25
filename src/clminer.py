@@ -109,6 +109,7 @@ class ClMiner(dict):
 
 
     def mine_closures(self):
+        "As per the Troppus algorithm"
 
         closempty = set()
         sorteditems = list()
@@ -202,6 +203,34 @@ class ClMiner(dict):
                                 # ~ print(" --- due to:", nst, i)
                                 heappush(self.pend_clos, ncl)
                                 mxsupp = sp
+
+    def close(self, st):
+        "find (and store if new) closure of set st"
+        fst = frozenset(st)
+        if fst in self:
+            "self expected to contain already the whole closure space"
+            return self[fst]
+        for clos in self.values:
+            "one option: linear search - risks being slow"
+            if fst <= clos:
+                "dict order: largest-support closure containing fst"
+                break
+            self[fst] = clos
+            return clos
+        else:
+            "fall back on dataset - which is slower?"
+            supp, exact = self.dataset.slow_supp(fst)
+            if exact:
+                "matched a transaction hence it is closed"
+                clos = fst
+            else:
+                "intersect support sets"
+                clos = self.dataset.inters(supp)
+            clos = ItSet(clos, supp)
+            self[fst] = clos
+            self.totlen += len(supp)
+            return clos
+
 
 
 if __name__ == "__main__":

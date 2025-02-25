@@ -284,7 +284,7 @@ class IFace:
 
 
     @classmethod
-    def report(cls, m = "", warnlevel = ''):
+    def report(cls, m = ""): # , warnlevel = ''):
         cls.clock_at_report = clock()
         m = " " + m + "\n"
         if cls._gui:

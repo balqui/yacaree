@@ -147,28 +147,6 @@ class Lattice(dict):
                     handled.add(q)
                     pending.append(q)
 
-# ~ Make sure whether I really need it, then refactor and avoid closeds
-    # ~ def close(self,st):
-        # ~ "closure of set st according to current closures list"
-        # ~ fst = ItSet(st)
-        # ~ if fst in self.immpreds:
-            # ~ "fast to test with hash, little expense may save a lot"
-            # ~ return fst
-        # ~ for node in self.closeds:
-            # ~ "linear search - risks being slow"
-            # ~ if st <= node:
-                # ~ "largest support closure containing st"
-                # ~ break
-        # ~ else:
-            # ~ "should check that node is included in universe"
-            # ~ node = ItSet(self.dataset.univ)
-        # ~ return node
-
-# ~ set2node undefined - luckily isclosed never called
-    # ~ def isclosed(self,st):
-        # ~ "test closedness of set st according to current closures"
-        # ~ return set2node(st) in self.nodes
-
     def __str__(self):
         s = ""
         for e in self:
