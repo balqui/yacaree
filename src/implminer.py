@@ -123,6 +123,23 @@ def _faces(itst, listpred):
                 # ~ rul.cboo = rul.conf/belowconf
     # ~ return rul.cboo
 
+def is_cboost_high_impl(rul, latt):
+    "rul assumed to be an implication, test std (non-closure) cboost"
+    if rul.conf < 1:
+        print(" .. test expected implication but got", rul)
+        exit(1)
+    print(" .. testing", rul)
+    print(" .. type of consequent", type(rul.cn)) # should be always ItSet
+    if rul.cn.suppratio < IFace.hpar.absoluteboost:
+        print(" .. no, low suppratio")
+        return False
+    else:
+        for it in rul.an:
+            if confidence_of_an_minus_it_to_cn > 1/IFace.hpar.absoluteboost:
+                print(" .. no, high conf taking out", it)
+                return False
+    return True
+
 def mine_implications(latt, cn):
     """
     Gets a closure cn, with suppratio if known: find implications there.
@@ -150,6 +167,7 @@ def mine_implications(latt, cn):
             an = frozenset(an)
             if an in latt:
                 print(an, "ALREADY IN lattice, then something wrong I believe")
+                exit(1)
             else: 
                 # ~ rminer.latt.supps[an] = rminer.latt.supps[cn]
                 # ~ rul = Rule(an,cn,rminer.latt)

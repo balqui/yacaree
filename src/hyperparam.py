@@ -64,16 +64,17 @@ class HyperParam:
         
         self.pend_len_limit = 16384 # 8192 # 1000 # 16384 # 2 to power 14
         self.tot_len_limit = 100000000 # guess :( - may require maybe 4GB to 6GB of core
-        self.genabsupp = 5 # 5 # absolute number of transactions
+        self.genabsupp = 1 # 5 # absolute number of transactions
         # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
         # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)
-        self.confthr = 0.65
+        self.confthr = 0.52
         # ~ self.confthr = int(0.65 * self.scale)
         # ~ self.findrules = 0
         # ~ self.maxrules = 50 # set this to zero if all the rules are to be written out
         # ~ self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         # ~ self.initialboost = 1.15
-        # ~ self.absoluteboost = 1.05
+        self.absoluteboost = 1.05
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
 
+        self.nrtr = 0 # to be updated by Dataset

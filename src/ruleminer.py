@@ -83,7 +83,9 @@ if __name__=="__main__":
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
-    fnm = "../data/e5b"
+    # ~ fnm = "../data/e5b"
+    # ~ fnm = "../data/e5"
+    fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
@@ -101,8 +103,9 @@ if __name__=="__main__":
     # ~ miner = RuleMiner(fnm)
     miner = RuleMiner(IFace.hpar, d)
     for rul in miner.minerules(0):
-        if rul.conf == 1:
+        # ~ if rul.conf == 1:
         # ~ if rul.an == set(['a', 'b']):
+        # ~ if len(rul.an) == 2 == len(rul.rcn):
             IFace.report(str(miner.count) + "/ " + str(rul))
         # ~ iface.report(str(miner.count) + "/ " + str(rul[0]) + " --> " + 
         # ~ str(rul[1]) +

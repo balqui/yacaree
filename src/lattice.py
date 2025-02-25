@@ -6,10 +6,11 @@ Current revision: early Ventose 2025
 Lattice based on Hasse edges, that is, list of immediate 
 predecessors for each node.
 A dict that follows the support order of the closure miner.
-However, the local generator shuffles the order due to 
-waiting for the first superset to compute the support 
-ratio, even though the support ratio constraint is not
-pushed anymore into the mining algorithm.
+However, be careful: right now, the local generator shuffles 
+the order, due to waiting for the first superset to compute 
+the support ratio, even though the support ratio constraint 
+is not pushed anymore into the mining algorithm. CAVEAT: do
+I need to change this?
 
 Programmers: JLB
 
@@ -26,9 +27,9 @@ from clminer import ClMiner
 
 class Lattice(dict):
     """
-    Lattice is mainly the ordered dict of closures with their
-    predecessors. Keys are (the frozenset of) the contents as
-    follows from the definition of __hash__ in ItSet:
+    Lattice is mainly the ordered dict of closures to their
+    predecessor lists. Keys are (the frozenset of) the contents
+    as follows from the definition of __hash__ in ItSet:
     then, can be accessed from either the frozenset alone 
     or the whole ItSet. 
     """
@@ -223,7 +224,9 @@ if __name__=="__main__":
         print("\n\n")
 
     # ~ fnm = "../data/e13"
-    fnm = "../data/e24t.td"
+    # ~ fnm = "../data/e24t.td"
+    # ~ fnm = "../data/e5b"
+    fnm = "../data/p5.td"
     # ~ fnm = "../data/toy"
     # ~ fnm = "../data/lenses_recoded.txt"
 

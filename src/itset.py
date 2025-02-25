@@ -6,18 +6,20 @@ Current revision: late Pluviose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
+Early idea was to 
+
 CAVEAT: Must simplify a lot the docstrings and clean up the code.
 
 Careful: a hash is defined to use ItSet's as set members and 
 dict keys; ItSet should be handled always as immutable even though
 the program does not control that instances don't change.
 
-Consider migrating it into a frozen dataclass - TRIED but couldn't
-make it work, see file in scaff folder.
-
-A simplified version might be handy where we only keep contents 
-and supp, forgetting supportset and suppratio once they have 
-fulfilled their roles.
+An early idea was, at some point, to move to a simplified version 
+where we only keep contents and supp, forgetting supportset and 
+suppratio and giving they back to the garbage collector once they 
+have fulfilled their roles. But I cannot do that, since supportsets 
+are needed to compute closures of nonclosed itemsets appearing later 
+as eg mingens or differences between consequents and antecedents.
 
 History:
 
@@ -57,6 +59,9 @@ a dict. I could give ItSet an intersect method but it would have to
 construct unions of the lists of transactions, and it is unclear 
 that this is needed. For the time being, I take them down to frozensets
 at the time of intersecting.
+
+Consider migrating it into a frozen dataclass - TRIED but couldn't
+make it work, see file in scaff folder.
 
 Old:
 
