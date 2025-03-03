@@ -60,7 +60,7 @@ heappushcnt = 0 # see above
 ## mine_partial_rules very close to minerules in yacaree 1.1
 ## needs refactoring
 
-def mine_partial_rules(rminer,cn):
+def mine_partial_rules(rminer, cn):
     "check boost wrt smaller antecedents only"
     # ~ global heappushcnt
     for an in rminer.latt.allpreds(cn): #,(rminer.latt.supps[cn]*iface.hpar.scale)/iface.hpar.confthr):

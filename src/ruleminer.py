@@ -54,7 +54,6 @@ class RuleMiner: # Does not subclass Lattice anymore
         Early version had an undocumented 'safetysupp' instead.
         """
         for cn in self.latt.candidate_closures(supp): 
-            # ~ yield (cn, self.latt[cn])
             if cn:
                 for rul in mine_implications(self.latt, cn):
                     self.count += 1

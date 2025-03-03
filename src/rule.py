@@ -24,7 +24,8 @@ class Rule:
 
     def __init__(self, an, cn, full_impl = False):
         """
-        They are ItSets, thus bring their supports with them.
+        They are to be ItSets, thus bring their supports with them,
+        except when full_impl is True: then an can be a mere frozenset.
         """
         self.an = an
         self.cn = cn

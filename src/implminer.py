@@ -157,15 +157,18 @@ def mine_implications(latt, cn):
     mingens = list( m for m in transv(_faces(cn, latt[cn])).hyedges )
     # ~ print(" == mingens of", cn, ":", mingens)
     if not mingens:
-        print(" == No mingens:", cn, latt[cn])
+        IFace.reportwarning("No minimum generators for " + 
+            f"{str(cn)}, predecessors: [ " +
+            f"{'; '.join(str(e) for e in latt[cn])} ]")
     if len(cn) == len(mingens[0]):
-        "o/w no rules as cn is a free set and its own unique mingen"
+        "no rules as cn is a free set and its own unique mingen"
         pass
     else:
         for an in mingens:
             # ~ print(" == making a rule out of", an, "and", latt[cn])
             an = frozenset(an)
             if an in latt:
+                "look it up on clminer instead"
                 print(an, "ALREADY IN lattice, then something wrong I believe")
                 exit(1)
             else: 
