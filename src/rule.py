@@ -48,6 +48,8 @@ class Rule:
         self.cboo = 0 # placeholder for the time being, MAYBE IT IS JUST AN UPPER BOUND but only if discarded
         self.lift = 0 # placeholder for the time being
         self.levg = 0 # placeholder for the time being
+        # ~ if not full_impl:
+            # ~ print(" :: Made rule", self, "with conf", cn.supp, "/", an.supp)
 
 
     def __str__(self):
@@ -64,9 +66,9 @@ class Rule:
         if self.s_s >= 0:
             res += ("; S-S: %2.3f" % self.s_s)
         if self.cboo == 0:
-            res += "; ]\n"
+            res += "; ]"
         else:
-            res += ("; boost: %2.3f]\n" % self.cboo)
+            res += ("; boost: %2.3f]" % self.cboo)
         return res
 
 if __name__ == "__main__":

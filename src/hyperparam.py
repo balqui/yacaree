@@ -68,7 +68,7 @@ class HyperParam:
         # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
         # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)
-        self.confthr = 0.52
+        self.confthr = 0.65
         # ~ self.confthr = int(0.65 * self.scale)
         # ~ self.findrules = 0
         # ~ self.maxrules = 50 # set this to zero if all the rules are to be written out

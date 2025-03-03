@@ -214,9 +214,8 @@ class ClMiner(dict):
             "one option: linear search - risks being slow"
             if fst <= clos:
                 "dict order: largest-support closure containing fst"
-                break
-            self[fst] = clos
-            return clos
+                self[fst] = clos
+                return clos
         else:
             "fall back on dataset - which is slower?"
             supp, exact = self.dataset.slow_supp(fst)
@@ -240,11 +239,11 @@ if __name__ == "__main__":
     from time import time
 
     # ~ fnm = "../data/lenses_recoded"
-    # ~ fnm = "../data/toy"
+    fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
-    fnm = "../data/e5b"
+    # ~ fnm = "../data/e5b"
     # ~ fnm = "../data/e13a"
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/adultrain"
@@ -272,6 +271,15 @@ if __name__ == "__main__":
         print(cl)
     print(f"Number of closures: {len(lcl)} of " + 
           f"support {cl.supp} of more; total lengths {miner.totlen}.") # or miner.card
+
+
+
+
+    # ~ a = set(['D', 'E'])
+    # ~ print("Closure of", a, "is", miner.close(a))
+
+
+
     # ~ print("In dict:")
     # ~ for fs in miner:
         # ~ if miner[fs].supp == 0:
