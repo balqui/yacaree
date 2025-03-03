@@ -172,6 +172,7 @@ def mine_implications(latt, cn):
                 print(an, "ALREADY IN lattice, then something wrong I believe")
                 exit(1)
             else: 
+                "CAVEAT: pending to clarify which cboost and impose it"
                 # ~ rminer.latt.supps[an] = rminer.latt.supps[cn]
                 # ~ rul = Rule(an,cn,rminer.latt)
                 # ~ ch = checkrule(rul,rminer)
@@ -184,7 +185,7 @@ def mine_implications(latt, cn):
                     # ~ rminer.count += 1
                     # ~ yield rul
                     # ~ yield (set(an), set(cn))
-                    yield (an, cn) # REMEMBER, cn is an ItSet but an just a frozenset
+                yield (an, cn) # REMEMBER, cn is an ItSet but an just a frozenset
 
 
 

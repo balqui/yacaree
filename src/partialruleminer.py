@@ -30,24 +30,43 @@ See also implminer.py
 ##from choose_iface import iface
 ##from itset import ItSet
 ##from lattice import Lattice
-# ~ from rule import Rule
+from rule import Rule
 
 # ~ from heapq import heapify, heappush, heappop
 ##from collections import defaultdict
 
+from iface import IFace
+from math import isfinite
 
-heappushcnt = 0 # see above
+# ~ heappushcnt = 0 # see above
 
-# ~ def checkrule(rul,rm):
-    # ~ belowconf = 0
-    # ~ la = rm.latt
-    # ~ for an2 in la.allpreds(rul.an):
-        # ~ "ToDo: refactor avoiding floats"
-        # ~ cn2 = la.close(rul.rcn.union(an2))
-        # ~ if float(la.supps[cn2])/la.supps[an2] > belowconf:
-            # ~ belowconf = float(la.supps[cn2])/la.supps[an2]
-        # ~ if float(rul.conf)/belowconf < iface.hpar.absoluteboost:
-            # ~ return rm.DISCARD
+DISCARD = -1
+
+def checkrule(rul, rm):
+    "Assumed a partial rule so both sides are closures"
+    la = rm.latt
+    nrtr = IFace.hpar.nrtr
+    cn2 = la.miner.close(rul.rcn) # empty set gives cn2 closure of rcn, CAVEAT: CHECK OUT
+    rul.lift = rul.an.supp * cn2.supp / rul.cn.supp * nrtr
+    rul.levg = rul.an.supp * cn2.supp - rul.cn.supp * nrtr
+    if isfinite(rul.cn.suppratio):
+        rul.cboo = rul.cn.suppratio # initial upper bound
+        if rul.cboo < IFace.hpar.absoluteboost:
+            return DISCARD
+        other_conf = rul.cn.suppratio
+    else:
+        other_conf = 0 # WRONG INITIALIZATION, MAY REACH THE FINAL DIVISION
+    for an2 in la.allpreds(rul.an):
+        "if empty set reached, fast, as already computed"
+        cn2 = la.miner.close(rul.rcn.union(an2))
+        if (cf := cn2.supp/an2.supp) > other_conf:
+            other_conf = cf
+        if rul.conf < IFace.hpar.absoluteboost * other_conf:
+            rul.cboo = other_conf # only an upper bound but discarded
+            return DISCARD
+    rul.cboo = rul.conf/other_conf # not discarded, correct value
+    return rul.cboo
+
     # ~ if rul.cboo < iface.hpar.epsilon:
         # ~ "ToDo: refactor without floats"
         # ~ if rul.cn in la.suppratios:
@@ -55,7 +74,6 @@ heappushcnt = 0 # see above
         # ~ if belowconf > 0:
             # ~ if rul.cboo > rul.conf/belowconf or rul.cboo < iface.hpar.epsilon:
                 # ~ rul.cboo = rul.conf/belowconf
-    # ~ return rul.cboo
 
 ## mine_partial_rules very close to minerules in yacaree 1.1
 ## needs refactoring
@@ -64,7 +82,7 @@ def mine_partial_rules(rminer, cn):
     "check boost wrt smaller antecedents only"
     # ~ global heappushcnt
     for an in rminer.latt.allpreds(cn): #,(rminer.latt.supps[cn]*iface.hpar.scale)/iface.hpar.confthr):
-        # ~ rul = Rule(an,cn) # ,rminer.latt)
+        rul = Rule(an, cn) # ,rminer.latt)
         # ~ if len(an) == 1: # and len(cn) == 2:
             # ~ "boost revision may require to fish back in reserved rules"
             # ~ if 1 < rul.lift < rminer.latt.boosthr:
@@ -80,12 +98,15 @@ def mine_partial_rules(rminer, cn):
                         # ~ rminer.count += 1
                         # ~ yield rul2
                 # ~ rminer.reserved = rereserved
-        # ~ ch = checkrule(rul,rminer)
-        # ~ if ch == rminer.DISCARD:
-            # ~ pass
+        ch = checkrule(rul, rminer)
+        print(" ..... just checked", rul)
+        if ch == DISCARD:
+            print(" ..... discarding", rul, ", low upper cboost bound")
+            pass
         # ~ elif ch < rminer.latt.boosthr:
             # ~ heappushcnt -= 1
             # ~ heappush(rminer.reserved,(-rul.supp,heappushcnt,rul))
-        # ~ else:
-            yield (an, cn)
+        else:
+            # ~ yield (an, cn)
+            yield rul
 

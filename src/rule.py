@@ -1,7 +1,7 @@
 """
 Project: yacaree
 
-Current revision: Ventose 2025
+Current revision: mid Ventose 2025
 
 Programmer: JLB
 
@@ -45,7 +45,10 @@ class Rule:
                       # ~ float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
         # ~ self.p_s = ( self.supp -
                      # ~ float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
-        self.cboo = 0
+        self.cboo = 0 # placeholder for the time being, MAYBE IT IS JUST AN UPPER BOUND but only if discarded
+        self.lift = 0 # placeholder for the time being
+        self.levg = 0 # placeholder for the time being
+
 
     def __str__(self):
         sp4 = "    "

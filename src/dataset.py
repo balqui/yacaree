@@ -56,7 +56,7 @@ class Dataset:
             if not isempty:
                 self.nrtr += 1
         self.nrits = len(self.univ)
-        IFace.nrtr = self.nrtr
+        IFace.hpar.nrtr = self.nrtr
         IFace.datafile.close()
         IFace.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +

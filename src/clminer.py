@@ -210,7 +210,7 @@ class ClMiner(dict):
         if fst in self:
             "self expected to contain already the whole closure space"
             return self[fst]
-        for clos in self.values:
+        for clos in self.values():
             "one option: linear search - risks being slow"
             if fst <= clos:
                 "dict order: largest-support closure containing fst"
