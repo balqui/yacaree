@@ -57,7 +57,8 @@ class RuleMiner: # Does not subclass Lattice anymore
             if cn:
                 for rul in mine_implications(self.latt, cn):
                     self.count += 1
-                    yield Rule(*rul, full_impl = True)
+                    yield rul
+                    # ~ yield Rule(*rul, full_impl = True)
                 for rul in mine_partial_rules(self, cn):
                     # ~ rul = Rule(*rul) # now it IS a Rule when received here
                     if rul.conf > IFace.hpar.confthr:
@@ -78,7 +79,7 @@ if __name__=="__main__":
 ##    fnm = "cmc-full"
 ##    fnm = "adultrain"
     # ~ fnm = "../data/lenses_recoded"
-    fnm = "../data/toy"
+    # ~ fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
@@ -86,7 +87,7 @@ if __name__=="__main__":
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/e5b"
     # ~ fnm = "../data/e5"
-    # ~ fnm = "../data/p5.td"
+    fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT

@@ -60,7 +60,7 @@ Additional comment:
 from iface import IFace as iface
 # ~ import statics
 from itset import ItSet
-# ~ from rule import Rule
+from rule import Rule
 
 from iface import IFace
 
@@ -123,20 +123,21 @@ def _faces(itst, listpred):
                 # ~ rul.cboo = rul.conf/belowconf
     # ~ return rul.cboo
 
-def is_cboost_high_impl(rul, latt):
+def is_cboost_high_impl(rul, miner):
     "rul assumed to be an implication, test std (non-closure) cboost"
     if rul.conf < 1:
-        print(" .. test expected implication but got", rul)
-        exit(1)
+        IFace.reporterror("Conf boost test expected implication but got instead " + str(rul))
     print(" .. testing", rul)
-    print(" .. type of consequent", type(rul.cn)) # should be always ItSet
     if rul.cn.suppratio < IFace.hpar.absoluteboost:
         print(" .. no, low suppratio")
         return False
     else:
         for it in rul.an:
-            if confidence_of_an_minus_it_to_cn > 1/IFace.hpar.absoluteboost:
-                print(" .. no, high conf taking out", it)
+            sub_an_supp = miner.close(rul.an.difference([ it ])).supp            
+            sub_cn_supp = miner.close(rul.cn.difference([ it ])).supp
+            if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
+                "reformulate w/o quotients"
+                print(" .. no, high conf when taking out", it)
                 return False
     return True
 
@@ -173,6 +174,9 @@ def mine_implications(latt, cn):
                 exit(1)
             else: 
                 "CAVEAT: pending to clarify which cboost and impose it"
+                rul = Rule(an, cn, full_impl = True)
+                if is_cboost_high_impl(rul, latt.miner):
+                    yield rul
                 # ~ rminer.latt.supps[an] = rminer.latt.supps[cn]
                 # ~ rul = Rule(an,cn,rminer.latt)
                 # ~ ch = checkrule(rul,rminer)
@@ -185,7 +189,7 @@ def mine_implications(latt, cn):
                     # ~ rminer.count += 1
                     # ~ yield rul
                     # ~ yield (set(an), set(cn))
-                yield (an, cn) # REMEMBER, cn is an ItSet but an just a frozenset
+                # ~ yield Rule(an, cn, full_impl = True) # REMEMBER, cn is an ItSet but an just a frozenset
 
 
 
@@ -199,10 +203,10 @@ if __name__=="__main__":
     from lattice import Lattice
     from dataset import Dataset
 
-    fnm = "../data/e13"
+    # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/toy"
-    # ~ fnm = "../data/adultrain"
+    fnm = "../data/adultrain"
     # ~ fnm = "../data/lenses_recoded.txt"
 
 
@@ -212,7 +216,7 @@ if __name__=="__main__":
     d = Dataset()
 
     la = Lattice(d)
-    supp = 0
+    supp = 0.1
     impls = list()
 
     for cn in la.candidate_closures(supp): 
@@ -221,7 +225,7 @@ if __name__=="__main__":
                 impls.append(rul)
     if input(f"Show {len(impls)} implications? "):
         for rul in impls:
-            print(rul[0], "=>", rul[1].difference(rul[0]))
+            print(rul) # [0], "=>", rul[1].difference(rul[0]))
 
     print("Lattice:")
     for a in la:
