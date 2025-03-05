@@ -1,20 +1,20 @@
 '''
 yacaree
 
-Current revision: early Ventose 2025
+Current revision: mid Pluviose 2025
 
 Programmers: JLB
 
-CAVEAT: As of today it constructs the Pasquier basis, not the GD.
 
 Warns if TyTra unavailable, falls back to old transversal code; 
-CAVEAT: HyTra untested for many years.
 
-
+CAVEAT: HyTra untested for many years until Pluviose 2025.
 
 
 
 Earlier docstrings to revise:
+
+As of today it constructs the Pasquier basis, not the GD (cboost implies GD?)
 
 VERY UGLY INHERITED HACKS
 
@@ -145,6 +145,7 @@ def mine_implications(latt, cn):
     """
     Gets a closure cn, with suppratio if known: find implications there.
     If all supersets below minsupp, suppratio not known.
+    CAVEAT: keep count somehow of discarded implications!
     """
     warn_potential_deprecation()
     # ~ global heappushcnt
@@ -206,8 +207,9 @@ if __name__=="__main__":
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/toy"
-    fnm = "../data/adultrain"
+    # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/lenses_recoded.txt"
+    fnm = "../data/cmc-full"
 
 
     IFace.hpar = HyperParam()
@@ -216,18 +218,20 @@ if __name__=="__main__":
     d = Dataset()
 
     la = Lattice(d)
-    supp = 0.1
+    supp = 0.05
     impls = list()
 
     for cn in la.candidate_closures(supp): 
         if cn:
             for rul in mine_implications(la, cn):
                 impls.append(rul)
+
     if input(f"Show {len(impls)} implications? "):
         for rul in impls:
             print(rul) # [0], "=>", rul[1].difference(rul[0]))
 
-    print("Lattice:")
-    for a in la:
-        print(a)
+    if input("Show lattice? "):
+        print("Lattice:")
+        for a in la:
+            print(a)
 
