@@ -55,18 +55,18 @@ class RuleMiner: # Does not subclass Lattice anymore
         """
         for cn in self.latt.candidate_closures(supp): 
             if cn:
-                # ~ for rul in mine_implications(self.latt, cn):
-                    # ~ self.count += 1
-                    # ~ yield Rule(*rul, full_impl = True)
+                for rul in mine_implications(self.latt, cn):
+                    self.count += 1
+                    yield Rule(*rul, full_impl = True)
                 for rul in mine_partial_rules(self, cn):
                     # ~ rul = Rule(*rul) # now it IS a Rule when received here
                     if rul.conf > IFace.hpar.confthr:
                         self.count += 1
                         yield rul
-                    else:
-                        print(" ..... fails confidence:", rul)
-            else:
-                print(" === skipping emptyset:", cn)
+                    # ~ else:
+                        # ~ print(" ..... fails confidence:", rul)
+            # ~ else:
+                # ~ print(" === skipping emptyset:", cn)
 
 if __name__=="__main__":
 
@@ -78,7 +78,7 @@ if __name__=="__main__":
 ##    fnm = "cmc-full"
 ##    fnm = "adultrain"
     # ~ fnm = "../data/lenses_recoded"
-    # ~ fnm = "../data/toy"
+    fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
@@ -89,11 +89,11 @@ if __name__=="__main__":
     # ~ fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
-    # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
+    # ~ fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
     # ~ fnm = "../data/votesTr" 
     # The next work thanks to the limit on the total support set lengths
-    # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
-    fnm = "../data/connect.td" # Fills memory with ridiculous heap
+    # ~ fnm = "../data/chess.td"   # Fills 8GB memory with small heap size
+    # ~ fnm = "../data/connect.td" # Fills 8GB memory with ridiculous heap
                                    # size and less than 5000 closures
 
     IFace.hpar = HyperParam()
@@ -103,7 +103,7 @@ if __name__=="__main__":
     
     # ~ miner = RuleMiner(fnm)
     miner = RuleMiner(IFace.hpar, d)
-    for rul in miner.minerules(0.3):
+    for rul in miner.minerules(0):
         # ~ if rul.conf == 1:
         # ~ if rul.an == set(['a', 'b']):
         # ~ if len(rul.an) == 2 == len(rul.rcn):
