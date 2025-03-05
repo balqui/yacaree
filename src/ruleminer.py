@@ -88,12 +88,12 @@ if __name__=="__main__":
     # ~ fnm = "../data/e5"
     # ~ fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
-    fnm = "../data/cmc-full"
+    # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/papersTr" # FILLS MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
     # ~ fnm = "../data/votesTr" 
     # The next work thanks to the limit on the total support set lengths
     # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
-    # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
+    fnm = "../data/connect.td" # Fills memory with ridiculous heap
                                    # size and less than 5000 closures
 
     IFace.hpar = HyperParam()

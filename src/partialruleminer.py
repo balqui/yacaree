@@ -42,9 +42,8 @@ from math import isfinite
 
 DISCARD = -1
 
-def checkrule(rul, rm):
+def checkrule(rul, la):
     "Assumed a partial rule so both sides are closures"
-    la = rm.latt
     nrtr = IFace.hpar.nrtr
     cn2 = la.miner.close(rul.rcn) # empty set gives cn2 closure of rcn, CAVEAT: CHECK OUT
     rul.lift = rul.an.supp * cn2.supp / rul.cn.supp * nrtr
@@ -52,7 +51,7 @@ def checkrule(rul, rm):
     if isfinite(rul.cn.suppratio):
         # ~ print(" ..... closure", rul.cn, "with suppratio", rul.cn.suppratio)
         if rul.cn.suppratio < IFace.hpar.absoluteboost:
-            print(" ..... fails suppratio:", rul)
+            # ~ print(" ..... fails suppratio:", rul)
             return DISCARD
         # ~ rul.cboo = rul.cn.suppratio # initial upper bound
         other_conf = rul.conf / rul.cn.suppratio # conf of rule w/an & best superset of cn
@@ -66,7 +65,7 @@ def checkrule(rul, rm):
         # ~ print(" ..... considering", an2, ">", cn2, cf, rul.conf/cf)
         if rul.conf < IFace.hpar.absoluteboost * other_conf:
             rul.cboo = other_conf # only an upper bound but discarded
-            print(" ..... fails boost:", rul)
+            # ~ print(" ..... fails boost:", rul)
             return DISCARD
     if other_conf > 0:
         rul.cboo = rul.conf/other_conf # never discarded, correct value
@@ -107,7 +106,7 @@ def mine_partial_rules(rminer, cn):
                         # ~ yield rul2
                 # ~ rminer.reserved = rereserved
         # ~ print(" ..... checking", rul)
-        ch = checkrule(rul, rminer)
+        ch = checkrule(rul, rminer.latt)
         if ch == DISCARD:
             # ~ print(" ..... discarding", rul, ", low upper cboost bound")
             continue
