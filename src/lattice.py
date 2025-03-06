@@ -65,10 +65,12 @@ class Lattice(dict):
             # ~ print(" .... miner sent:", itst)
             supp = itst.supp
             self[itst] = list()
-            for pot_cover in set( 
-              frozenset(itst.intersection(bord_elem)) 
+            for pot_cover, b_elem in set( 
+              (frozenset(itst.intersection(bord_elem)), bord_elem) 
               for bord_elem in bord ):
-                pot_cover = self.miner[frozenset(pot_cover)] # complete it
+                if pot_cover == b_elem:
+                    pot_cover_init = b_elem
+                pot_cover = self.miner[frozenset(pot_cover)] # complete it - CAREFUL, CLOSES IT AS WELL
                 if itst.intersection(union_covers[pot_cover]) <= pot_cover:
                     "this is the iPred condition"
                     self[itst].append(pot_cover)
@@ -77,6 +79,12 @@ class Lattice(dict):
                         pot_cover.suppratio = float(pot_cover.supp)/supp
                         # ~ if pot_cover.suppratio >= self.boosthr:
                         # NOT PUSHING ANYMORE THE suppratio CONSTRAINT
+                        if pot_cover not in self:
+                            print("pot_cover", pot_cover) 
+                            print("pot_cover_init", pot_cover_init) 
+                            print("self.miner[frozenset(pot_cover_init)]", self.miner[frozenset(pot_cover_init)])
+                            print("via miner.close:", self.miner.close(pot_cover, verbose = True))
+                        assert pot_cover in self, f"{pot_cover} ready but not in lattice"
                         heappush(ready, pot_cover)
                     union_covers[pot_cover].update(itst)
                     bord.discard(pot_cover)

@@ -6,6 +6,10 @@ Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
 Closure miner based on the Troppus algorithm.
 
+In the current version, the dict order does not coincide with
+the yield order as nonclosed sets keep being added to the dict
+along the way. Might consider restricting it to closures one day.
+
 CAVEAT: MUST REVIEW SEVERAL THINGS MARKED "CAVEAT".
 """
 
@@ -34,17 +38,17 @@ class ClMiner(dict):
         self.card = 0
         self.totlen = 0
         self.pend_clos = list()
-        # ~ self.minsupp = 0
 
 
     def supp_adding(self, itst, nitt):
         """
         Find support of the result of adding nitt (new item) to itst.
         If necessary, compute supporting set for that. Store on self 
-        if not there yet.
+        if not there yet. (THEN dict order is NOT yield order anymore.)
         Leave sets and closures in the dict even if their support is 
-        zero, these are not useful but we don't want to test them again
-        (but grab a lot of memory since their closure is all the items)
+        zero.
+        They are not that useful but wanted to avoid testing them again,
+        grab a lot of memory though since closure is all the items.
         """
         exact = False # matches maybe a transaction
         itst = frozenset(itst)
@@ -66,6 +70,7 @@ class ClMiner(dict):
                 "intersect support sets"
                 clos = self.dataset.inters(supp)
         clos = ItSet(clos, supp)
+        # ~ if clos.supp > 0:
         self[itstadd] = clos
         self.totlen += len(supp)
         return clos.supp
@@ -168,22 +173,18 @@ class ClMiner(dict):
                     # ~ break
                 if i in pclos:
                     "remove this i as required for all future i's"
-                    # ~ print(" --- take", i, "out from", pclos)
                     pclos.remove(i)
                 else:
                     nst = pclos.copy() # copy to modify
                     sp = self.supp_adding(nst, itt)
-                    # ~ print(" --- try:", nst, i, "sp", sp, "mxsupp", mxsupp)
                     if not pclos:
                         """
                         nst a singleton: back down to singletons level
                         CAVEAT: I don't fully understand these conditions
                         """
-                        # ~ print(" --- first level set")
                         first_level = True
                     if sp > mxsupp:
                         ncl = self[frozenset(nst.union(itt))]
-                        # ~ print(" --- closure of:", nst, i, "is", ncl)
                         for j in ncl:
                             jtt = ItSet({j}, self.dataset.occurncs[j])
                             # ~ if (j not in clos and
@@ -195,12 +196,8 @@ class ClMiner(dict):
                                 break
                         else:
                             if sp > clos.supp:
-                                # ~ print(" --- break:", ncl, ">", clos.supp)
                                 break
                             elif sp > self.intsupp:
-                                # ~ print(" --- heap:", self.pend_clos)
-                                # ~ print(" --- add:", ncl)
-                                # ~ print(" --- due to:", nst, i)
                                 heappush(self.pend_clos, ncl)
                                 mxsupp = sp
 
@@ -210,26 +207,18 @@ class ClMiner(dict):
         if fst in self:
             "self expected to contain already the whole closure space"
             return self[fst]
-        for clos in self.values():
-            "one option: linear search - risks being slow"
-            if fst <= clos:
-                "dict order: largest-support closure containing fst"
-                self[fst] = clos
-                return clos
+        supp, exact = self.dataset.slow_supp(fst)
+        if exact:
+            "matched a transaction hence it is closed"
+            clos = fst
         else:
-            "fall back on dataset - which is slower?"
-            supp, exact = self.dataset.slow_supp(fst)
-            if exact:
-                "matched a transaction hence it is closed"
-                clos = fst
-            else:
-                "intersect support sets"
-                clos = self.dataset.inters(supp)
-            clos = ItSet(clos, supp)
-            self[fst] = clos
-            self.totlen += len(supp)
-            return clos
-
+            "intersect support sets"
+            clos = self.dataset.inters(supp)
+        clos = ItSet(clos, supp)
+        # ~ if clos.supp > 0:
+        self[fst] = clos
+        self.totlen += len(supp)
+        return clos
 
 
 if __name__ == "__main__":
@@ -239,7 +228,7 @@ if __name__ == "__main__":
     from time import time
 
     # ~ fnm = "../data/lenses_recoded"
-    fnm = "../data/toy"
+    # ~ fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
@@ -252,6 +241,7 @@ if __name__ == "__main__":
     # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
                                    # size and less than 5000 closures
+    fnm = "../data/votesTr" 
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)
@@ -261,7 +251,7 @@ if __name__ == "__main__":
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
     # ~ miner = ClMiner(d, 3/24)
-    miner = ClMiner(d, 0)
+    miner = ClMiner(d, 0.1)
     # ~ print("Int support:", miner.intsupp)
     lcl = list()
     for cl in miner.mine_closures():
@@ -314,3 +304,12 @@ if __name__ == "__main__":
                             # ~ " further closures found so far; current support " +
                             # ~ str(spp) + ".")
 
+        # ~ This leads to wrong answers in the linear search attempt,
+        # ~ took them out, now putting them back in.
+        # ~ for clos in self.values():
+            # ~ "linear search - TAKEN OUT, several points add to the dict and arrival order is not yield order"
+            # ~ if fst <= clos:
+                # ~ "dict order: largest-support closure containing fst"
+                # ~ self[fst] = clos
+                # ~ return clos
+        # ~ "or fall back on dataset - which is slower?"
