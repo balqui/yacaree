@@ -20,6 +20,7 @@ from dataset import Dataset
 
 from heapq import heapify, heappush, heappop
 
+from psutil import virtual_memory as vmem
 
 class ClMiner(dict):
     """
@@ -83,16 +84,23 @@ class ClMiner(dict):
         than that, very close to version 1.*.
         """
         intsupp = 0 # return 0 if supp unchanged o/w return new supp
-        if ((count := len(self.pend_clos)) > IFace.hpar.pend_len_limit
-          or self.totlen > IFace.hpar.tot_len_limit):
+        # ~ if ((count := len(self.pend_clos)) > IFace.hpar.pend_len_limit
+          # ~ or self.totlen > IFace.hpar.tot_len_limit):
+            # ~ """
+            # ~ Too many closures pending expansion: raise
+            # ~ the support bound so that about half of the
+            # ~ heap becomes discarded. Careful that support-tied
+            # ~ ItSet's are either all kept or all discarded.
+            # ~ Trying to control as well tot_len_limit.
+            # ~ """
+        if vmem().percent > 50:
             """
-            Too many closures pending expansion: raise
-            the support bound so that about half of the
-            heap becomes discarded. Careful that support-tied
-            ItSet's are either all kept or all discarded.
-            Trying to control as well tot_len_limit.
+            Less than half the system's memory remains available. 
+            Most memory employed by closures dict: cutting away 
+            half the heap does not free much but the new support 
+            may allow the computation to complete.
             """
-            lim = count // 2
+            lim = len(self.pend_clos) // 2
             current_supp = self.pend_clos[0].supp
             current_supp_clos = []
             new_pend_clos = []
@@ -132,6 +140,7 @@ class ClMiner(dict):
         closempty = ItSet(closempty, range(self.dataset.nrtr))
         self.pend_clos = [ closempty ]
 
+        report_it = False
         self.minsupp = self.dataset.nrtr
         while self.pend_clos and IFace.running:
             """
@@ -145,12 +154,8 @@ class ClMiner(dict):
             self.card += 1
             yield clos
 
-            if self.card % IFace.hpar.report_often == 0:
-                "Report and consider raising support."
-                IFace.report(
-                  f"{self.card} closures traversed, " +
-                  f"{len(self.pend_clos)} further closures pending; " +
-                  f"current support {clos.supp}.")
+            if self.card % IFace.hpar.check_size_often == 0:
+                "Consider raising support."
                 new_supp = self.test_size()
                 if new_supp > self.intsupp:
                     "support bound grew, heap halved, report"
@@ -160,6 +165,14 @@ class ClMiner(dict):
                       f"up to {new_supp} " + 
                       f"({new_supp*100/self.dataset.nrtr:5.3f}%).")
                     self.intsupp = new_supp
+                    report_it = True
+            if self.card % IFace.hpar.report_often == 0 or report_it:
+                "Just report."
+                report_it = False
+                IFace.report(
+                  f"{self.card} closures traversed, " +
+                  f"{len(self.pend_clos)} further closures pending; " +
+                  f"current support {clos.supp}.")
 
             first_level = False  # unless we find otherwise later on
             mxsupp = 0
@@ -241,7 +254,8 @@ if __name__ == "__main__":
     # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
                                    # size and less than 5000 closures
-    fnm = "../data/votesTr" 
+    # ~ fnm = "../data/votesTr" 
+    fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)
@@ -251,16 +265,16 @@ if __name__ == "__main__":
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
     # ~ miner = ClMiner(d, 3/24)
-    miner = ClMiner(d, 0.1)
+    miner = ClMiner(d, 0)
     # ~ print("Int support:", miner.intsupp)
     lcl = list()
     for cl in miner.mine_closures():
         lcl.append(cl)
         # ~ if miner.card > IFace.hpar.clos_num_limit:
             # ~ break
-        print(cl)
+        # ~ print(cl)
     print(f"Number of closures: {len(lcl)} of " + 
-          f"support {cl.supp} of more; total lengths {miner.totlen}.") # or miner.card
+          f"support {cl.supp} of more; total lengths {miner.totlen}, {miner.card}.") # or miner.card
 
 
 

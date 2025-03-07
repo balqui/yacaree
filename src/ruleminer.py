@@ -89,8 +89,8 @@ if __name__=="__main__":
     # ~ fnm = "../data/e5"
     # ~ fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
-    fnm = "../data/cmc-full"
-    # ~ fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
+    # ~ fnm = "../data/cmc-full"
+    fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
     # ~ fnm = "../data/votesTr" 
     # The next work thanks to the limit on the total support set lengths
     # ~ fnm = "../data/chess.td"   # Fills 8GB memory with small heap size
@@ -101,17 +101,16 @@ if __name__=="__main__":
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
-    
+
     # ~ miner = RuleMiner(fnm)
     miner = RuleMiner(IFace.hpar, d)
-    for rul in miner.minerules(0.05):
-        # ~ if rul.conf == 1:
-        # ~ if rul.an == set(['a', 'b']):
-        # ~ if len(rul.an) == 2 == len(rul.rcn):
-            IFace.report(str(miner.count) + "/ " + str(rul))
-        # ~ iface.report(str(miner.count) + "/ " + str(rul[0]) + " --> " + 
-        # ~ str(rul[1]) +
-        # ~ " c: " + str(rul[1].supp/rul[0].supp) )
+    rulist = list()
+    for rul in miner.minerules(0):
+        rulist.append(rul)
+        # ~ IFace.report(str(miner.count) + "/ " + str(rul))
+    for cnt, rul in enumerate(sorted(rulist, key = lambda r: r.cboo, reverse = True)):
+        print(cnt + 1, "/", rul)
+
         # ~ ans = iface.ask_input("More? (<CR> to finish) ")
         # ~ if len(ans)==0: break
 

@@ -55,7 +55,8 @@ class HyperParam:
         # self.scale = 100000
         # self.epsilon = 100.0/self.scale
         self.boostab = 5
-        self.report_often = 1500 # report every that many closures
+        self.report_often = 2000 # report every that many closures
+        self.check_size_often = 500 # test memory left every that many closures
 
         self.inffloat = float("inf") # infinite float, e.g. suppratios
         # ~ unclear whether worth it!

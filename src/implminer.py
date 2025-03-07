@@ -127,18 +127,21 @@ def is_cboost_high_impl(rul, miner):
     "rul assumed to be an implication, test std (non-closure) cboost"
     if rul.conf < 1:
         IFace.reporterror("Conf boost test expected implication but got instead " + str(rul))
-    print(" .. testing", rul)
+    # ~ print(" .. testing", rul)
     if rul.cn.suppratio < IFace.hpar.absoluteboost:
-        print(" .. no, low suppratio")
+        # ~ print(" .. no, low suppratio")
         return False
     else:
+        rul.cboo = float("inf")
         for it in rul.an:
             sub_an_supp = miner.close(rul.an.difference([ it ])).supp            
             sub_cn_supp = miner.close(rul.cn.difference([ it ])).supp
             if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
                 "reformulate w/o quotients"
-                print(" .. no, high conf when taking out", it)
+                # ~ print(" .. no, high conf when taking out", it)
                 return False
+            elif sub_cn_supp / sub_an_supp < rul.cboo:
+                rul.cboo = sub_cn_supp / sub_an_supp
     return True
 
 def mine_implications(latt, cn):
