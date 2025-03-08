@@ -93,12 +93,20 @@ class ClMiner(dict):
             # ~ ItSet's are either all kept or all discarded.
             # ~ Trying to control as well tot_len_limit.
             # ~ """
+        incr_supp = False
         if vmem().percent > 50:
+            IFace.report("Too high memory usage: increasing support.")
+            incr_supp = True
+        if len(self.pend_clos) > IFace.hpar.pend_len_limit:
+            IFace.report("Too many pending closures: increasing support.")
+            incr_supp = True
+        if incr_supp:
             """
             Less than half the system's memory remains available. 
-            Most memory employed by closures dict: cutting away 
-            half the heap does not free much but the new support 
-            may allow the computation to complete.
+            Often, however, most memory is not employed by the heap
+            (e.g. the closures dict instead): maybe, cutting away 
+            half the heap does not free much. But the new support 
+            may allow the computation to complete anyway.
             """
             lim = len(self.pend_clos) // 2
             current_supp = self.pend_clos[0].supp
@@ -124,6 +132,7 @@ class ClMiner(dict):
     def mine_closures(self):
         "As per the Troppus algorithm"
 
+        IFace.report("Memory control on closure miner via psutil.")
         closempty = set()
         sorteditems = list()
 

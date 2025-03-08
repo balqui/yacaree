@@ -64,7 +64,7 @@ class HyperParam:
         ## standard process:
         
         self.pend_len_limit = 16384 # 8192 # 1000 # 16384 # 2 to power 14
-        self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
+        # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
                                        # but may end up eating 15GB
         # ~ self.tot_len_limit = 50000000 # half of above for testing 
         self.genabsupp = 1 # 5 # absolute number of transactions
