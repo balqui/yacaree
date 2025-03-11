@@ -67,7 +67,7 @@ class HyperParam:
         # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
                                        # but may end up eating 15GB
         # ~ self.tot_len_limit = 50000000 # half of above for testing 
-        self.genabsupp = 1 # 5 # absolute number of transactions
+        self.genabsupp = 5 # absolute number of transactions
         # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
         # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)

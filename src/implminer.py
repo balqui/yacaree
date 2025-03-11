@@ -67,6 +67,7 @@ from iface import IFace
 ##from choose_iface import iface
 ##from lattice import Lattice
 
+from math import isfinite
 from heapq import heappush
 ##from heapq import heapify, heappush, heappop
 ##from collections import defaultdict
@@ -142,7 +143,7 @@ def is_cboost_high_impl(rul, miner):
                 # ~ cl_ants.add(an2cl)
         # ~ for an2 in cl_ants:
             if an2cl in cl_ants:
-                # ~ print(" .. repe", an2cl)
+                print(" .. repeated", an2cl, "closure of", an2, "for", rul)
                 pass
             else:
                 cl_ants.add(an2cl)
@@ -152,28 +153,14 @@ def is_cboost_high_impl(rul, miner):
                 return False
             if cn2.supp > altconf * an2cl.supp:
                 altconf = cn2.supp / an2cl.supp
-        rul.cboo = 1/altconf if altconf > 0 else rul.cn.suppratio
-        print(" .. accepting", rul, "sr:", rul.cn.suppratio)
+        if altconf > 0:
+            rul.cboo = min(1/altconf, rul.cn.suppratio)
+        else:
+            print(" .. null altconf for", rul, cl_ants)
+            rul.cboo = rul.cn.suppratio
+        # ~ print(" .. accepting", rul, "sr:", rul.cn.suppratio)
         return True
 
-        
-        # ~ rul.cboo = float("inf")
-        # ~ for it in rul.an:
-            # ~ sub_an_supp = miner.close(rul.an.difference([ it ])).supp            
-            # ~ sub_cn_supp = miner.close(rul.cn.difference([ it ])).supp
-            # ~ if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
-                # ~ "reformulate w/o quotients"
-                # ~ print(" .. no, high conf when taking out", it)
-                # ~ return False
-            # ~ elif sub_cn_supp / sub_an_supp < rul.cboo:
-                # ~ rul.cboo = sub_cn_supp / sub_an_supp
-            # ~ if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
-                # ~ "reformulate w/o quotients"
-                # ~ print(" .. no, high conf when taking out", it)
-                # ~ return False
-            # ~ elif sub_cn_supp / sub_an_supp < rul.cboo:
-                # ~ rul.cboo = sub_cn_supp / sub_an_supp
-    # ~ return True
 
 def mine_implications(latt, cn):
     """
@@ -252,18 +239,24 @@ if __name__=="__main__":
     d = Dataset()
 
     la = Lattice(d)
-    supp = 0
+    supp = 0.01
     impls = list()
     # ~ cboothr = 1.1
 
-    for cn in la.candidate_closures(supp): 
+    for cn in la.candidate_closures(): # supp): 
         if cn:
+            if not isfinite(cn.suppratio):
+                break
             for rul in mine_implications(la, cn):
                 impls.append(rul)
+            
 
     if input(f"Show {len(impls)} implications? "):
-        for rul in impls:
-            print(rul) # [0], "=>", rul[1].difference(rul[0]))
+        for cnt, rul in enumerate(sorted(impls, 
+              key = lambda r: r.cboo, reverse = True)):
+            print(cnt + 1, "/", rul, rul.cn.suppratio)
+        # ~ for rul in impls:
+            # ~ print(rul) # [0], "=>", rul[1].difference(rul[0]))
 
     if input("Show lattice? "):
         print("Lattice:")
