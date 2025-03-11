@@ -25,8 +25,9 @@ def test_std(rul, miner):
     cl_ants = set([])
     for an2 in all_proper_subsets(set(rul.an)):
         an2cl = miner.close(an2)
-        if not rul.rcn <= an2cl:
-            cl_ants.add(an2cl)
+        # ~ if not rul.rcn <= an2cl:
+            # ~ cl_ants.add(an2cl)
+        cl_ants.add(an2cl)
     for an2 in cl_ants:
         cn2 = miner.close(rul.rcn.union(an2))
         print(" ...... std compare", an2, cn2)
@@ -50,7 +51,7 @@ def test_cl(rul, miner):
     for an2 in all_proper_subsets(set(rul.cn)):
         "implication, closure of rul.an is rul.cn"
         an2cl = miner.close(an2)
-        if len(an2cl) < len(rul.cn) and not rul.rcn <= an2cl:
+        if len(an2cl) < len(rul.cn): # and not rul.rcn <= an2cl:
             cl_ants.add(an2cl)
     for an2 in cl_ants:
         cn2 = miner.close(rul.rcn.union(an2))
@@ -128,7 +129,9 @@ if __name__=="__main__":
 
     # ~ fnm = "../data/e13"
     # ~ fnm = "../data/e24t.td"
-    fnm = "../data/toy"
+    # ~ fnm = "../data/toy"
+    # ~ fnm = "../data/toy_r"
+    fnm = "../data/toy_rr"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/lenses_recoded.txt"
     # ~ fnm = "../data/cmc-full"

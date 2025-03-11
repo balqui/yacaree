@@ -78,7 +78,8 @@ class HyperParam:
         # ~ self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         # ~ self.initialboost = 1.15
         # ~ self.absoluteboost = 1.05
-        self.absoluteboost = 1.1
+        self.abssuppratio = 1.05
+        self.absoluteboost = 1.15
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
 
         self.nrtr = 0 # to be updated by Dataset

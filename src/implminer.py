@@ -128,21 +128,52 @@ def is_cboost_high_impl(rul, miner):
     if rul.conf < 1:
         IFace.reporterror("Conf boost test expected implication but got instead " + str(rul))
     # ~ print(" .. testing", rul)
-    if rul.cn.suppratio < IFace.hpar.absoluteboost:
-        # ~ print(" .. no, low suppratio")
+    if rul.cn.suppratio < IFace.hpar.abssuppratio:
+        # ~ print(" .. no, low suppratio", rul.cn.suppratio)
         return False
     else:
-        rul.cboo = float("inf")
-        for it in rul.an:
-            sub_an_supp = miner.close(rul.an.difference([ it ])).supp            
-            sub_cn_supp = miner.close(rul.cn.difference([ it ])).supp
-            if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
-                "reformulate w/o quotients"
-                # ~ print(" .. no, high conf when taking out", it)
+        "here I had single-drop but it is not correct"
+        altconf = 0
+        cl_ants = set([])
+        for an2 in all_proper_subsets(set(rul.an)):
+            an2cl = miner.close(an2)
+            # ~ if an2cl.supp > 0:
+                # ~ "CAVEAT: can it really be zero?"
+                # ~ cl_ants.add(an2cl)
+        # ~ for an2 in cl_ants:
+            if an2cl in cl_ants:
+                # ~ print(" .. repe", an2cl)
+                pass
+            else:
+                cl_ants.add(an2cl)
+            cn2 = miner.close(rul.rcn.union(an2))
+            if cn2.supp * IFace.hpar.absoluteboost > an2cl.supp:
+                # ~ print(" .. no, high conf for", an2, cn2, cn2.supp / an2cl.supp)
                 return False
-            elif sub_cn_supp / sub_an_supp < rul.cboo:
-                rul.cboo = sub_cn_supp / sub_an_supp
-    return True
+            if cn2.supp > altconf * an2cl.supp:
+                altconf = cn2.supp / an2cl.supp
+        rul.cboo = 1/altconf if altconf > 0 else rul.cn.suppratio
+        print(" .. accepting", rul, "sr:", rul.cn.suppratio)
+        return True
+
+        
+        # ~ rul.cboo = float("inf")
+        # ~ for it in rul.an:
+            # ~ sub_an_supp = miner.close(rul.an.difference([ it ])).supp            
+            # ~ sub_cn_supp = miner.close(rul.cn.difference([ it ])).supp
+            # ~ if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
+                # ~ "reformulate w/o quotients"
+                # ~ print(" .. no, high conf when taking out", it)
+                # ~ return False
+            # ~ elif sub_cn_supp / sub_an_supp < rul.cboo:
+                # ~ rul.cboo = sub_cn_supp / sub_an_supp
+            # ~ if sub_cn_supp * IFace.hpar.absoluteboost > sub_an_supp:
+                # ~ "reformulate w/o quotients"
+                # ~ print(" .. no, high conf when taking out", it)
+                # ~ return False
+            # ~ elif sub_cn_supp / sub_an_supp < rul.cboo:
+                # ~ rul.cboo = sub_cn_supp / sub_an_supp
+    # ~ return True
 
 def mine_implications(latt, cn):
     """
@@ -221,8 +252,9 @@ if __name__=="__main__":
     d = Dataset()
 
     la = Lattice(d)
-    supp = 0.05
+    supp = 0
     impls = list()
+    # ~ cboothr = 1.1
 
     for cn in la.candidate_closures(supp): 
         if cn:
