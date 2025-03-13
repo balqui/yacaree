@@ -100,8 +100,8 @@ class Lattice(dict):
                 self.minsupp = ready[0].supp
                 yield heappop(ready)
 
-        print("\n\n ....... now pending bord w/o suppratios")
-        print(" ....... highest unreached supp:", supp - 1)
+        # ~ print("\n\n ....... now pending bord w/o suppratios")
+        IFace.report("Closures support border at: " + str(supp))
         for st in bord:
             # ~ print(" ......... yielding:", st, "suppratio bound:", st.supp, "/", supp - 1, "=", end = ' ')
             # ~ if supp > 1: 

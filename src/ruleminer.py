@@ -58,12 +58,15 @@ class RuleMiner: # Does not subclass Lattice anymore
                 for rul in mine_implications(self.latt, cn):
                     self.count += 1
                     yield rul
+                # ~ for rul in mine_partial_rules(self, cn):
+                    # ~ if rul.conf > IFace.hpar.confthr:
+                        # ~ self.count += 1
+                        # ~ yield rul
+
+
+
                     # ~ yield Rule(*rul, full_impl = True)
-                for rul in mine_partial_rules(self, cn):
                     # ~ rul = Rule(*rul) # now it IS a Rule when received here
-                    if rul.conf > IFace.hpar.confthr:
-                        self.count += 1
-                        yield rul
                     # ~ else:
                         # ~ print(" ..... fails confidence:", rul)
             # ~ else:
@@ -90,8 +93,9 @@ if __name__=="__main__":
     # ~ fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
+    # ~ fnm = "../data/votesTr" 
+    fnm = "../data/NOW" 
     # ~ fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
-    fnm = "../data/votesTr" 
     # The next work thanks to the limit on the total support set lengths
     # ~ fnm = "../data/chess.td"   # Fills 8GB memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills 8GB memory with ridiculous heap
@@ -101,15 +105,18 @@ if __name__=="__main__":
     IFace.fn = FileNames(IFace)
     IFace.opendatafile(fnm)
     d = Dataset()
+    # ~ supp = 0.01
 
     # ~ miner = RuleMiner(fnm)
     miner = RuleMiner(IFace.hpar, d)
     rulist = list()
-    for rul in miner.minerules():
+    for rul in miner.minerules(): # supp):
         rulist.append(rul)
         # ~ IFace.report(str(miner.count) + "/ " + str(rul))
-    for cnt, rul in enumerate(sorted(rulist, key = lambda r: r.cboo, reverse = True)):
-        print(cnt + 1, "/", rul)
+    if input(f"Show {len(rulist)} implications? "):
+        for cnt, rul in enumerate(sorted(rulist, 
+              key = lambda r: r.cboo, reverse = True)):
+            print(cnt + 1, "/", rul, rul.cn.suppratio, rul.m_impr)
 
         # ~ ans = iface.ask_input("More? (<CR> to finish) ")
         # ~ if len(ans)==0: break

@@ -22,6 +22,27 @@ from heapq import heapify, heappush, heappop
 
 from psutil import virtual_memory as vmem
 
+class Test_Memory:
+
+    def __init__(self, nrits):
+        self.cuts = 0
+        self.nrits = nrits
+        self.nrits_thr = 1000
+        self.first_thr = 50
+        self.secnd_thr = 66
+        self.third_thr = 75
+
+    def too_much_mem(self):
+        if self.nrits < self.nrits_thr or self.cuts == 0:
+            print(" 0 cuts...", vmem().percent, self.first_thr)
+            return vmem().percent > self.first_thr
+        elif self.cuts == 1:
+            print(" 1 cut...", vmem().percent, self.secnd_thr)
+            return vmem().percent > self.secnd_thr
+        else:
+            print(" 2 cuts or more...", vmem().percent, self.third_thr)
+            return vmem().percent > self.secnd_thr
+
 class ClMiner(dict):
     """
     Troppus-based miner. It is a dict from (frozen)sets of items 
@@ -39,6 +60,7 @@ class ClMiner(dict):
         self.card = 0
         self.totlen = 0
         self.pend_clos = list()
+        self.mem_tester = Test_Memory(IFace.hpar.nrits)
 
 
     def supp_adding(self, itst, nitt):
@@ -94,7 +116,7 @@ class ClMiner(dict):
             # ~ Trying to control as well tot_len_limit.
             # ~ """
         incr_supp = False
-        if vmem().percent > 50:
+        if self.mem_tester.too_much_mem():
             IFace.report("Too high memory usage: increasing support.")
             incr_supp = True
         if len(self.pend_clos) > IFace.hpar.pend_len_limit:
@@ -108,6 +130,7 @@ class ClMiner(dict):
             half the heap does not free much. But the new support 
             may allow the computation to complete anyway.
             """
+            self.mem_tester.cuts += 1
             lim = len(self.pend_clos) // 2
             current_supp = self.pend_clos[0].supp
             current_supp_clos = []

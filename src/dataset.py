@@ -57,6 +57,9 @@ class Dataset:
                 self.nrtr += 1
         self.nrits = len(self.univ)
         IFace.hpar.nrtr = self.nrtr
+        IFace.hpar.nrits = self.nrits
+        if self.nrtr < 100:
+            IFace.hpar.genabsupp = 3
         IFace.datafile.close()
         IFace.report("Dataset read in. Consists of " +
                      str(self.nrtr) + " transactions from among " +

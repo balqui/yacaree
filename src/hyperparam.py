@@ -1,7 +1,7 @@
 """
 yacaree
 
-Current revision: mid / late Frimaire 2024 (but inffloat in Pluviose 2025)
+Current revision: mid / late Frimaire 2024 (but inffloat & removals after Pluviose 2025)
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -50,11 +50,11 @@ class HyperParam:
 
     def __init__(self):
         
-        self.verbose = False
+        # self.verbose = False
         # self.please_report = False # To report every now and then 
         # self.scale = 100000
         # self.epsilon = 100.0/self.scale
-        self.boostab = 5
+        # self.boostab = 5
         self.report_often = 2000 # report every that many closures
         self.check_size_often = 500 # test memory left every that many closures
 
@@ -63,11 +63,11 @@ class HyperParam:
 
         ## standard process:
         
-        self.pend_len_limit = 16384 # 8192 # 1000 # 16384 # 2 to power 14
+        self.pend_len_limit = 4098 # 16384 # 8192 # 1000 # 16384 # 2 to power 14
         # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
                                        # but may end up eating 15GB
         # ~ self.tot_len_limit = 50000000 # half of above for testing 
-        self.genabsupp = 5 # absolute number of transactions
+        self.genabsupp = 5 # absolute number of transactions, reduced to 3 if dataset has less than 100 transactions
         # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
         # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)
@@ -78,8 +78,9 @@ class HyperParam:
         # ~ self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         # ~ self.initialboost = 1.15
         # ~ self.absoluteboost = 1.05
-        self.abssuppratio = 1.05
+        self.abssuppratio = 1.03 # 1.05
         self.absoluteboost = 1.15
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
 
-        self.nrtr = 0 # to be updated by Dataset
+        self.nrtr = 0  # to be updated by Dataset
+        self.nrits = 0 # to be updated by Dataset

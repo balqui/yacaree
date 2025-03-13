@@ -1,7 +1,7 @@
 '''
 yacaree
 
-Current revision: mid Pluviose 2025
+Current revision: late Ventose 2025
 
 Programmers: JLB
 
@@ -57,7 +57,7 @@ Additional comment:
 '''
 
 
-from iface import IFace as iface
+# ~ from iface import IFace as iface
 # ~ import statics
 from itset import ItSet
 from rule import Rule
@@ -103,63 +103,37 @@ def _faces(itst, listpred):
         # ~ itst = set(itst)
         return hypergraph(itst, [ itst.difference(e) for e in listpred ])
 
-# ~ def checkrule(rul,rminer):
-    # ~ belowconf = 0
-    # ~ cl_ants = set([])
-    # ~ for an2 in all_proper_subsets(set(rul.an)):
-        # ~ cl_ants.add(rminer.latt.close(an2))
-    # ~ for an2 in cl_ants:
-        # ~ "ToDo: refactor avoiding floats"
-        # ~ cn2 = rminer.latt.close(rul.rcn.union(an2))
-        # ~ if float(rminer.latt.supps[cn2])/rminer.latt.supps[an2] > belowconf:
-            # ~ belowconf = float(rminer.latt.supps[cn2])/rminer.latt.supps[an2]
-        # ~ if float(rul.conf)/belowconf < iface.hpar.absoluteboost:
-            # ~ return rminer.DISCARD
-    # ~ if rul.cboo < iface.hpar.epsilon:
-        # ~ "ToDo: refactor without floats"
-        # ~ if rul.cn in rminer.latt.suppratios:
-            # ~ rul.cboo = rminer.latt.suppratios[rul.cn]
-        # ~ if belowconf > 0:
-            # ~ if rul.cboo > rul.conf/belowconf or rul.cboo < iface.hpar.epsilon:
-                # ~ rul.cboo = rul.conf/belowconf
-    # ~ return rul.cboo
-
-def is_cboost_high_impl(rul, miner):
-    "rul assumed to be an implication, test std (non-closure) cboost"
+def set_m_impr(rul, miner):
+    "rul assumed to be an implication, test std (non-closure) mult impr"
     if rul.conf < 1:
-        IFace.reporterror("Conf boost test expected implication but got instead " + str(rul))
-    # ~ print(" .. testing", rul)
+        IFace.reporterror("Multiplicative improvement test expected" +
+            " an implication but got instead " + str(rul))
     if rul.cn.suppratio < IFace.hpar.abssuppratio:
+        "Plan to push the suppratio constraint into the cl mining"
         # ~ print(" .. no, low suppratio", rul.cn.suppratio)
         return False
-    else:
-        "here I had single-drop but it is not correct"
-        altconf = 0
-        cl_ants = set([])
-        for an2 in all_proper_subsets(set(rul.an)):
-            an2cl = miner.close(an2)
-            # ~ if an2cl.supp > 0:
-                # ~ "CAVEAT: can it really be zero?"
-                # ~ cl_ants.add(an2cl)
-        # ~ for an2 in cl_ants:
-            if an2cl in cl_ants:
-                print(" .. repeated", an2cl, "closure of", an2, "for", rul)
-                pass
-            else:
-                cl_ants.add(an2cl)
-            cn2 = miner.close(rul.rcn.union(an2))
-            if cn2.supp * IFace.hpar.absoluteboost > an2cl.supp:
-                # ~ print(" .. no, high conf for", an2, cn2, cn2.supp / an2cl.supp)
-                return False
-            if cn2.supp > altconf * an2cl.supp:
-                altconf = cn2.supp / an2cl.supp
-        if altconf > 0:
-            rul.cboo = min(1/altconf, rul.cn.suppratio)
+    altconf = 0
+    cl_ants = set([])
+    for an2 in all_proper_subsets(set(rul.an)):
+        an2cl = miner.close(an2)
+        if an2cl in cl_ants:
+            "CAVEAT, TEST TO BE REMOVED SOON"
+            print(" .. repeated", an2cl, "closure of", an2, "for", rul)
         else:
-            print(" .. null altconf for", rul, cl_ants)
-            rul.cboo = rul.cn.suppratio
-        # ~ print(" .. accepting", rul, "sr:", rul.cn.suppratio)
-        return True
+            cl_ants.add(an2cl)
+        cn2 = miner.close(rul.rcn.union(an2))
+        if cn2.supp * IFace.hpar.absoluteboost > an2cl.supp:
+            # ~ print(" .. discarding", rul, an2, cn2, cn2.supp / an2cl.supp)
+            return False
+        if cn2.supp > altconf * an2cl.supp:
+            altconf = cn2.supp / an2cl.supp
+    if altconf > 0:
+        rul.m_impr = 1/altconf
+    else:
+        IFace.reportwarning("Null altconf for Rule " + str(rul))
+        rul.m_impr = rul.cn.suppratio # will not disturb
+    rul.set_cboo()
+    return True
 
 
 def mine_implications(latt, cn):
@@ -180,7 +154,7 @@ def mine_implications(latt, cn):
     mingens = list( m for m in transv(_faces(cn, latt[cn])).hyedges )
     # ~ print(" == mingens of", cn, ":", mingens)
     if not mingens:
-        IFace.reportwarning("No minimum generators for " + 
+        IFace.reporterror("No minimum generators for " + 
             f"{str(cn)}, predecessors: [ " +
             f"{'; '.join(str(e) for e in latt[cn])} ]")
     if len(cn) == len(mingens[0]):
@@ -192,12 +166,11 @@ def mine_implications(latt, cn):
             an = frozenset(an)
             if an in latt:
                 "look it up on clminer instead"
-                print(an, "ALREADY IN lattice, then something wrong I believe")
-                exit(1)
+                IFace.reporterror(str(an) + 
+                " in lattice but should not be, something seems wrong.")
             else: 
-                "CAVEAT: pending to clarify which cboost and impose it"
                 rul = Rule(an, cn, full_impl = True)
-                if is_cboost_high_impl(rul, latt.miner):
+                if set_m_impr(rul, latt.miner):
                     yield rul
                 # ~ rminer.latt.supps[an] = rminer.latt.supps[cn]
                 # ~ rul = Rule(an,cn,rminer.latt)
@@ -229,8 +202,8 @@ if __name__=="__main__":
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/toy"
     # ~ fnm = "../data/adultrain"
-    # ~ fnm = "../data/lenses_recoded.txt"
-    fnm = "../data/cmc-full"
+    fnm = "../data/lenses_recoded.txt"
+    # ~ fnm = "../data/cmc-full"
 
 
     IFace.hpar = HyperParam()
@@ -239,22 +212,22 @@ if __name__=="__main__":
     d = Dataset()
 
     la = Lattice(d)
-    supp = 0.01
+    # ~ supp = 0 # .01
     impls = list()
     # ~ cboothr = 1.1
 
     for cn in la.candidate_closures(): # supp): 
         if cn:
-            if not isfinite(cn.suppratio):
-                break
+            # ~ if not isfinite(cn.suppratio):
+                # ~ break
             for rul in mine_implications(la, cn):
                 impls.append(rul)
-            
+
 
     if input(f"Show {len(impls)} implications? "):
         for cnt, rul in enumerate(sorted(impls, 
               key = lambda r: r.cboo, reverse = True)):
-            print(cnt + 1, "/", rul, rul.cn.suppratio)
+            print(cnt + 1, "/", rul, rul.cn.suppratio, rul.m_impr, rul.cboo)
         # ~ for rul in impls:
             # ~ print(rul) # [0], "=>", rul[1].difference(rul[0]))
 
@@ -262,4 +235,64 @@ if __name__=="__main__":
         print("Lattice:")
         for a in la:
             print(a)
+
+
+# ~ def checkrule(rul,rminer):
+    # ~ belowconf = 0
+    # ~ cl_ants = set([])
+    # ~ for an2 in all_proper_subsets(set(rul.an)):
+        # ~ cl_ants.add(rminer.latt.close(an2))
+    # ~ for an2 in cl_ants:
+        # ~ "ToDo: refactor avoiding floats"
+        # ~ cn2 = rminer.latt.close(rul.rcn.union(an2))
+        # ~ if float(rminer.latt.supps[cn2])/rminer.latt.supps[an2] > belowconf:
+            # ~ belowconf = float(rminer.latt.supps[cn2])/rminer.latt.supps[an2]
+        # ~ if float(rul.conf)/belowconf < iface.hpar.absoluteboost:
+            # ~ return rminer.DISCARD
+    # ~ if rul.cboo < iface.hpar.epsilon:
+        # ~ "ToDo: refactor without floats"
+        # ~ if rul.cn in rminer.latt.suppratios:
+            # ~ rul.cboo = rminer.latt.suppratios[rul.cn]
+        # ~ if belowconf > 0:
+            # ~ if rul.cboo > rul.conf/belowconf or rul.cboo < iface.hpar.epsilon:
+                # ~ rul.cboo = rul.conf/belowconf
+    # ~ return rul.cboo
+
+# ~ def is_cboost_high_impl(rul, miner):
+    # ~ "rul assumed to be an implication, test std (non-closure) cboost"
+    # ~ if rul.conf < 1:
+        # ~ IFace.reporterror("Conf boost test expected implication but got instead " + str(rul))
+    # ~ print(" .. testing", rul)
+    # ~ if rul.cn.suppratio < IFace.hpar.abssuppratio:
+        # ~ print(" .. no, low suppratio", rul.cn.suppratio)
+        # ~ return False
+    # ~ else:
+        # ~ "here I had single-drop but it is not correct"
+        # ~ altconf = 0
+        # ~ cl_ants = set([])
+        # ~ for an2 in all_proper_subsets(set(rul.an)):
+            # ~ an2cl = miner.close(an2)
+            # ~ if an2cl.supp > 0:
+                # ~ "CAVEAT: can it really be zero?"
+                # ~ cl_ants.add(an2cl)
+        # ~ for an2 in cl_ants:
+            # ~ if an2cl in cl_ants:
+                # ~ print(" .. repeated", an2cl, "closure of", an2, "for", rul)
+                # ~ pass
+            # ~ else:
+                # ~ cl_ants.add(an2cl)
+            # ~ cn2 = miner.close(rul.rcn.union(an2))
+            # ~ if cn2.supp * IFace.hpar.absoluteboost > an2cl.supp:
+                # ~ print(" .. no, high conf for", an2, cn2, cn2.supp / an2cl.supp)
+                # ~ return False
+            # ~ if cn2.supp > altconf * an2cl.supp:
+                # ~ altconf = cn2.supp / an2cl.supp
+        # ~ if altconf > 0:
+            # ~ rul.cboo = min(1/altconf, rul.cn.suppratio)
+        # ~ else:
+            # ~ print(" .. null altconf for", rul, cl_ants)
+            # ~ rul.cboo = rul.cn.suppratio
+        # ~ print(" .. accepting", rul, "sr:", rul.cn.suppratio)
+        # ~ return True
+
 
