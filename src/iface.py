@@ -1,7 +1,7 @@
 """
 yacaree
 
-Current revision: late Frimaire 2024
+Current revision: late Pluviose 2025
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -29,18 +29,6 @@ Can one combine decorator @classmethod with @property-related?
 from datetime import datetime
 from time import sleep, time as clock
 from filenames import FileNames
-
-# ~ # Had this when it was necessary to fly under both Python 2 and 3
-# ~ try:
-    # ~ "Python 2 version - all these imports only for gui"
-    # ~ import Tkinter
-    # ~ import tkFileDialog
-    # ~ import tkFont
-# ~ except ModuleNotFoundError:
-    # ~ "Python 3 (or beyond?) version"
-    # ~ import tkinter as Tkinter
-    # ~ from tkinter import filedialog as tkFileDialog
-    # ~ from tkinter import font as tkFont
 
 import tkinter as Tkinter
 from tkinter import filedialog as tkFileDialog
@@ -77,6 +65,28 @@ class IFace:
     @running.setter
     def running(self, val):
         type(self)._running = bool(val)
+
+# ~ Warns if TyTra unavailable, falls back to old transversal code; 
+
+# ~ CAVEAT: HyTra untested for many years until Pluviose 2025.
+
+    _old_hygr = False
+
+    @property
+    def old_hygr(self):
+        return type(self)._old_hygr
+
+    @old_hygr.setter
+    def old_hygr(self, val):
+        "Replaces old 'warn potential deprecation' now w/o 'global'."
+        if not type(self)._old_hygr:
+            "report at most once"
+            if val:
+                "This must be called only with True but..."
+                type(self)._old_hygr = True
+                IFace.reportwarning("Could not import from module HyTra.")
+                IFace.reportwarning("Please pip install hytra at some point.")
+                IFace.reportwarning("Falling back on deprecated hypergraph_old code.")
 
     @classmethod
     def go(cls, yacaree):

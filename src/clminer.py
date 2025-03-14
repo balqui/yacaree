@@ -34,13 +34,13 @@ class Test_Memory:
 
     def too_much_mem(self):
         if self.nrits < self.nrits_thr or self.cuts == 0:
-            print(" 0 cuts...", vmem().percent, self.first_thr)
+            # ~ print(" 0 cuts...", vmem().percent, self.first_thr)
             return vmem().percent > self.first_thr
         elif self.cuts == 1:
-            print(" 1 cut...", vmem().percent, self.secnd_thr)
+            # ~ print(" 1 cut...", vmem().percent, self.secnd_thr)
             return vmem().percent > self.secnd_thr
         else:
-            print(" 2 cuts or more...", vmem().percent, self.third_thr)
+            # ~ print(" 2 cuts or more...", vmem().percent, self.third_thr)
             return vmem().percent > self.secnd_thr
 
 class ClMiner(dict):
@@ -117,10 +117,12 @@ class ClMiner(dict):
             # ~ """
         incr_supp = False
         if self.mem_tester.too_much_mem():
-            IFace.report("Too high memory usage: increasing support.")
+            IFace.report("Too high memory usage: " + 
+                "increasing support threshold.")
             incr_supp = True
         if len(self.pend_clos) > IFace.hpar.pend_len_limit:
-            IFace.report("Too many pending closures: increasing support.")
+            IFace.report("Too many pending closures: " + 
+                "increasing support threshold.")
             incr_supp = True
         if incr_supp:
             """
@@ -192,10 +194,10 @@ class ClMiner(dict):
                 if new_supp > self.intsupp:
                     "support bound grew, heap halved, report"
                     IFace.report(
-                      f"Increasing min support from {self.intsupp} " +
-                      f"({self.intsupp*100/self.dataset.nrtr:5.3f}%) " + 
-                      f"up to {new_supp} " + 
-                      f"({new_supp*100/self.dataset.nrtr:5.3f}%).")
+                      f"Increased minimum support from {self.intsupp} "
+                      + f"({self.intsupp*100/self.dataset.nrtr:5.3f}%) "
+                      + f"up to {new_supp} " 
+                      + f"({new_supp*100/self.dataset.nrtr:5.3f}%).")
                     self.intsupp = new_supp
                     report_it = True
             if self.card % IFace.hpar.report_often == 0 or report_it:

@@ -1,14 +1,11 @@
 '''
 yacaree
 
-Current revision: late Ventose 2025
+Current revision: late Ventose 2025 - OBSOLETE SINCE THEN
 
 Programmers: JLB
 
 
-Warns if TyTra unavailable, falls back to old transversal code; 
-
-CAVEAT: HyTra untested for many years until Pluviose 2025.
 
 
 
@@ -74,27 +71,13 @@ from heapq import heappush
 
 from iter_subsets import all_proper_subsets
 
-old_hygr = False
-
 try:
     from hytra import HyperGraph as hypergraph
     from hytra import transv_zero as transv
 except ImportError:
     "take note to report it, but wait until statics.iface exists"
-    old_hygr = True
+    IFace.old_hygr = True
     from hypergraph_old import hypergraph, transv_zero as transv
-
-def warn_potential_deprecation():
-    global old_hygr
-    if old_hygr:
-        "report at most once"
-        old_hygr = False
-        # ~ statics.iface.report("Could not import from module HyTra.")
-        # ~ statics.iface.report("Please pip install hytra at some point.")
-        # ~ statics.iface.report("Falling back on deprecated hypergraph_old code.")
-        IFace.reportwarning("Could not import from module HyTra.")
-        IFace.reportwarning("Please pip install hytra at some point.")
-        IFace.reportwarning("Falling back on deprecated hypergraph_old code.")
 
 # ~ heappushcnt = 0 # see above
 
@@ -102,6 +85,8 @@ def _faces(itst, listpred):
         "listpred immediate preds of itst - make hypergraph of differences"
         # ~ itst = set(itst)
         return hypergraph(itst, [ itst.difference(e) for e in listpred ])
+
+# ~ took out the very ugly old_hygr global
 
 def set_m_impr(rul, miner):
     "rul assumed to be an implication, test std (non-closure) mult impr"
@@ -142,7 +127,7 @@ def mine_implications(latt, cn):
     If all supersets below minsupp, suppratio not known.
     CAVEAT: keep count somehow of discarded implications!
     """
-    warn_potential_deprecation()
+    # ~ warn_potential_deprecation()
     # ~ global heappushcnt
     # ~ mingens = []
     # ~ for m in transv(_faces(cn, latt[cn])).hyedges:
