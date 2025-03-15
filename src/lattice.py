@@ -77,15 +77,15 @@ class Lattice(dict):
                     if not union_covers[pot_cover]:
                         "first successor of pot_cover: gives its suppratio"
                         pot_cover.suppratio = float(pot_cover.supp)/supp
-                        # ~ if pot_cover.suppratio >= self.boosthr:
-                        # NOT PUSHING ANYMORE THE suppratio CONSTRAINT
-                        if pot_cover not in self:
-                            print("pot_cover", pot_cover) 
-                            print("pot_cover_init", pot_cover_init) 
-                            print("self.miner[frozenset(pot_cover_init)]", self.miner[frozenset(pot_cover_init)])
-                            print("via miner.close:", self.miner.close(pot_cover, verbose = True))
-                        assert pot_cover in self, f"{pot_cover} ready but not in lattice"
-                        heappush(ready, pot_cover)
+                        if pot_cover.suppratio >= IFace.hpar.abssuppratio:
+                            "Back to pushing up here the constraint"
+                            # ~ if pot_cover not in self:
+                                # ~ print("pot_cover", pot_cover) 
+                                # ~ print("pot_cover_init", pot_cover_init) 
+                                # ~ print("self.miner[frozenset(pot_cover_init)]", self.miner[frozenset(pot_cover_init)])
+                                # ~ print("via miner.close:", self.miner.close(pot_cover, verbose = True))
+                            assert pot_cover in self, f"{pot_cover} ready but not in lattice"
+                            heappush(ready, pot_cover)
                     union_covers[pot_cover].update(itst)
                     bord.discard(pot_cover)
             bord.add(itst)

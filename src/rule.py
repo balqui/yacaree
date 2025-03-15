@@ -45,18 +45,19 @@ class Rule:
             self.connective = " --> "
             # ~ self.s_s = float(cn.supp) / (an.supp - cn.supp)
 
-        self.m_impr = 0 # placeholder for mult improv for the time being
+        self.m_impr = float("inf")
         # Careful: m_impr must be standard for full implications but
         # closure-aware for partial implications.
         self.cboo = 0
         self.sign = ''
 
     def set_cboo(self):
-        if self.m_impr == 0:
+        if not isfinite(self.m_impr):
             if not isfinite(self.cn.suppratio):
                 IFace.reporterror("No confidence boost available " +
                     "for rule" + str(self))
             self.cboo = self.cn.suppratio
+            self.sign = "^"
         elif self.m_impr < self.cn.suppratio:
             self.cboo = self.m_impr
             self.sign = "v"

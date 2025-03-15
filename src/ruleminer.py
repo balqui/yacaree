@@ -75,10 +75,13 @@ class ImplMiner:
                 altconf = cn2.supp / an2cl.supp
         if altconf > 0:
             rul.m_impr = 1/altconf
+        elif isfinite(rul.cn.suppratio):
+            "Empty antecedent, only suppratio."
+            rul.m_impr = float("inf")
         else:
-            "CAVEAT: Acceptable for empty antecedents, think."
-            IFace.reportwarning("Null altconf for Rule " + str(rul))
-            rul.m_impr = rul.cn.suppratio # will not disturb
+            "No m_impr and no suppratio: can't evaluate that rule"
+            print(" .. discarding", rul, "no m_impr, no suppratio")
+            return False
         rul.set_cboo()
         return True
 
@@ -117,9 +120,95 @@ class ImplMiner:
 
 
 
+class PartRulMiner:
+
+    # ~ def __init__(self):
+        # ~ try:
+            # ~ from hytra import HyperGraph, transv_zero
+        # ~ except ImportError:
+            # ~ IFace.old_hygr = True
+            # ~ from hypergraph_old import transv_zero, \
+                                       # ~ hypergraph as HyperGraph
+        # ~ self.hypergraph = HyperGraph
+        # ~ self.transv = transv_zero
+    
+    # ~ def _faces(self, itst, listpred):
+        # ~ "listpred immediate preds of itst, hypergraph of differences"
+        # ~ return self.hypergraph(itst, 
+                             # ~ [ itst.difference(e) for e in listpred ])
 
 
-class RuleMiner: # Does not subclass Lattice anymore
+    def set_m_impr(self, rul, la):
+        if rul.cn.suppratio < IFace.hpar.abssuppratio:
+            "CAVEAT: Plan to push the suppratio constraint into the cl mining"
+            # ~ print(" .. no, low suppratio", rul.cn.suppratio)
+            return False
+        altconf = 0
+        cl_ants = set([])
+        for an2 in la.allpreds(rul.an):
+            cn2 = la.miner.close(rul.rcn.union(an2))
+            if (cf := cn2.supp/an2.supp) > altconf:
+                altconf = cf
+            # ~ print(" ..... considering", an2, ">", cn2, cf, rul.conf/cf)
+            if rul.conf < IFace.hpar.absoluteboost * altconf:
+                rul.cboo = altconf # only an upper bound but discarded
+                return False
+        if altconf > 0:
+            rul.m_impr = rul.conf/altconf # not discarded, correct value
+        elif isfinite(rul.cn.suppratio):
+            "Empty antecedent, only suppratio."
+            rul.m_impr = float("inf")
+        else:
+            "No m_impr and no suppratio: can't evaluate that rule"
+            print(" .. discarding", rul, "no m_impr, no suppratio")
+            return False
+        rul.set_cboo()
+        return True
+
+
+
+    def mine_partial_rules(self, latt, cn):
+        for an in latt.allpreds(cn): 
+            rul = Rule(an, cn)
+            if self.set_m_impr(rul, latt):
+                yield rul
+
+
+    # ~ def mine_implications(self, latt, cn):
+        # ~ """
+        # ~ Gets a closure cn, with suppratio if known: find implications
+        # ~ with it as consequent.
+        # ~ If all supersets below minsupp, suppratio not known.
+        # ~ CAVEAT: keep count somehow of discarded implications!
+        # ~ """
+        # ~ mingens = list( m 
+            # ~ for m in self.transv(self._faces(cn, latt[cn])).hyedges )
+        # ~ if not mingens:
+            # ~ "The error reporting will exit the program."
+            # ~ IFace.reporterror("No minimum generators for " + 
+                # ~ f"{str(cn)}, predecessors: [ " +
+                # ~ f"{'; '.join(str(e) for e in latt[cn])} ]")
+        # ~ if len(cn) > len(mingens[0]):
+            # ~ "o/w cn is a free set, its own unique mingen, no rules"
+            # ~ for an in mingens:
+                # ~ an = frozenset(an)
+                # ~ if an in latt:
+                    # ~ "CAVEAT: look it up on clminer instead?"
+                    # ~ IFace.reporterror(str(an) + 
+                        # ~ " in lattice but should not be," + 
+                        # ~ " something seems wrong.")
+                # ~ else: 
+                    # ~ rul = Rule(an, cn, full_impl = True)
+                    # ~ if self.set_m_impr(rul, latt.miner):
+                        # ~ yield rul
+
+
+
+
+
+
+
+class RuleMiner: 
 
     def __init__(self, hpar, dataset, supprat = True):
         "some codes, reserved rules, and average lift so far"
@@ -128,6 +217,7 @@ class RuleMiner: # Does not subclass Lattice anymore
             self.latt.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
         self.count = 0
         self.im = ImplMiner()
+        self.prm = PartRulMiner()
 
     def minerules(self, supp = -1):
         """
@@ -140,10 +230,11 @@ class RuleMiner: # Does not subclass Lattice anymore
                 for rul in self.im.mine_implications(self.latt, cn):
                     self.count += 1
                     yield rul
-                # ~ for rul in mine_partial_rules(self, cn):
-                    # ~ if rul.conf > IFace.hpar.confthr:
-                        # ~ self.count += 1
-                        # ~ yield rul
+                for rul in self.prm.mine_partial_rules(self.latt, cn):
+                    if rul.conf > IFace.hpar.confthr:
+                        "this test should be inside the miner"
+                        self.count += 1
+                        yield rul
 
 
 if __name__=="__main__":
@@ -165,12 +256,12 @@ if __name__=="__main__":
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/e5b"
     # ~ fnm = "../data/e5"
-    # ~ fnm = "../data/p5.td"
+    fnm = "../data/p5.td"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/votesTr" 
     # ~ fnm = "../data/NOW" 
-    fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
+    # ~ fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
     # The next work thanks to the limit on the total support set lengths
     # ~ fnm = "../data/chess.td"   # Fills 8GB memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills 8GB memory with ridiculous heap
@@ -187,7 +278,7 @@ if __name__=="__main__":
     for rul in miner.minerules(): # supp):
         rulist.append(rul)
         # ~ IFace.report(str(miner.count) + "/ " + str(rul))
-    if input(f"Show {len(rulist)} implications? "):
+    if input(f"Show {len(rulist)} associations? "):
         for cnt, rul in enumerate(sorted(rulist, 
               key = lambda r: r.cboo, reverse = True)):
             print(cnt + 1, "/", rul, rul.cn.suppratio, rul.m_impr)

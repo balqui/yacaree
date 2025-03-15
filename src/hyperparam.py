@@ -78,7 +78,7 @@ class HyperParam:
         # ~ self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         # ~ self.initialboost = 1.15
         # ~ self.absoluteboost = 1.05
-        self.abssuppratio = 1.03 # 1.05
+        self.abssuppratio = 1.23 # 1.05
         self.absoluteboost = 1.15
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
 
