@@ -49,7 +49,7 @@ class Rule:
         # Careful: m_impr must be standard for full implications but
         # closure-aware for partial implications.
         self.cboo = 0
-        self.sign = ''
+        # ~ self.sign = ''
 
     def set_cboo(self):
         if not isfinite(self.m_impr):
@@ -57,13 +57,13 @@ class Rule:
                 IFace.reporterror("No confidence boost available " +
                     "for rule" + str(self))
             self.cboo = self.cn.suppratio
-            self.sign = "^"
+            # ~ self.sign = "^"
         elif self.m_impr < self.cn.suppratio:
             self.cboo = self.m_impr
-            self.sign = "v"
+            # ~ self.sign = "v"
         else:
             self.cboo = self.cn.suppratio
-            self.sign = "^"
+            # ~ self.sign = "^"
 
 
 # ~ REMOVE ONE DAY:
@@ -96,7 +96,8 @@ class Rule:
         if self.cboo == 0:
             res += "; ]"
         else:
-            res += (f"; boost: {self.cboo:5.3f} ({self.sign})]")
+            res += (f"; boost: {self.cboo:5.3f}]")
+            # ~ res += (f"; boost: {self.cboo:5.3f} ({self.sign})]")
         return res
 
 if __name__ == "__main__":

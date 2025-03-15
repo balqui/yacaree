@@ -38,8 +38,8 @@ class Lattice(dict):
         super().__init__(self)
         self.dataset = dataset
         # ~ self.boosthr = IFace.hpar.initialboost
-        self.miner = None   # to access miner.minsupp later
-        self.minsupp = None # among closures with known suppratio
+        # ~ self.miner = None   # to access miner.minsupp later
+        self.minsupp = float("inf") # among closures with known suppratio
 
     def candidate_closures(self, supp = -1):
         """
@@ -77,7 +77,7 @@ class Lattice(dict):
                     if not union_covers[pot_cover]:
                         "first successor of pot_cover: gives its suppratio"
                         pot_cover.suppratio = float(pot_cover.supp)/supp
-                        if pot_cover.suppratio >= IFace.hpar.abssuppratio:
+                        if pot_cover.suppratio >= IFace.hpar.abs_suppratio:
                             "Back to pushing up here the constraint"
                             # ~ if pot_cover not in self:
                                 # ~ print("pot_cover", pot_cover) 
@@ -95,21 +95,28 @@ class Lattice(dict):
             while ready:
                 """
                 At this point we have the closures and their heaviest
-                predecessor so suppratio correct, but lack other preds
+                predecessor so suppratio correct, but lack other preds.
+                The suppratio thing may lead to non-support-order!
                 """
-                self.minsupp = ready[0].supp
+                self.minsupp = min(self.minsupp, ready[0].supp)
                 yield heappop(ready)
 
         # ~ print("\n\n ....... now pending bord w/o suppratios")
-        IFace.report("Closures support border at: " + str(supp))
-        for st in bord:
+        IFace.report("Lattice support border at: " + str(self.minsupp))
+        IFace.report("Additional closures support border at: " + str(supp))
+
+        # ~ for st in bord:
+            # ~ "Positive border, maximal sets, no suppratio info, omitted"
+            # ~ CAVEAT: THIS MAY BE PROVIDED 'ON REQUEST' BUT RIGHT NOW NO
+            # ~ self.minsupp = st.supp
+            # ~ yield st
+
+
             # ~ print(" ......... yielding:", st, "suppratio bound:", st.supp, "/", supp - 1, "=", end = ' ')
             # ~ if supp > 1: 
                 # ~ print(st.supp/(supp - 1))
             # ~ else:
                 # ~ print("inf")
-            self.minsupp = st.supp
-            yield st
 
         # ~ print(" ....... freezer:", freezer)
         # ~ self.minsupp = miner.minsupp # for reporting at end

@@ -50,37 +50,42 @@ class HyperParam:
 
     def __init__(self):
         
+        self.report_often = 2000 # report every that many closures
+        self.check_size_often = 500 # test memory left every that many closures
+        self.genabsupp = 5 # absolute number of transactions, reduced to 
+                           # 3 if dataset has less than 100 transactions
+        self.confthr = 0.65
+        self.abs_suppratio = 1.05 # 1.03 # 1.01
+        self.abs_m_impr = 1.15 # 1.03
+
+        self.nrtr = 0  # to be updated by Dataset
+        self.nrits = 0 # to be updated by Dataset
+
+        self.pend_len_limit = 4098 # 8192 # 1000 # 16384 # 2 to power 14/13/12
+
+        # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
+                                       # but may end up eating 15GB
+        # ~ self.tot_len_limit = 50000000 # half of above for testing 
+        # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
+        # ~ self.pend_mem_limit = 1000000000 # 1GB
+
         # self.verbose = False
         # self.please_report = False # To report every now and then 
         # self.scale = 100000
         # self.epsilon = 100.0/self.scale
         # self.boostab = 5
-        self.report_often = 2000 # report every that many closures
-        self.check_size_often = 500 # test memory left every that many closures
 
-        self.inffloat = float("inf") # infinite float, e.g. suppratios
+        # ~ self.inffloat = float("inf") # infinite float, e.g. suppratios
         # ~ unclear whether worth it!
 
         ## standard process:
         
-        self.pend_len_limit = 4098 # 16384 # 8192 # 1000 # 16384 # 2 to power 14
-        # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
-                                       # but may end up eating 15GB
-        # ~ self.tot_len_limit = 50000000 # half of above for testing 
-        self.genabsupp = 5 # absolute number of transactions, reduced to 3 if dataset has less than 100 transactions
-        # ~ self.pend_total_limit = 100000000 # 100000 # 100000000
-        # ~ self.pend_mem_limit = 1000000000 # 1GB
         ##confthr = int((2.0/3) * scale)
-        self.confthr = 0.65
         # ~ self.confthr = int(0.65 * self.scale)
         # ~ self.findrules = 0
         # ~ self.maxrules = 50 # set this to zero if all the rules are to be written out
         # ~ self.stdmaxrules = self.maxrules # to recover the standard situation if necessary
         # ~ self.initialboost = 1.15
         # ~ self.absoluteboost = 1.05
-        self.abssuppratio = 1.23 # 1.05
-        self.absoluteboost = 1.15
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
 
-        self.nrtr = 0  # to be updated by Dataset
-        self.nrits = 0 # to be updated by Dataset

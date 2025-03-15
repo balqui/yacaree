@@ -28,20 +28,18 @@ class Test_Memory:
         self.cuts = 0
         self.nrits = nrits
         self.nrits_thr = 1000
-        self.first_thr = 50
-        self.secnd_thr = 66
-        self.third_thr = 75
+        self.first_thr = 60
+        self.secnd_thr = 70
+        self.third_thr = 80
 
     def too_much_mem(self):
         if self.nrits < self.nrits_thr or self.cuts == 0:
-            # ~ print(" 0 cuts...", vmem().percent, self.first_thr)
             return vmem().percent > self.first_thr
         elif self.cuts == 1:
-            # ~ print(" 1 cut...", vmem().percent, self.secnd_thr)
             return vmem().percent > self.secnd_thr
         else:
-            # ~ print(" 2 cuts or more...", vmem().percent, self.third_thr)
-            return vmem().percent > self.secnd_thr
+            "CAVEAT: third threshold or second?"
+            return vmem().percent > self.third_thr
 
 class ClMiner(dict):
     """
@@ -205,8 +203,8 @@ class ClMiner(dict):
                 report_it = False
                 IFace.report(
                   f"{self.card} closures traversed, " +
-                  f"{len(self.pend_clos)} further closures pending; " +
-                  f"current support {clos.supp}.")
+                  f"{len(self.pend_clos)} further closures " +
+                  f"found so far; current support {clos.supp}.")
 
             first_level = False  # unless we find otherwise later on
             mxsupp = 0

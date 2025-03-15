@@ -62,9 +62,9 @@ class Dataset:
             IFace.hpar.genabsupp = 3
         IFace.datafile.close()
         IFace.report("Dataset read in. Consists of " +
-                     str(self.nrtr) + " transactions from among " +
-                     str(self.nrits) + " different items, with a total of " +
-                     str(self.nrocc) + " item occurrences.")
+            str(self.nrtr) + " transactions from among " +
+            str(self.nrits) + " different items, with a total of " +
+            str(self.nrocc) + " item occurrences.")
 
     def inters(self, lstr):
         "for iterable of transactions lstr, return their intersection"
