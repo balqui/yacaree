@@ -56,7 +56,7 @@ class HyperParam:
                            # 3 if dataset has less than 100 transactions
         self.confthr = 0.65
         self.abs_suppratio = 1.05 # 1.03 # 1.01
-        self.abs_m_impr = 1.15 # 1.03
+        self.abs_m_impr = 1.1 # 1.03
 
         self.nrtr = 0  # to be updated by Dataset
         self.nrits = 0 # to be updated by Dataset

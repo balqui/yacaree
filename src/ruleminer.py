@@ -177,9 +177,6 @@ if __name__=="__main__":
     from dataset import Dataset
 
 ##    fnm = "pumsb_star"
-##    fnm = "cmc-full"
-##    fnm = "adultrain"
-    fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
     # ~ fnm = "../data/toy_rr"
     # ~ fnm = "../data/e24.td"
@@ -190,6 +187,7 @@ if __name__=="__main__":
     # ~ fnm = "../data/e5b"
     # ~ fnm = "../data/e5"
     # ~ fnm = "../data/p5.td"
+    fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/votesTr" 
