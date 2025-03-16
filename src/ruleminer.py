@@ -179,7 +179,7 @@ if __name__=="__main__":
 ##    fnm = "pumsb_star"
 ##    fnm = "cmc-full"
 ##    fnm = "adultrain"
-    # ~ fnm = "../data/lenses_recoded"
+    fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
     # ~ fnm = "../data/toy_rr"
     # ~ fnm = "../data/e24.td"
@@ -194,11 +194,12 @@ if __name__=="__main__":
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/votesTr" 
     # ~ fnm = "../data/NOW" 
-    fnm = "../data/papersTr"   # FILLS 15GB VERY EASILY
+    # ~ fnm = "../data/papersTr"   # FILLS 15GB VERY EASILY
     # ~ fnm = "../data/chess.td"   # Fills 8GB with small heap size
     # ~ fnm = "../data/connect.td" # Fills 8GB with ridiculous heap
                                    # size and less than 5000 closures
                                    # but actually no associations found
+                                   # and lattice minsupp still at inf
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)

@@ -3,7 +3,7 @@
 """
 yacaree
 
-Current revision: late Frimaire 2024
+Current revision: late Pluviose 2025
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -14,10 +14,38 @@ Current default is text CLI but this might change.
 Heavily refactored from the 1.* versions: hyperparameters and
 interface replaced the early statics.py now not anymore used.
 
-Must change the report messages in terms of f-strings.
+CAVEAT: Must change the report messages in terms of f-strings.
 
 CAVEAT: Should review the -a option and clarify the labels on the buttons.
 
+As of today, only testing the latest version of ruleminer on a 16GB machine.
+ - chess OK (very slow, both memory and heap grow slowly) 
+   (produces only empty antecedents, currently only one but thats OK)
+   (skip trying 1.2/1.2/10)
+ - papersTr OK, 70 rules, good enough
+   1.2/1.2/10: 49 (no echo nada en falta)
+ - connect OK, finds nothing, latt border still at inf after mem full 
+   and an additional 1GB of swap 
+   1.2/1.2/10: nothing found (OK)
+   (strong effect on memory, suppose via suppratio, then longish time)
+ - NOW OK, 250 rules
+   1.2/1.2/10: 4 rules
+ - votesTr OK, 1088 rules
+   1.2/1.2/10: 2 quite good rules
+   (w/ suppratio at 1.2 2 rules, at 1.15 13 rules)
+ - cmc (full) OK, no support incr, 1325 rules, suppratio 1.2 472 rules, at cboo 1.25 179 rules
+   many rules for specific values of "age" and/or "children so far"
+   (w/ additional cut abs supp 10: 45 rules, abs sup 20: 21 rules)
+   1.2/1.2/10: 87 rules, good enough but 1.25 seems better
+ - adultrain OK, 950 rules, try 1.2/1.2/10 99 rules good enough
+ - lenses 3 quite good rules, 1.2/1.2/10 same
+ 
+MUST TRY 1.25/1.25/10 Y 1.25/1.25/20.
+MUST TRY NOW restricted to order-family omitting genus-species
+(and other options like only order or order-family-genus omitting species)
+(count indets on each!) 
+
+compute 0.668/0.659 > 1.5
 """
 
 from iface import IFace

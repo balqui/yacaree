@@ -28,8 +28,8 @@ class Test_Memory:
         self.cuts = 0
         self.nrits = nrits
         self.nrits_thr = 1000
-        self.first_thr = 60
-        self.secnd_thr = 70
+        self.first_thr = 50
+        self.secnd_thr = 65
         self.third_thr = 80
 
     def too_much_mem(self):
