@@ -1,39 +1,43 @@
-On a 16GB core machine, cutting heap at 50/65/80
+On a 16GB core machine, cutting heap at 50/65/80,
 
-              harsh         stringent   lenient      comments
-              1.25/1.25/25  1.2/1.2/10  1.1/1.05/5
 
-lenses          2              3            3        harsh good, supp 15 no change, strict a bit better, lenient no difference
+              harsh         stringent   lenient      relaxed     comments
+              1.25/1.25/25  1.2/1.2/15  1.15/1.05/10 1.1/1.05/5
 
-connect         0              0            0        finds nothing, latt border still at inf for all three
-                                                     no change at supp 15 for harsh
-                                                     needs first cut at maybe 60 (then mem full w/ maybe an additional 1GB of swap)
+lenses          2              3            3           3        harsh good, supp 15 no change, strict a bit better, lenient no difference
 
-chess           0              0            1        mild very slow, both memory and heap grow slowly, stringent still slow
-                                                     latt border still at inf in both (thus the 0's), empty-an rule at lenient
-                                                     harsh w supp 15 no change
+connect         0              0            0           0        finds nothing, latt border still at inf for all three
+                                                                 no change at supp 15 for harsh
+                                                                 needs first cut at maybe 60 (then mem full w/ maybe an additional 1GB of swap)
 
-papersTr       10             49           79        nothing relevant lost from mild to stringent but s/t lost for harsh
-                                                     harsh w supp 15 recovers a bit for 21 but still s/t missed
-                                                     stringent looks good, some (not many) lowish boost in mild interesting
+chess           0              0            1           1        milds very slow, both memory and heap grow slowly, stringent still slow
+                                                                 latt border still at inf in ALL (thus the 0's), empty-an rule at lenient
+                                                                 harsh w supp 15 no change
 
-NOW             0              4           45        harsh w supp 15 no change, strict good 4 but a bit too little, lenient good
+papersTr       10             24           38          43        nothing relevant lost from relaxed to lenient (looks good); 
+                                                                 good lowish-boost rules lost for stringent and more for harsh
+                                                                 harsh w supp 15 recovers a bit but still some missed
 
-votesTr         0              2         2383        harsh w supp 15 no change, strict good 2 but a bit insuf, lenient overwhelms
+NOW             0              0            5          45        harsh w supp 15 no change, strict good 4 but a bit too little, lenient good
 
-cmc            19             87         2153        19 reasonably good, grow to 27 at supp 15 but no real growth in interest 
-                                                     extra ones at stringent are good (some, not too many), lenient overwhelms
-                                                     many rules for specific values of "age" and/or "children so far"
+votesTr         0              2         1088        2383        harsh w supp 15 no change, strict good 2 but a bit insuf, lenient overwhelms
 
-adultrain      55             99         1398        harsh good enough, supp 15 no change, lenient overwhelms
-                                                     stringent brings in a few good ones but 99 is maybe too many
-                                                     quite a few rules with "age:..." or "hours_per_week:..."
+cmc            19             52          396        2153        19 reasonably good, grow to 27 at supp 15 but no real growth in interest 
+                                                                 extra ones at stringent are good (some, not too many), lenient overwhelms
+                                                                 many rules for specific values of "age" and/or "children so far"
+
+adultrain      55             99          950        1398        harsh good enough, supp 15 no change, lenient overwhelms
+                                                                 stringent brings in a few good ones but 99 is maybe too many
+                                                                 quite a few rules with "age:..." or "hours_per_week:..."
 
 
 Morals: 
 
  - keep harsh at supp 25 because drop to 15 only makes changes where harsh is not very good
- - may need a variant of lenient with stricter mult improv (but clarify what for)
+ - end up with four levels although the difference is often very high between 1.2/1.2/15 and 1.15/1.05/10
+ 
+Try 1.15/1.10/10 instead for lenient: adultrain 480, cmc 230, votes 89 (goodish!), NOW 5, papers 48, chess 0, connect 0, lenses 3.
+Try 1.15/1.15/10 instead for lenient: adultrain 235, cmc 201, votes 13 (goodish), NOW 5, papers 46, chess 0, connect 0, lenses 3.
 
 
 ==

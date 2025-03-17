@@ -187,14 +187,14 @@ if __name__=="__main__":
     # ~ fnm = "../data/e5b"
     # ~ fnm = "../data/e5"
     # ~ fnm = "../data/p5.td"
-    fnm = "../data/lenses_recoded"
+    # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
     # ~ fnm = "../data/votesTr" 
     # ~ fnm = "../data/NOW" 
     # ~ fnm = "../data/papersTr"   # FILLS 15GB VERY EASILY
     # ~ fnm = "../data/chess.td"   # Fills 8GB with small heap size
-    # ~ fnm = "../data/connect.td" # Fills 8GB with ridiculous heap
+    fnm = "../data/connect.td" # Fills 8GB with ridiculous heap
                                    # size and less than 5000 closures
                                    # but actually no associations found
                                    # and lattice minsupp still at inf
