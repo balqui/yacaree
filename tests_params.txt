@@ -1,3 +1,10 @@
+Decisions:
+
+harsh       1.25/1.25/25
+stringent   1.2/1.2/15
+lenient     1.15/1.15/10
+relaaaxed   1.1/1.1/5
+
 On a 16GB core machine, cutting heap at 50/65/80. SEE BELOW FOR OTHER VARIANTS.
 
 
