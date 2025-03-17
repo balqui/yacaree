@@ -1,4 +1,4 @@
-On a 16GB core machine, cutting heap at 50/65/80,
+On a 16GB core machine, cutting heap at 50/65/80. SEE BELOW FOR OTHER VARIANTS.
 
 
               harsh         stringent   lenient      relaxed     comments
@@ -38,7 +38,11 @@ Morals:
  
 Try 1.15/1.10/10 instead for lenient: adultrain 480, cmc 230, votes 89 (goodish!), NOW 5, papers 48, chess 0, connect 0, lenses 3.
 Try 1.15/1.15/10 instead for lenient: adultrain 235, cmc 201, votes 13 (goodish), NOW 5, papers 46, chess 0, connect 0, lenses 3.
+Try 1.15/1.15/5 instead for lenient: adultrain 235, cmc 726, votes 13, NOW 28, papers 35, chess 0, connect 0, lenses 3.
 
+Middle one is best: 1.15/1.15/10
+
+Try 1.1/1.1/5 instead for relaxed: adultrain 682, cmc 1878, votes 204, NOW 45, papers 42, chess 0, connect 0, lenses 3.
 
 ==
 
