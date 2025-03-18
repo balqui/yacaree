@@ -6,8 +6,8 @@ Current revision: late Pluviose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
-Old, to check out: "Close" button does not always work, I believe 
-already in the frozen version. CAVEAT.
+CAVEAT: Old, to check out: "Close" button does not always work, 
+I believe already in the frozen version. Also: GUI not tested yet.
 
 Heavily refactored to bring here all interfaces and take them 
 out of statics.py

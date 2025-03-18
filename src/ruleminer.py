@@ -42,8 +42,7 @@ class PartRulMiner:
             rul.m_impr = float("inf")
         else:
             "No m_impr and no suppratio: can't evaluate that rule"
-            print(" .. discarding", rul, "no m_impr, no suppratio")
-            return False
+            return False # CAVEAT: leave it to set_cboo to raise error?
         rul.set_cboo()
         return True
 
@@ -86,13 +85,13 @@ class ImplMiner:
         for an2 in all_proper_subsets(set(rul.an)):
             an2cl = miner.close(an2)
             if an2cl in cl_ants:
-                "CAVEAT, TEST TO BE REMOVED SOON"
-                print(" .. repeated", an2cl, "closure of", an2, "for", rul)
+                "CAVEAT: remove this test?"
+                IFace.reportwarning("Repeated closure of " + 
+                    str(an2) " while handling rule " + str(rul))
             else:
                 cl_ants.add(an2cl)
             cn2 = miner.close(rul.rcn.union(an2))
             if cn2.supp * IFace.hpar.abs_m_impr > an2cl.supp:
-                # ~ print(" .. discarding", rul, an2, cn2, cn2.supp / an2cl.supp)
                 return False
             if cn2.supp > altconf * an2cl.supp:
                 altconf = cn2.supp / an2cl.supp
@@ -103,8 +102,7 @@ class ImplMiner:
             rul.m_impr = float("inf")
         else:
             "No m_impr and no suppratio: can't evaluate that rule"
-            print(" .. discarding", rul, "no m_impr, no suppratio")
-            return False
+            return False # CAVEAT: leave it to set_cboo to raise error?
         rul.set_cboo()
         return True
 
@@ -118,7 +116,6 @@ class ImplMiner:
         """
         mingens = list( m 
             for m in self.transv(self._faces(cn, latt[cn])).hyedges )
-        # ~ print(" == mingens of", cn, ":", mingens)
         if not mingens:
             "The error reporting will exit the program."
             IFace.reporterror("No minimum generators for " + 
@@ -127,7 +124,6 @@ class ImplMiner:
         if len(cn) > len(mingens[0]):
             "o/w cn is a free set, its own unique mingen, no rules"
             for an in mingens:
-                # ~ print(" == making a rule out of", an, "and", latt[cn])
                 an = frozenset(an)
                 if an in latt:
                     "CAVEAT: look it up on clminer instead?"
@@ -147,8 +143,6 @@ class RuleMiner:
 
     def __init__(self, hpar, dataset):
         self.latt = Lattice(dataset)
-        # ~ if not supprat:
-            # ~ self.latt.boosthr = 1 # SHORTCIRCUIT SUPPRATIO CONSTRAINT PUSH
         self.count = 0
         self.im = ImplMiner()
         self.prm = PartRulMiner()

@@ -16,8 +16,7 @@ right now cannot have that easily the support of
 rcn (rest of consequent), hence cannot compute 
 easily anything that depends on it.
 
-CAVEAT: The current code still lacks the number of 
-transactions dataset.nrtr needed to normalize supports.
+Added later a method to set cboost.
 """
 
 from math import isfinite
@@ -49,7 +48,6 @@ class Rule:
         # Careful: m_impr must be standard for full implications but
         # closure-aware for partial implications.
         self.cboo = 0
-        # ~ self.sign = ''
 
     def set_cboo(self):
         if not isfinite(self.m_impr):
@@ -57,27 +55,10 @@ class Rule:
                 IFace.reporterror("No confidence boost available " +
                     "for rule" + str(self))
             self.cboo = self.cn.suppratio
-            # ~ self.sign = "^"
         elif self.m_impr < self.cn.suppratio:
             self.cboo = self.m_impr
-            # ~ self.sign = "v"
         else:
             self.cboo = self.cn.suppratio
-            # ~ self.sign = "^"
-
-
-# ~ REMOVE ONE DAY:
-        # ~ self.lift = 0 # placeholder for the time being
-        # ~ self.levg = 0 # placeholder for the time being
-
-        # ~ self.lift = ( float(self.suppboth) * latt.dataset.nrtr / (self.supprcn * self.suppant))
-        # ~ self.levg = ( self.conf -
-                      # ~ float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
-        # ~ self.p_s = ( self.supp -
-                     # ~ float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
-        # ~ if not full_impl:
-            # ~ print(" :: Made rule", self, "with conf", cn.supp, "/", an.supp)
-
 
     def __str__(self):
         sp4 = "    "
@@ -106,3 +87,16 @@ if __name__ == "__main__":
               ItSet((str(e) for e in range(7)), 5))
     print(r1)
     
+# ~ REMOVE ONE DAY:
+        # ~ self.lift = 0 # placeholder for the time being
+        # ~ self.levg = 0 # placeholder for the time being
+
+        # ~ self.lift = ( float(self.suppboth) * latt.dataset.nrtr / (self.supprcn * self.suppant))
+        # ~ self.levg = ( self.conf -
+                      # ~ float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
+        # ~ self.p_s = ( self.supp -
+                     # ~ float(self.supprcn*self.suppant)/(latt.dataset.nrtr*latt.dataset.nrtr) )
+        # ~ if not full_impl:
+            # ~ print(" :: Made rule", self, "with conf", cn.supp, "/", an.supp)
+
+

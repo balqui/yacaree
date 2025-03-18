@@ -49,25 +49,17 @@ class Yacaree:
             self.dataset = Dataset() # reads in from iface.datafile
         self.iface.openauxfiles()
 
-        rulecnt = 0 # avoid comparing rules of same cb in sorted(rules) 
+        rulecnt = 0 # avoid comparing rules of same cb in sorted(rules) CAVEAT: I BELIEVE THIS UNNECESSARY NOW (???)
         results_file = self.iface.rulesfile
         self.iface.get_ready_for_run()
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("Providing all rules as output.")
         self.iface.running = True
-        # ~ miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = True) # supprat: push suppratio constraint
-        # ~ miner = RuleMiner(self.iface, self.hpar, self.dataset)
         miner = RuleMiner(self.hpar, self.dataset)
         rules = []
         for rul in miner.minerules():
-            "if someday Rule has comparison, remove mentions to rulecnt"
-            # ~ if len(rul[0]) <= 2:
-                # ~ print("At main loop of yacaree:", rul) # list(cl), list(list(pr) for pr in preds)
             rulecnt += 1
             rules.append(rul)
-            # ~ rules.append((-rul.cboo, rulecnt, rul))
-            # ~ if miner.count == self.hpar.findrules > 0: break
-        # ~ print(miner.latt)
         self.iface.report("Mining process terminated; searched for" + 
                 " rules of confidence boost "
                 f"{min(hpar.abs_suppratio, hpar.abs_m_impr):4.2f}.")
@@ -77,10 +69,8 @@ class Yacaree:
                       # ~ + " (" +
                      # ~ str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
         cnt = 0
-        # ~ for (b, c, r) in sorted(rules):
         for r in sorted(rules, reverse = True, key = self.cboo_f):
             cnt += 1
-            # ~ results_file.write("\n" + str(cnt) + "/\n" + str(r))
             results_file.write("\n" + str(cnt) + "/ " + str(r))
             # ~ if cnt == self.hpar.maxrules > 0: break
         results_file.close()
@@ -96,7 +86,7 @@ class Yacaree:
         # ~ self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
         self.iface.sound_bell()
 
-    # ~ def standard_run_all(self):
+    # ~ def standard_run_all(self): # PLANNING TO REMOVE THIS OPTION
         # ~ "needed as a single button command - std run will get back on its own the std figure afterwards ?????"
         # ~ self.hpar.maxrules = 0
         # ~ self.standard_run()
@@ -104,6 +94,65 @@ class Yacaree:
 if __name__ == "__main__":
 
     from filenames import FileNames
+    from argparse import ArgumentParser
+
+    iface = IFace()
+    hpar = HyperParam()
+
+    argp = ArgumentParser(
+        description = "Yet another closure-based association rule " +
+                      "experimentation environment (CLI *nix flavor, " +
+                      "alt Win/*nix-compatible double-click launch " +
+                      "in file yacaree.pyw).",
+        # ~ prog = "python[3] yacaree.py or just ./yacaree"
+        prog = "./yacaree"
+        )
+
+    argp.add_argument('-g', '--gui', action = 'store_true', 
+                      help = "launch GUI (default: remain in " + 
+                             "command line interface - CLI)")
+    argp.add_argument('-V', '--version', action = 'version', 
+                            version = "yacaree " + iface.version,
+                            help = "print version and exit")
+    argp.add_argument('dataset', nargs = '?', default = None, 
+                      help = "name of optional dataset file " + 
+                             "(default: none, ask user)")
+
+    argp.add_argument('-m', '--mode', 
+            choices = ['harsh', 'stringent', 'lenient', 'relaaaxed'], 
+            default = 'stringent',
+            help = "how strict are we to be")
+
+    args = argp.parse_args()
+
+    iface.gui = args.gui
+
+    y = Yacaree(iface, hpar, args.dataset)
+    y.hpar.set_mode(args.mode)
+    print(y.hpar.genabsupp)
+    y.iface.go(y)
+
+# ~ DOUBTFUL FLAGS:
+
+    # ~ argp.add_argument('-t', '--test', action = 'store_true') 
+    # ~ # for testing times (???)
+
+    # ~ argp.add_argument('-a', '--all', action = 'store_true', 
+                      # ~ help = "output with no rule limit " + 
+                             # ~ "(default: limit to " 
+                             # ~ + str(hpar.maxrules) + " rules)")
+    # ~ argp.add_argument('-v', '--verbose', action = 'store_true', 
+                      # ~ help = "verbose report of current support " + 
+                             # ~ "at every closure")
+
+    # ~ if args.all:
+        # ~ hpar.maxrules = 0
+
+    # ~ if args.verbose:
+        # ~ hpar.verbose = True
+
+# ~ EARLIER TEST CODE:
+
     # ~ from time import time
 
     # ~ fnm = "../data/lenses_recoded"
@@ -148,65 +197,4 @@ if __name__ == "__main__":
     # ~ for fs in miner:
         # ~ if miner[fs].supp == 0:
             # ~ print(fs, miner[fs])
-
-
-
-    # ~ exit(1)
-
-	# TRUE MAIN:
-    from argparse import ArgumentParser
-
-    iface = IFace()
-    hpar = HyperParam()
-
-    argp = ArgumentParser(
-        description = "Yet another closure-based association rule " +
-                      "experimentation environment (CLI *nix flavor, " +
-                      "alt Win/*nix-compatible double-click launch " +
-                      "in file yacaree.pyw).",
-        # ~ prog = "python[3] yacaree.py or just ./yacaree"
-        prog = "./yacaree"
-        )
-
-    argp.add_argument('-g', '--gui', action = 'store_true', 
-                      help = "launch GUI (default: remain in " + 
-                             "command line interface - CLI)")
-    argp.add_argument('-V', '--version', action = 'version', 
-                            version = "yacaree " + iface.version,
-                            help = "print version and exit")
-    argp.add_argument('dataset', nargs = '?', default = None, 
-                      help = "name of optional dataset file " + 
-                             "(default: none, ask user)")
-
-    argp.add_argument('-m', '--mode', 
-            choices = ['harsh', 'stringent', 'lenient', 'relaaaxed'], 
-            default = 'stringent',
-            help = "how strict are we to be")
-
-    # ~ argp.add_argument('-t', '--test', action = 'store_true') 
-    # ~ # for testing times (???)
-
-# ~ DOUBTFUL FLAGS:
-    # ~ argp.add_argument('-a', '--all', action = 'store_true', 
-                      # ~ help = "output with no rule limit " + 
-                             # ~ "(default: limit to " 
-                             # ~ + str(hpar.maxrules) + " rules)")
-    # ~ argp.add_argument('-v', '--verbose', action = 'store_true', 
-                      # ~ help = "verbose report of current support " + 
-                             # ~ "at every closure")
-
-    args = argp.parse_args()
-
-    # ~ if args.all:
-        # ~ hpar.maxrules = 0
-
-    # ~ if args.verbose:
-        # ~ hpar.verbose = True
-
-    iface.gui = args.gui
-
-    y = Yacaree(iface, hpar, args.dataset)
-    y.hpar.set_mode(args.mode)
-    print(y.hpar.genabsupp)
-    y.iface.go(y)
 

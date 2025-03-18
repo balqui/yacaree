@@ -6,13 +6,13 @@ Current revision: late Pluviose 2025
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
 
-Early idea was to 
-
 CAVEAT: Must simplify a lot the docstrings and clean up the code.
 
 Careful: a hash is defined to use ItSet's as set members and 
 dict keys; ItSet should be handled always as immutable even though
 the program does not control that instances don't change.
+
+REST OF DOCSTRING TO MOVE SOMEWHERE ELSE.
 
 An early idea was, at some point, to move to a simplified version 
 where we only keep contents and supp, forgetting supportset and 

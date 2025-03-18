@@ -124,7 +124,7 @@ class ClMiner(dict):
             incr_supp = True
         if incr_supp:
             """
-            Less than half the system's memory remains available. 
+            Lowish amount of system's memory remains available. 
             Often, however, most memory is not employed by the heap
             (e.g. the closures dict instead): maybe, cutting away 
             half the heap does not free much. But the new support 
