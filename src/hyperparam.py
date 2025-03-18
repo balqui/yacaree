@@ -50,18 +50,17 @@ class HyperParam:
 
     def __init__(self):
         
+
         self.report_often = 2000 # report every that many closures
         self.check_size_often = 500 # test memory left every that many closures
-        self.genabsupp = 5 # absolute number of transactions, reduced to 
-                           # 3 if dataset has less than 100 transactions
         self.confthr = 0.65
-        self.abs_suppratio = 1.1 # 1.03 # 1.01
-        self.abs_m_impr = 1.1 # 1.03
 
         self.nrtr = 0  # to be updated by Dataset
         self.nrits = 0 # to be updated by Dataset
 
         self.pend_len_limit = 4098 # 8192 # 1000 # 16384 # 2 to power 14/13/12
+
+        self.set_mode() # set to default
 
         # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core
                                        # but may end up eating 15GB
@@ -88,4 +87,31 @@ class HyperParam:
         # ~ self.initialboost = 1.15
         # ~ self.absoluteboost = 1.05
         # ~ self.boostdecr = 0.001 # minimal boost decrease allowed
+
+    def set_mode(self, mode = "stringent"):
+        """
+        Note: absolute number of transactions will be reduced to 3 if 
+        dataset has less than 100 transactions.
+        """
+        if mode == "relaaaxed":
+            self.genabsupp = 5 # absolute number of transactions
+            self.abs_suppratio = 1.1 
+            self.abs_m_impr = 1.1 
+
+        if mode == "lenient":
+            self.genabsupp = 10
+            self.abs_suppratio = 1.15
+            self.abs_m_impr = 1.15
+
+        if mode == "stringent":
+            "default"
+            self.genabsupp = 1.2
+            self.abs_suppratio = 1.2
+            self.abs_m_impr = 15
+
+        if mode == "harsh":
+            self.genabsupp = 1.25 
+            self.abs_suppratio = 1.25
+            self.abs_m_impr = 25
+
 

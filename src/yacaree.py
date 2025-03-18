@@ -3,7 +3,7 @@
 """
 yacaree
 
-Current revision: late Pluviose 2025
+Current revision: late Ventose 2025, only CLI for today
 
 Author: Jose Luis Balcazar, ORCID 0000-0003-4248-4528 
 Copyleft: MIT License (https://en.wikipedia.org/wiki/MIT_License)
@@ -16,8 +16,14 @@ interface replaced the early statics.py now not anymore used.
 
 CAVEAT: Must change the report messages in terms of f-strings.
 
-CAVEAT: Should review the -a option and clarify the labels on the buttons.
+CAVEAT: Should review the -a option, right now it reports all 
+the rules, not sure whether I want back the option of limiting 
+then to 50.
 
+CAVEAT: Should review the -v option, right now it is as verbose
+as I want it.
+
+CAVEAT: Clarify the labels on the buttons.
 """
 
 from iface import IFace
@@ -28,11 +34,13 @@ from ruleminer import RuleMiner
 class Yacaree:
 
     def __init__(self, iface, hpar, datafilename):
+        from operator import attrgetter
         self.hpar = hpar
         self.iface = iface
         self.dataset = None
         self.datafilename = datafilename
-        self.iface.go(self)
+        self.cboo_f = attrgetter('cboo') # extract cboo from rules
+        # ~ self.iface.go(self) # moved off
 
     def standard_run(self):
         # ~ if self.hpar.maxrules == 0:
@@ -48,35 +56,35 @@ class Yacaree:
             # ~ self.iface.report("Providing all rules as output.")
         self.iface.running = True
         # ~ miner = RuleMiner(self.iface, self.hpar, self.dataset, supprat = True) # supprat: push suppratio constraint
-        miner = RuleMiner(self.iface, self.hpar, self.dataset)
+        # ~ miner = RuleMiner(self.iface, self.hpar, self.dataset)
+        miner = RuleMiner(self.hpar, self.dataset)
         rules = []
         for rul in miner.minerules():
             "if someday Rule has comparison, remove mentions to rulecnt"
-            if len(rul[0]) <= 2:
-                print("At main loop of yacaree:", rul) # list(cl), list(list(pr) for pr in preds)
+            # ~ if len(rul[0]) <= 2:
+                # ~ print("At main loop of yacaree:", rul) # list(cl), list(list(pr) for pr in preds)
             rulecnt += 1
+            rules.append(rul)
             # ~ rules.append((-rul.cboo, rulecnt, rul))
             # ~ if miner.count == self.hpar.findrules > 0: break
         # ~ print(miner.latt)
-        self.iface.report("Mining process terminated;" + 
-                          " searched for rules of confidence boost" + 
-                          '...' )
-                         # ~ (" at least %1.3f." % miner.latt.boosthr)) 
+        self.iface.report("Mining process terminated; searched for" + 
+                " rules of confidence boost "
+                f"{min(hpar.abs_suppratio, hpar.abs_m_impr):4.2f}.")
         self.iface.report(("Total of %d Rules obtained from " % miner.count) +
                      ("%d closures of support at least " % len(miner.latt)) +
                      str(miner.latt.minsupp))
                       # ~ + " (" +
                      # ~ str(miner.latt.miner.to_percent(miner.latt.miner.minsupp)) + "%).")
         cnt = 0
-        for (b, c, r) in sorted(rules):
-            "remove c in case rulecnt is removed" # CAVEAT: THIS LOOP IS EMPTY RIGHT NOW
+        # ~ for (b, c, r) in sorted(rules):
+        for r in sorted(rules, reverse = True, key = self.cboo_f):
             cnt += 1
-            results_file.write("\n" + str(cnt) + "/\n" + str(r))
-            if cnt == self.hpar.maxrules > 0: break
+            # ~ results_file.write("\n" + str(cnt) + "/\n" + str(r))
+            results_file.write("\n" + str(cnt) + "/ " + str(r))
+            # ~ if cnt == self.hpar.maxrules > 0: break
         results_file.close()
-        self.iface.report("Confidence threshold was..." # %2.3f."
-                     # ~ % (float(self.hpar.confthr)/self.hpar.scale))
-                     )
+        self.iface.report(f"Confidence threshold was {self.hpar.confthr:4.2f}.")
         self.iface.report(str(cnt) + " rules chosen according to their " +
                      "confidence boost written to file " + self.iface.rulesfile.name + ".") 
         self.iface.report("End of process of dataset in file " + 
@@ -88,10 +96,10 @@ class Yacaree:
         # ~ self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
         self.iface.sound_bell()
 
-    def standard_run_all(self):
-        "needed as a single button command - std run will get back on its own the std figure afterwards ?????"
-        self.hpar.maxrules = 0
-        self.standard_run()
+    # ~ def standard_run_all(self):
+        # ~ "needed as a single button command - std run will get back on its own the std figure afterwards ?????"
+        # ~ self.hpar.maxrules = 0
+        # ~ self.standard_run()
 
 if __name__ == "__main__":
 
@@ -99,7 +107,7 @@ if __name__ == "__main__":
     # ~ from time import time
 
     # ~ fnm = "../data/lenses_recoded"
-    fnm = "../data/toy"
+    # ~ fnm = "../data/toy"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
@@ -114,14 +122,14 @@ if __name__ == "__main__":
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
                                    # size and less than 5000 closures
 
-    iface = IFace()
-    hpar = HyperParam()
+    # ~ iface = IFace()
+    # ~ hpar = HyperParam()
 
-    IFace.fn = FileNames(IFace)
-    IFace.opendatafile(fnm)
+    # ~ IFace.fn = FileNames(IFace)
+    # ~ IFace.opendatafile(fnm)
     # ~ d = Dataset()
 
-    y = Yacaree(iface, hpar, fnm)
+    # ~ y = Yacaree(iface, hpar, fnm)
 
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
@@ -143,7 +151,7 @@ if __name__ == "__main__":
 
 
 
-    exit(1)
+    # ~ exit(1)
 
 	# TRUE MAIN:
     from argparse import ArgumentParser
@@ -156,19 +164,13 @@ if __name__ == "__main__":
                       "experimentation environment (CLI *nix flavor, " +
                       "alt Win/*nix-compatible double-click launch " +
                       "in file yacaree.pyw).",
-        prog = "python[3] yacaree.py or just ./yacaree"
+        # ~ prog = "python[3] yacaree.py or just ./yacaree"
+        prog = "./yacaree"
         )
 
-    # ~ argp.add_argument('-a', '--all', action = 'store_true', 
-                      # ~ help = "output with no rule limit " + 
-                             # ~ "(default: limit to " 
-                             # ~ + str(hpar.maxrules) + " rules)")
     argp.add_argument('-g', '--gui', action = 'store_true', 
                       help = "launch GUI (default: remain in " + 
                              "command line interface - CLI)")
-    argp.add_argument('-v', '--verbose', action = 'store_true', 
-                      help = "verbose report of current support " + 
-                             "at every closure")
     argp.add_argument('-V', '--version', action = 'version', 
                             version = "yacaree " + iface.version,
                             help = "print version and exit")
@@ -176,18 +178,35 @@ if __name__ == "__main__":
                       help = "name of optional dataset file " + 
                              "(default: none, ask user)")
 
+    argp.add_argument('-m', '--mode', 
+            choices = ['harsh', 'stringent', 'lenient', 'relaaaxed'], 
+            default = 'stringent',
+            help = "how strict are we to be")
+
     # ~ argp.add_argument('-t', '--test', action = 'store_true') 
     # ~ # for testing times (???)
+
+# ~ DOUBTFUL FLAGS:
+    # ~ argp.add_argument('-a', '--all', action = 'store_true', 
+                      # ~ help = "output with no rule limit " + 
+                             # ~ "(default: limit to " 
+                             # ~ + str(hpar.maxrules) + " rules)")
+    # ~ argp.add_argument('-v', '--verbose', action = 'store_true', 
+                      # ~ help = "verbose report of current support " + 
+                             # ~ "at every closure")
 
     args = argp.parse_args()
 
     # ~ if args.all:
         # ~ hpar.maxrules = 0
 
-    if args.verbose:
-        hpar.verbose = True
+    # ~ if args.verbose:
+        # ~ hpar.verbose = True
 
     iface.gui = args.gui
 
     y = Yacaree(iface, hpar, args.dataset)
+    y.hpar.set_mode(args.mode)
+    print(y.hpar.genabsupp)
+    y.iface.go(y)
 
