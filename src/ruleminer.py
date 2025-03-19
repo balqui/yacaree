@@ -87,7 +87,7 @@ class ImplMiner:
             if an2cl in cl_ants:
                 "CAVEAT: remove this test?"
                 IFace.reportwarning("Repeated closure of " + 
-                    str(an2) " while handling rule " + str(rul))
+                    str(an2) + " while handling rule " + str(rul))
             else:
                 cl_ants.add(an2cl)
             cn2 = miner.close(rul.rcn.union(an2))

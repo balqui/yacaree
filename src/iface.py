@@ -154,23 +154,35 @@ class IFace:
                                    command = cls.choose_datafile)
             cls.filepick.pack()
 
+            cls.mode = Tkinter.StringVar()
+            cls.mode.set('stringent')
+            harsh_rb = Tkinter.Radiobutton(left_frame, text='Harsh', 
+                variable = mode, value = 'harsh')
+            stringent_rb = Tkinter.Radiobutton(left_frame, text='Stringent', 
+                variable = mode, value = 'stringent')
+            lenient_rb = Tkinter.Radiobutton(left_frame, text='Lenient', 
+                variable = mode, value = 'lenient')
+            relaaaxed_rb = Tkinter.Radiobutton(left_frame, text='Relaaaxed', 
+                variable = mode, value = 'relaaaxed')
+
             cls.run = Tkinter.Button(process_frame)
             cls.run.configure(text = "Run yacaree for " + 
                               "all rules\n(and be patient), or...",
                               width = button_width,
                               height = button_height,
                               state = Tkinter.DISABLED,
-                              command = yacaree.standard_run_all)
+                              command = yacaree.standard_run)
+                              # ~ command = yacaree.standard_run_all)
             cls.run.pack()
 
-            cls.run50 = Tkinter.Button(process_frame)
-            cls.run50.configure(text = "...Run yacaree for " + 
-                         "at most 50 rules\n(but be equally patient)",
-                         width = button_width,
-                         height = button_height,
-                         state = Tkinter.DISABLED,
-                         command = yacaree.standard_run)
-            cls.run50.pack()
+            # ~ cls.run50 = Tkinter.Button(process_frame)
+            # ~ cls.run50.configure(text = "...Run yacaree for " + 
+                         # ~ "at most 50 rules\n(but be equally patient)",
+                         # ~ width = button_width,
+                         # ~ height = button_height,
+                         # ~ state = Tkinter.DISABLED,
+                         # ~ command = yacaree.standard_run)
+            # ~ cls.run50.pack()
 
             cls.finish_button = Tkinter.Button(process_frame)
             cls.finish_button.configure(text = "Stop ASAP (be patient) / Close",
@@ -184,8 +196,8 @@ class IFace:
                 cls.report("Called on dataset in file " + 
                            yacaree.datafilename)
                 cls.run.configure(state = Tkinter.NORMAL)
-                if cls.hpar.maxrules:
-                    cls.run50.configure(state = Tkinter.NORMAL)
+                # ~ if cls.hpar.maxrules:
+                    # ~ cls.run50.configure(state = Tkinter.NORMAL)
                 cls.opendatafile(yacaree.datafilename)
             cls.clock_at_report = clock()
             cls.root.mainloop()
@@ -214,8 +226,8 @@ class IFace:
                 cls.report("Selected dataset in file " + 
                            cls.fn._filenamefull + ".")
                 cls.run.configure(state = Tkinter.NORMAL)
-                if cls.hpar.maxrules:
-                    cls.run50.configure(state = Tkinter.NORMAL)
+                # ~ if cls.hpar.maxrules:
+                    # ~ cls.run50.configure(state = Tkinter.NORMAL)
 
 
     @classmethod
@@ -243,8 +255,8 @@ class IFace:
     def openauxfiles(cls):
         if cls._gui:
             cls.run.configure(state = Tkinter.NORMAL)
-            if cls.hpar.maxrules:
-                cls.run50.configure(state = Tkinter.NORMAL)
+            # ~ if cls.hpar.maxrules:
+                # ~ cls.run50.configure(state = Tkinter.NORMAL)
         cls.logfile = cls.fn.openfile(cls.fn._filenamenow + ".log", "w")
         cls.rulesfile = cls.fn.openfile(cls.fn._filenamenow + 
             "_rules.log", "w") # + "_rules.txt" to get back to
@@ -275,13 +287,15 @@ class IFace:
         if cls._gui:
             cls._running = False
             cls.run.configure(state = Tkinter.NORMAL)
-            cls.run50.configure(state = Tkinter.NORMAL)
+            # ~ cls.run50.configure(state = Tkinter.NORMAL)
             cls.filepick.configure(state = Tkinter.NORMAL)
             cls.finish_button.configure(state = Tkinter.NORMAL)
             # ~ refresh datetime in names, 
             # ~ just in case we use the same dataset
             # ~ (done by the property setter in the FileNames class)
             cls.fn.filename = cls.fn.filename 
+            cls.hpar.mode = cls.mode.get()
+            cls.hpar.set_mode() 
 
 
     @classmethod
@@ -290,7 +304,9 @@ class IFace:
         if cls._gui:
             cls.filepick.configure(state = Tkinter.DISABLED)
             cls.run.configure(state = Tkinter.DISABLED)
-            cls.run50.configure(state = Tkinter.DISABLED)
+            cls.hpar.mode = cls.mode.get()
+            cls.hpar.set_mode() 
+            # ~ cls.run50.configure(state = Tkinter.DISABLED)
 
 
     @classmethod

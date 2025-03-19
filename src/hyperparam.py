@@ -39,33 +39,34 @@ class HyperParam:
         self.pend_len_limit = 4098 # 2 to power 12
         # Alternatives considered: 1000, 8192, 16384 = 2 to power 14
 
-        self.set_mode() # set to default
+        self.mode = "stringent" # set to default
+        self.set_mode() 
 
-    def set_mode(self, mode = "stringent"):
+    def set_mode(self):
         """
         Note: absolute number of transactions will be reduced to 3 if 
         dataset has less than 100 transactions.
         """
-        if mode == "relaaaxed":
+        if self.mode == "relaaaxed":
             self.genabsupp = 5 # absolute number of transactions
             self.abs_suppratio = 1.1 
             self.abs_m_impr = 1.1 
 
-        if mode == "lenient":
+        if self.mode == "lenient":
             self.genabsupp = 10
             self.abs_suppratio = 1.15
             self.abs_m_impr = 1.15
 
-        if mode == "stringent":
+        if self.mode == "stringent":
             "default"
-            self.genabsupp = 1.2
+            self.genabsupp = 15
             self.abs_suppratio = 1.2
-            self.abs_m_impr = 15
+            self.abs_m_impr = 1.2
 
-        if mode == "harsh":
-            self.genabsupp = 1.25 
+        if self.mode == "harsh":
+            self.genabsupp = 25 
             self.abs_suppratio = 1.25
-            self.abs_m_impr = 25
+            self.abs_m_impr = 1.25
 
 # ~ DEPRECATED FIELDS:
         # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core

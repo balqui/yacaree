@@ -33,10 +33,10 @@ from ruleminer import RuleMiner
 
 class Yacaree:
 
-    def __init__(self, iface, hpar, datafilename):
+    def __init__(self, hpar, datafilename):
         from operator import attrgetter
         self.hpar = hpar
-        self.iface = iface
+        # ~ self.iface = IFace
         self.dataset = None
         self.datafilename = datafilename
         self.cboo_f = attrgetter('cboo') # extract cboo from rules
@@ -47,23 +47,22 @@ class Yacaree:
             # ~ self.iface.report("CLI call requested all rules as output.")
         if not self.dataset:
             self.dataset = Dataset() # reads in from iface.datafile
-        self.iface.openauxfiles()
+        IFace.openauxfiles()
 
         rulecnt = 0 # avoid comparing rules of same cb in sorted(rules) CAVEAT: I BELIEVE THIS UNNECESSARY NOW (???)
-        results_file = self.iface.rulesfile
-        self.iface.get_ready_for_run()
+        IFace.get_ready_for_run()
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("Providing all rules as output.")
-        self.iface.running = True
+        IFace.running = True
         miner = RuleMiner(self.hpar, self.dataset)
         rules = []
         for rul in miner.minerules():
             rulecnt += 1
             rules.append(rul)
-        self.iface.report("Mining process terminated; searched for" + 
+        IFace.report("Mining process terminated; searched for" + 
                 " rules of confidence boost "
                 f"{min(hpar.abs_suppratio, hpar.abs_m_impr):4.2f}.")
-        self.iface.report(("Total of %d Rules obtained from " % miner.count) +
+        IFace.report(("Total of %d Rules obtained from " % miner.count) +
                      ("%d closures of support at least " % len(miner.latt)) +
                      str(miner.latt.minsupp))
                       # ~ + " (" +
@@ -71,20 +70,20 @@ class Yacaree:
         cnt = 0
         for r in sorted(rules, reverse = True, key = self.cboo_f):
             cnt += 1
-            results_file.write("\n" + str(cnt) + "/ " + str(r))
+            IFace.rulesfile.write("\n" + str(cnt) + "/ " + str(r))
             # ~ if cnt == self.hpar.maxrules > 0: break
-        results_file.close()
-        self.iface.report(f"Confidence threshold was {self.hpar.confthr:4.2f}.")
-        self.iface.report(str(cnt) + " rules chosen according to their " +
-                     "confidence boost written to file " + self.iface.rulesfile.name + ".") 
-        self.iface.report("End of process of dataset in file " + 
-                     self.iface.datafile.name + ".")
-        self.iface.report("Closing output and log files; run of yacaree " + 
-                     self.iface.version + " finished.")
-        self.iface.logfile.close()
-        self.iface.get_ready_for_new_run()
+        IFace.rulesfile.close()
+        IFace.report(f"Confidence threshold was {self.hpar.confthr:4.2f}.")
+        IFace.report(str(cnt) + " rules chosen according to their " +
+                     "confidence boost written to file " + IFace.rulesfile.name + ".") 
+        IFace.report("End of process of dataset in file " + 
+                     IFace.datafile.name + ".")
+        IFace.report("Closing output and log files; run of yacaree " + 
+                     IFace.version + " finished.")
+        IFace.logfile.close()
+        IFace.get_ready_for_new_run()
         # ~ self.hpar.maxrules = self.hpar.stdmaxrules # Just in case something was recently tweaked
-        self.iface.sound_bell()
+        IFace.sound_bell()
 
     # ~ def standard_run_all(self): # PLANNING TO REMOVE THIS OPTION
         # ~ "needed as a single button command - std run will get back on its own the std figure afterwards ?????"
@@ -127,10 +126,11 @@ if __name__ == "__main__":
 
     iface.gui = args.gui
 
-    y = Yacaree(iface, hpar, args.dataset)
-    y.hpar.set_mode(args.mode)
-    print(y.hpar.genabsupp)
-    y.iface.go(y)
+    # ~ y = Yacaree(iface, hpar, args.dataset)
+    y = Yacaree(hpar, args.dataset)
+    y.hpar.mode = args.mode
+    y.hpar.set_mode()
+    IFace.go(y)
 
 # ~ DOUBTFUL FLAGS:
 
