@@ -54,6 +54,7 @@ class Yacaree:
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("Providing all rules as output.")
         IFace.running = True
+        IFace.set_mode()
         miner = RuleMiner(self.hpar, self.dataset)
         rules = []
         for rul in miner.minerules():

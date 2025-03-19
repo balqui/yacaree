@@ -154,16 +154,28 @@ class IFace:
                                    command = cls.choose_datafile)
             cls.filepick.pack()
 
+            mode_frame = Tkinter.LabelFrame(process_frame,
+                                               text="Mode:")
+            mode_frame.pack()
+
             cls.mode = Tkinter.StringVar()
             cls.mode.set('stringent')
-            harsh_rb = Tkinter.Radiobutton(left_frame, text='Harsh', 
-                variable = mode, value = 'harsh')
-            stringent_rb = Tkinter.Radiobutton(left_frame, text='Stringent', 
-                variable = mode, value = 'stringent')
-            lenient_rb = Tkinter.Radiobutton(left_frame, text='Lenient', 
-                variable = mode, value = 'lenient')
-            relaaaxed_rb = Tkinter.Radiobutton(left_frame, text='Relaaaxed', 
-                variable = mode, value = 'relaaaxed')
+            cls.harsh_rb = Tkinter.Radiobutton(mode_frame, text='Harsh', 
+                variable = cls.mode, value = 'harsh')
+            # ~ cls.harsh_rb.pack(side=Tkinter.LEFT)
+            cls.harsh_rb.pack()
+            cls.stringent_rb = Tkinter.Radiobutton(mode_frame, text='Stringent', 
+                variable = cls.mode, value = 'stringent')
+            # ~ cls.stringent_rb.pack(side=Tkinter.LEFT)
+            cls.stringent_rb.pack()
+            cls.lenient_rb = Tkinter.Radiobutton(mode_frame, text='Lenient', 
+                variable = cls.mode, value = 'lenient')
+            # ~ cls.lenient_rb.pack(side=Tkinter.LEFT)
+            cls.lenient_rb.pack()
+            cls.relaaaxed_rb = Tkinter.Radiobutton(mode_frame, text='Relaaaxed', 
+                variable = cls.mode, value = 'relaaaxed')
+            # ~ cls.relaaaxed_rb.pack(side=Tkinter.LEFT)
+            cls.relaaaxed_rb.pack()
 
             cls.run = Tkinter.Button(process_frame)
             cls.run.configure(text = "Run yacaree for " + 
@@ -294,8 +306,6 @@ class IFace:
             # ~ just in case we use the same dataset
             # ~ (done by the property setter in the FileNames class)
             cls.fn.filename = cls.fn.filename 
-            cls.hpar.mode = cls.mode.get()
-            cls.hpar.set_mode() 
 
 
     @classmethod
@@ -304,10 +314,14 @@ class IFace:
         if cls._gui:
             cls.filepick.configure(state = Tkinter.DISABLED)
             cls.run.configure(state = Tkinter.DISABLED)
-            cls.hpar.mode = cls.mode.get()
-            cls.hpar.set_mode() 
             # ~ cls.run50.configure(state = Tkinter.DISABLED)
 
+    @classmethod
+    def set_mode(cls):
+        "Only on GUI."
+        if cls._gui:
+            cls.hpar.mode = cls.mode.get()
+            cls.hpar.set_mode() 
 
     @classmethod
     def report(cls, m = ""): # , warnlevel = ''):
