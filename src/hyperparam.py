@@ -10,6 +10,16 @@ Heavily simplified as the refactoring reaches the sophisticated algorithms.
 
 CAVEAT: Still requires some work.
 
+Current quandary: mode in hpar is a Python string, mode in IFace 
+is a Tk StringVar(), and they have to be in lockstep: change is
+effected in IFace but consequences are to be guided from hpar.
+
+I see two options: a/ manage to bind hpar.mode to the radio buttons, 
+but for this I need it to be a Tk StringVar, whose creation requires
+previous existence of a Tk() which is created in IFace.go() which also
+launches the run: too late for setting up the mode; b/ import somehow 
+the IFace field inside hpar but unclear then how to entangle them.
+
 Evolution of earlier module encompassing some static objects 
 accessed from everywhere (or: Singleton pattern implemented 
 as a module; spoiler: did not work well enough).
@@ -25,6 +35,8 @@ genabsupp: Do not consider closures with absolute support below this - TO STAY
 
 """
 
+from iface import IFace # only necessary for the mode property
+
 class HyperParam:
 
     def __init__(self):
@@ -39,34 +51,44 @@ class HyperParam:
         self.pend_len_limit = 4098 # 2 to power 12
         # Alternatives considered: 1000, 8192, 16384 = 2 to power 14
 
-        self.mode = "stringent" # set to default
-        self.set_mode() 
+        # ~ self.mode = Tkinter.StringVar() # Needs a Tk, must come after IFace.go()
+        # ~ self.mode.set("stringent")  # set to default
+        # ~ self.set_mode() 
 
-    def set_mode(self):
-        """
-        Note: absolute number of transactions will be reduced to 3 if 
-        dataset has less than 100 transactions.
-        """
-        if self.mode == "relaaaxed":
-            self.genabsupp = 5 # absolute number of transactions
-            self.abs_suppratio = 1.1 
-            self.abs_m_impr = 1.1 
+# ~ CAUSE AN ERROR FOR THE TIME BEING AS I CANNOT MAKE UP MY MIND HOW TO DO THIS
 
-        if self.mode == "lenient":
-            self.genabsupp = 10
-            self.abs_suppratio = 1.15
-            self.abs_m_impr = 1.15
+    # ~ def set_mode(self, mode):
+        # ~ """
+        # ~ Note: absolute number of transactions will be reduced to 3 if 
+        # ~ dataset has less than 100 transactions.
+        # ~ """
 
-        if self.mode == "stringent":
-            "default"
-            self.genabsupp = 15
-            self.abs_suppratio = 1.2
-            self.abs_m_impr = 1.2
+        # ~ IFace.mode = mode
 
-        if self.mode == "harsh":
-            self.genabsupp = 25 
-            self.abs_suppratio = 1.25
-            self.abs_m_impr = 1.25
+        # ~ if mode == "relaaaxed":
+            # ~ self.genabsupp = 5 # absolute number of transactions
+            # ~ self.abs_suppratio = 1.1 
+            # ~ self.abs_m_impr = 1.1 
+
+        # ~ if mode == "lenient":
+            # ~ self.genabsupp = 10
+            # ~ self.abs_suppratio = 1.15
+            # ~ self.abs_m_impr = 1.15
+
+        # ~ if mode == "stringent":
+            # ~ "default"
+            # ~ self.genabsupp = 15
+            # ~ self.abs_suppratio = 1.2
+            # ~ self.abs_m_impr = 1.2
+
+        # ~ if mode == "harsh":
+            # ~ self.genabsupp = 25 
+            # ~ self.abs_suppratio = 1.25
+            # ~ self.abs_m_impr = 1.25
+
+        # ~ if self.nrtr < 100:
+            # ~ self.genabsupp = 3
+
 
 # ~ DEPRECATED FIELDS:
         # ~ self.tot_len_limit = 100000000 # requires often 4GB to 6GB core

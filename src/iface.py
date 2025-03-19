@@ -66,8 +66,7 @@ class IFace:
     def running(self, val):
         type(self)._running = bool(val)
 
-# ~ Warns if TyTra unavailable, falls back to old transversal code; 
-
+# ~ Warns if HyTra unavailable, falls back to old transversal code; 
 # ~ CAVEAT: HyTra untested for many years until Pluviose 2025.
 
     _old_hygr = False
@@ -87,6 +86,24 @@ class IFace:
                 IFace.reportwarning("Could not import from module HyTra.")
                 IFace.reportwarning("Please pip install hytra at some point.")
                 IFace.reportwarning("Falling back on deprecated hypergraph_old code.")
+
+    _mode = None
+
+    @property
+    def mode(self):
+        return type(self)._mode.get()
+
+    @mode.setter
+    def mode(self, val):
+        if type(self)._mode is None and not isinstance(val, str):
+            "initialization case, val must be StringVar from Tk"
+            type(self)._mode = val()
+        elif type(self)._mode is not None and \
+            val in ("harsh", "stringent", "lenient", "relaaaxed"):
+            type(self)._mode.set(val)
+        else:
+            IFace.reporterror("Bad handling of mode", str(val))
+
 
     @classmethod
     def go(cls, yacaree):
@@ -131,8 +148,31 @@ class IFace:
                                  anchor = Tkinter.SW)
             logo_label.pack(side=Tkinter.LEFT)
             name.pack(side=Tkinter.LEFT)
-            process_frame = Tkinter.LabelFrame(left_frame,
-                                               text="Process")
+
+            mode_frame = Tkinter.LabelFrame(left_frame, text="Mode:")
+            mode_frame.pack(fill = Tkinter.X)
+
+            cls.mode = Tkinter.StringVar # initialize
+            cls.mode = 'stringent' # default
+            cls.harsh_rb = Tkinter.Radiobutton(mode_frame, 
+                text='Harsh',
+                variable = cls.mode, value = 'harsh')
+            cls.harsh_rb.pack(anchor = Tkinter.W)
+            cls.stringent_rb = Tkinter.Radiobutton(mode_frame, 
+                text='Stringent', 
+                variable = cls.mode, value = 'stringent')
+            cls.stringent_rb.pack(anchor = Tkinter.W)
+            cls.lenient_rb = Tkinter.Radiobutton(mode_frame, 
+                text='Lenient', 
+                variable = cls.mode, value = 'lenient')
+            cls.lenient_rb.pack(anchor = Tkinter.W)
+            cls.relaaaxed_rb = Tkinter.Radiobutton(mode_frame, 
+                text='Relaaaxed', 
+                variable = cls.mode, value = 'relaaaxed')
+            cls.relaaaxed_rb.pack(anchor = Tkinter.W)
+
+            process_frame = Tkinter.LabelFrame(left_frame, 
+                text="Process")
             process_frame.pack(side=Tkinter.BOTTOM)
 
             console_frame = Tkinter.LabelFrame(cls.root, text="Console")
@@ -154,32 +194,10 @@ class IFace:
                                    command = cls.choose_datafile)
             cls.filepick.pack()
 
-            mode_frame = Tkinter.LabelFrame(process_frame,
-                                               text="Mode:")
-            mode_frame.pack()
-
-            cls.mode = Tkinter.StringVar()
-            cls.mode.set('stringent')
-            cls.harsh_rb = Tkinter.Radiobutton(mode_frame, text='Harsh', 
-                variable = cls.mode, value = 'harsh')
-            # ~ cls.harsh_rb.pack(side=Tkinter.LEFT)
-            cls.harsh_rb.pack()
-            cls.stringent_rb = Tkinter.Radiobutton(mode_frame, text='Stringent', 
-                variable = cls.mode, value = 'stringent')
-            # ~ cls.stringent_rb.pack(side=Tkinter.LEFT)
-            cls.stringent_rb.pack()
-            cls.lenient_rb = Tkinter.Radiobutton(mode_frame, text='Lenient', 
-                variable = cls.mode, value = 'lenient')
-            # ~ cls.lenient_rb.pack(side=Tkinter.LEFT)
-            cls.lenient_rb.pack()
-            cls.relaaaxed_rb = Tkinter.Radiobutton(mode_frame, text='Relaaaxed', 
-                variable = cls.mode, value = 'relaaaxed')
-            # ~ cls.relaaaxed_rb.pack(side=Tkinter.LEFT)
-            cls.relaaaxed_rb.pack()
-
             cls.run = Tkinter.Button(process_frame)
-            cls.run.configure(text = "Run yacaree for " + 
-                              "all rules\n(and be patient), or...",
+            cls.run.configure(text = "Run yacaree",
+             # ~ + 
+             # ~ "all rules\n(and be patient), or...",
                               width = button_width,
                               height = button_height,
                               state = Tkinter.DISABLED,
