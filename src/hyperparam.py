@@ -51,43 +51,37 @@ class HyperParam:
         self.pend_len_limit = 4098 # 2 to power 12
         # Alternatives considered: 1000, 8192, 16384 = 2 to power 14
 
-        # ~ self.mode = Tkinter.StringVar() # Needs a Tk, must come after IFace.go()
-        # ~ self.mode.set("stringent")  # set to default
-        # ~ self.set_mode() 
+    def set_mode(self, mode):
+        """
+        Note: absolute number of transactions will be reduced to 3 if 
+        dataset has less than 100 transactions.
+        """
 
-# ~ CAUSE AN ERROR FOR THE TIME BEING AS I CANNOT MAKE UP MY MIND HOW TO DO THIS
+        print(" === setting mode:", mode)
 
-    # ~ def set_mode(self, mode):
-        # ~ """
-        # ~ Note: absolute number of transactions will be reduced to 3 if 
-        # ~ dataset has less than 100 transactions.
-        # ~ """
+        if mode == "relaaaxed":
+            self.genabsupp = 5 # absolute number of transactions
+            self.abs_suppratio = 1.1 
+            self.abs_m_impr = 1.1 
 
-        # ~ IFace.mode = mode
+        if mode == "lenient":
+            self.genabsupp = 10
+            self.abs_suppratio = 1.15
+            self.abs_m_impr = 1.15
 
-        # ~ if mode == "relaaaxed":
-            # ~ self.genabsupp = 5 # absolute number of transactions
-            # ~ self.abs_suppratio = 1.1 
-            # ~ self.abs_m_impr = 1.1 
+        if mode == "stringent":
+            "default"
+            self.genabsupp = 15
+            self.abs_suppratio = 1.2
+            self.abs_m_impr = 1.2
 
-        # ~ if mode == "lenient":
-            # ~ self.genabsupp = 10
-            # ~ self.abs_suppratio = 1.15
-            # ~ self.abs_m_impr = 1.15
+        if mode == "harsh":
+            self.genabsupp = 25 
+            self.abs_suppratio = 1.25
+            self.abs_m_impr = 1.25
 
-        # ~ if mode == "stringent":
-            # ~ "default"
-            # ~ self.genabsupp = 15
-            # ~ self.abs_suppratio = 1.2
-            # ~ self.abs_m_impr = 1.2
-
-        # ~ if mode == "harsh":
-            # ~ self.genabsupp = 25 
-            # ~ self.abs_suppratio = 1.25
-            # ~ self.abs_m_impr = 1.25
-
-        # ~ if self.nrtr < 100:
-            # ~ self.genabsupp = 3
+        if self.nrtr < 100:
+            self.genabsupp = 3
 
 
 # ~ DEPRECATED FIELDS:

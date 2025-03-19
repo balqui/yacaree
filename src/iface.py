@@ -91,22 +91,39 @@ class IFace:
 
     @property
     def mode(self):
+        "CAVEAT: Bad in CLI"
         return type(self)._mode.get()
 
     @mode.setter
     def mode(self, val):
-        if type(self)._mode is None and not isinstance(val, str):
-            "initialization case, val must be StringVar from Tk"
-            type(self)._mode = val()
-        elif type(self)._mode is not None and \
-            val in ("harsh", "stringent", "lenient", "relaaaxed"):
+        "val must be a string and cls._mode already a Tk StringVar"
+        if val in ("harsh", "stringent", "lenient", "relaaaxed"):
             type(self)._mode.set(val)
         else:
             IFace.reporterror("Bad handling of mode", str(val))
 
 
+    # ~ @mode.setter
+    # ~ def mode(self, val):
+        # ~ if type(self)._gui:
+            # ~ if type(self)._mode is None:
+                # ~ if not isinstance(val, str):
+                    # ~ "initialization case, val must be StringVar from Tk"
+                    # ~ type(self)._mode = val()
+                # ~ else:
+                    # ~ IFace.reporterror("Bad handling of mode", str(val))
+            # ~ elif val in ("harsh", "stringent", "lenient", "relaaaxed"):
+                # ~ type(self)._mode.set(val)
+            # ~ else:
+                # ~ IFace.reporterror("Bad handling of mode", str(val))
+        # ~ elif isinstance(val, str):
+            # ~ type(self)._mode = val
+        # ~ else:
+            # ~ IFace.reporterror("Bad handling of mode", str(val))
+
+
     @classmethod
-    def go(cls, yacaree):
+    def go(cls, yacaree, init_mode):
         """
         Might try to move bindings to a regular __init__()
         (this could not be done in the earlier structure).
@@ -120,6 +137,8 @@ class IFace:
         if cls._gui:
 
             cls.root = Tkinter.Tk()
+            cls._mode = Tkinter.StringVar() # initialize
+            cls._mode.set(init_mode)        # --mode / -m or default
 
             button_width = 35
             button_height = 4
@@ -152,23 +171,21 @@ class IFace:
             mode_frame = Tkinter.LabelFrame(left_frame, text="Mode:")
             mode_frame.pack(fill = Tkinter.X)
 
-            cls.mode = Tkinter.StringVar # initialize
-            cls.mode = 'stringent' # default
             cls.harsh_rb = Tkinter.Radiobutton(mode_frame, 
                 text='Harsh',
-                variable = cls.mode, value = 'harsh')
+                variable = cls._mode, value = 'harsh')
             cls.harsh_rb.pack(anchor = Tkinter.W)
             cls.stringent_rb = Tkinter.Radiobutton(mode_frame, 
                 text='Stringent', 
-                variable = cls.mode, value = 'stringent')
+                variable = cls._mode, value = 'stringent')
             cls.stringent_rb.pack(anchor = Tkinter.W)
             cls.lenient_rb = Tkinter.Radiobutton(mode_frame, 
                 text='Lenient', 
-                variable = cls.mode, value = 'lenient')
+                variable = cls._mode, value = 'lenient')
             cls.lenient_rb.pack(anchor = Tkinter.W)
             cls.relaaaxed_rb = Tkinter.Radiobutton(mode_frame, 
                 text='Relaaaxed', 
-                variable = cls.mode, value = 'relaaaxed')
+                variable = cls._mode, value = 'relaaaxed')
             cls.relaaaxed_rb.pack(anchor = Tkinter.W)
 
             process_frame = Tkinter.LabelFrame(left_frame, 
@@ -234,6 +251,7 @@ class IFace:
 
         else:
             "CLI interface"
+            cls._mode = init_mode # --mode / -m or default
             cls.report("This is yacaree, version " + cls.version + ".")
             cls.opendatafile(yacaree.datafilename)
             yacaree.standard_run() 
@@ -334,12 +352,12 @@ class IFace:
             cls.run.configure(state = Tkinter.DISABLED)
             # ~ cls.run50.configure(state = Tkinter.DISABLED)
 
-    @classmethod
-    def set_mode(cls):
-        "Only on GUI."
-        if cls._gui:
-            cls.hpar.mode = cls.mode.get()
-            cls.hpar.set_mode() 
+    # ~ @classmethod
+    # ~ def set_mode(cls):
+        # ~ "Only on GUI."
+        # ~ if cls._gui:
+            # ~ cls.hpar.mode = cls.mode.get()
+            # ~ cls.hpar.set_mode() 
 
     @classmethod
     def report(cls, m = ""): # , warnlevel = ''):

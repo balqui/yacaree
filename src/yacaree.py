@@ -45,6 +45,10 @@ class Yacaree:
     def standard_run(self):
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("CLI call requested all rules as output.")
+
+        self.hpar.set_mode(IFace.mode)
+        print(" === run _mode", IFace._mode, "mode", IFace.mode)
+
         if not self.dataset:
             self.dataset = Dataset() # reads in from iface.datafile
         IFace.openauxfiles()
@@ -54,7 +58,7 @@ class Yacaree:
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("Providing all rules as output.")
         IFace.running = True
-        IFace.set_mode()
+        # ~ IFace.set_mode()
         miner = RuleMiner(self.hpar, self.dataset)
         rules = []
         for rul in miner.minerules():
@@ -129,9 +133,9 @@ if __name__ == "__main__":
 
     # ~ y = Yacaree(iface, hpar, args.dataset)
     y = Yacaree(hpar, args.dataset)
-    y.hpar.mode = args.mode
-    y.hpar.set_mode()
-    IFace.go(y)
+    # ~ y.hpar.mode = args.mode
+    # ~ y.hpar.set_mode()
+    IFace.go(y, args.mode)
 
 # ~ DOUBTFUL FLAGS:
 
