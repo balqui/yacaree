@@ -36,7 +36,7 @@ class Yacaree:
     def __init__(self, hpar, datafilename):
         from operator import attrgetter
         self.hpar = hpar
-        # ~ self.iface = IFace
+        self.iface = IFace() # for the mode and maybe other things
         self.dataset = None
         self.datafilename = datafilename
         self.cboo_f = attrgetter('cboo') # extract cboo from rules
@@ -46,7 +46,7 @@ class Yacaree:
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("CLI call requested all rules as output.")
 
-        self.hpar.set_mode(IFace.mode)
+        self.hpar.set_mode(iface.mode)
         print(" === run _mode", IFace._mode, "mode", IFace.mode)
 
         if not self.dataset:

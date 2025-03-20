@@ -35,7 +35,7 @@ genabsupp: Do not consider closures with absolute support below this - TO STAY
 
 """
 
-from iface import IFace # only necessary for the mode property
+# ~ from iface import IFace # only necessary for the mode property
 
 class HyperParam:
 

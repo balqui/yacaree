@@ -22,6 +22,7 @@ go: calls run method of main program
 others: to handle the communication with Tk
 
 Can one combine decorator @classmethod with @property-related?
+DOES NOT SEEM TO WORK. Need an instance to make @property'es work.
 
 """
 
@@ -34,11 +35,24 @@ import tkinter as Tkinter
 from tkinter import filedialog as tkFileDialog
 from tkinter import font as tkFont
 
+class MockStringVar(str):
+    """
+    Replacement for Tk's StringVar, needed for the mode radiobuttons,
+    to cover the non-GUI case too.
+    """
+
+    def set(self, v):
+        self = v
+
+    def get(self):
+        return str(self)
+
+
 class IFace:
 
     version = "2.0.0"  # OK TO HAVE THIS HERE?
 
-    report_period = 30 # seconds between possibly_report calls
+    # ~ report_period = 30 # seconds between possibly_report calls
 
     fn = None          # filename slot
 
@@ -87,39 +101,31 @@ class IFace:
                 IFace.reportwarning("Please pip install hytra at some point.")
                 IFace.reportwarning("Falling back on deprecated hypergraph_old code.")
 
-    _mode = None
+    _mode = MockStringVar()
 
     @property
     def mode(self):
         "CAVEAT: Bad in CLI"
         return type(self)._mode.get()
 
+    # ~ @mode.setter
+    # ~ def mode(self, val):
+        # ~ "val must be a string and cls._mode already a Tk StringVar"
+        # ~ if val in ("harsh", "stringent", "lenient", "relaaaxed"):
+            # ~ type(self)._mode.set(val)
+        # ~ else:
+            # ~ IFace.reporterror("Bad handling of mode", str(val))
+
+
     @mode.setter
     def mode(self, val):
-        "val must be a string and cls._mode already a Tk StringVar"
+        # ~ if type(self)._gui and not isinstance(val, str):
+            # ~ "initialization case, val must be StringVar from Tk"
+            # ~ type(self)._mode = val()
         if val in ("harsh", "stringent", "lenient", "relaaaxed"):
             type(self)._mode.set(val)
         else:
             IFace.reporterror("Bad handling of mode", str(val))
-
-
-    # ~ @mode.setter
-    # ~ def mode(self, val):
-        # ~ if type(self)._gui:
-            # ~ if type(self)._mode is None:
-                # ~ if not isinstance(val, str):
-                    # ~ "initialization case, val must be StringVar from Tk"
-                    # ~ type(self)._mode = val()
-                # ~ else:
-                    # ~ IFace.reporterror("Bad handling of mode", str(val))
-            # ~ elif val in ("harsh", "stringent", "lenient", "relaaaxed"):
-                # ~ type(self)._mode.set(val)
-            # ~ else:
-                # ~ IFace.reporterror("Bad handling of mode", str(val))
-        # ~ elif isinstance(val, str):
-            # ~ type(self)._mode = val
-        # ~ else:
-            # ~ IFace.reporterror("Bad handling of mode", str(val))
 
 
     @classmethod
@@ -251,7 +257,8 @@ class IFace:
 
         else:
             "CLI interface"
-            cls._mode = init_mode # --mode / -m or default
+            cls._mode = MockStringVar() # initialize
+            cls._mode.set(init_mode)    # --mode / -m or default
             cls.report("This is yacaree, version " + cls.version + ".")
             cls.opendatafile(yacaree.datafilename)
             yacaree.standard_run() 
