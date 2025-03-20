@@ -57,6 +57,7 @@ class ClMiner(dict):
             self.intsupp = IFace.hpar.genabsupp
         self.card = 0
         self.totlen = 0
+        self.iface = IFace()
         self.pend_clos = list()
         self.mem_tester = Test_Memory(IFace.hpar.nrits)
 
@@ -174,7 +175,7 @@ class ClMiner(dict):
 
         report_it = False
         self.minsupp = self.dataset.nrtr
-        while self.pend_clos and IFace.running:
+        while self.pend_clos and self.iface.running:
             """
             Yield next closure and handle extensions.
             CAVEAT: IFace.running condition still fully untested.

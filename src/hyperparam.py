@@ -57,8 +57,6 @@ class HyperParam:
         dataset has less than 100 transactions.
         """
 
-        print(" === setting mode:", mode)
-
         if mode == "relaaaxed":
             self.genabsupp = 5 # absolute number of transactions
             self.abs_suppratio = 1.1 

@@ -36,7 +36,6 @@ class Yacaree:
     def __init__(self, hpar, datafilename):
         from operator import attrgetter
         self.hpar = hpar
-        self.iface = IFace() # for the mode and maybe other things
         self.dataset = None
         self.datafilename = datafilename
         self.cboo_f = attrgetter('cboo') # extract cboo from rules
@@ -46,8 +45,7 @@ class Yacaree:
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("CLI call requested all rules as output.")
 
-        self.hpar.set_mode(iface.mode)
-        print(" === run _mode", IFace._mode, "mode", IFace.mode)
+        self.hpar.set_mode(iface.mode) # iface from main, version needs it there
 
         if not self.dataset:
             self.dataset = Dataset() # reads in from iface.datafile
@@ -57,8 +55,9 @@ class Yacaree:
         IFace.get_ready_for_run()
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("Providing all rules as output.")
-        IFace.running = True
-        # ~ IFace.set_mode()
+
+        iface.running = True # iface from main
+
         miner = RuleMiner(self.hpar, self.dataset)
         rules = []
         for rul in miner.minerules():
@@ -116,7 +115,7 @@ if __name__ == "__main__":
                       help = "launch GUI (default: remain in " + 
                              "command line interface - CLI)")
     argp.add_argument('-V', '--version', action = 'version', 
-                            version = "yacaree " + iface.version,
+                            version = "yacaree " + IFace.version,
                             help = "print version and exit")
     argp.add_argument('dataset', nargs = '?', default = None, 
                       help = "name of optional dataset file " + 
@@ -131,10 +130,7 @@ if __name__ == "__main__":
 
     iface.gui = args.gui
 
-    # ~ y = Yacaree(iface, hpar, args.dataset)
     y = Yacaree(hpar, args.dataset)
-    # ~ y.hpar.mode = args.mode
-    # ~ y.hpar.set_mode()
     IFace.go(y, args.mode)
 
 # ~ DOUBTFUL FLAGS:

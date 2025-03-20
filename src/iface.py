@@ -22,7 +22,7 @@ go: calls run method of main program
 others: to handle the communication with Tk
 
 Can one combine decorator @classmethod with @property-related?
-DOES NOT SEEM TO WORK. Need an instance to make @property'es work.
+Yes but sometime we need an instance to make @property'es work.
 
 """
 
@@ -91,7 +91,7 @@ class IFace:
 
     @old_hygr.setter
     def old_hygr(self, val):
-        "Replaces old 'warn potential deprecation' now w/o 'global'."
+        "Replaces old 'warn potential deprecation'."
         if not type(self)._old_hygr:
             "report at most once"
             if val:
@@ -105,23 +105,10 @@ class IFace:
 
     @property
     def mode(self):
-        "CAVEAT: Bad in CLI"
         return type(self)._mode.get()
-
-    # ~ @mode.setter
-    # ~ def mode(self, val):
-        # ~ "val must be a string and cls._mode already a Tk StringVar"
-        # ~ if val in ("harsh", "stringent", "lenient", "relaaaxed"):
-            # ~ type(self)._mode.set(val)
-        # ~ else:
-            # ~ IFace.reporterror("Bad handling of mode", str(val))
-
 
     @mode.setter
     def mode(self, val):
-        # ~ if type(self)._gui and not isinstance(val, str):
-            # ~ "initialization case, val must be StringVar from Tk"
-            # ~ type(self)._mode = val()
         if val in ("harsh", "stringent", "lenient", "relaaaxed"):
             type(self)._mode.set(val)
         else:
@@ -358,13 +345,6 @@ class IFace:
             cls.filepick.configure(state = Tkinter.DISABLED)
             cls.run.configure(state = Tkinter.DISABLED)
             # ~ cls.run50.configure(state = Tkinter.DISABLED)
-
-    # ~ @classmethod
-    # ~ def set_mode(cls):
-        # ~ "Only on GUI."
-        # ~ if cls._gui:
-            # ~ cls.hpar.mode = cls.mode.get()
-            # ~ cls.hpar.set_mode() 
 
     @classmethod
     def report(cls, m = ""): # , warnlevel = ''):
