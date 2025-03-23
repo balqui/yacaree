@@ -45,8 +45,6 @@ class Yacaree:
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("CLI call requested all rules as output.")
 
-        self.hpar.set_mode(iface.mode) # iface from main, version needs it there
-
         if not self.dataset:
             self.dataset = Dataset() # reads in from iface.datafile
         IFace.openauxfiles()
@@ -55,6 +53,8 @@ class Yacaree:
         IFace.get_ready_for_run()
         # ~ if self.hpar.maxrules == 0:
             # ~ self.iface.report("Providing all rules as output.")
+
+        self.hpar.set_mode(iface.mode) # iface from main, version needs it there
 
         iface.running = True # iface from main
 
@@ -104,9 +104,10 @@ if __name__ == "__main__":
 
     argp = ArgumentParser(
         description = "Yet another closure-based association rule " +
-                      "experimentation environment (CLI *nix flavor, " +
-                      "alt Win/*nix-compatible double-click launch " +
-                      "in file yacaree.pyw).",
+                      "experimentation environment.",
+                      # ~ "experimentation environment (CLI *nix flavor, " +
+                      # ~ "alt Win/*nix-compatible double-click launch " +
+                      # ~ "in file yacaree.pyw).",
         # ~ prog = "python[3] yacaree.py or just ./yacaree"
         prog = "./yacaree"
         )

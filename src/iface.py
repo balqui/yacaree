@@ -70,7 +70,7 @@ class IFace:
     logfile = None
     rulesfile = None
 
-    _running = False
+    _running = True
 
     @property
     def running(self):

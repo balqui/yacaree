@@ -22,6 +22,8 @@ from heapq import heapify, heappush, heappop
 
 from psutil import virtual_memory as vmem
 
+from collections import Counter # consider removing this
+
 class Test_Memory:
 
     def __init__(self, nrits):
@@ -60,6 +62,8 @@ class ClMiner(dict):
         self.iface = IFace()
         self.pend_clos = list()
         self.mem_tester = Test_Memory(IFace.hpar.nrits)
+        
+        # ~ self.ctr = Counter()
 
 
     def supp_adding(self, itst, nitt):
@@ -77,9 +81,13 @@ class ClMiner(dict):
         itstadd = frozenset(itst.union(nitt))
         if itstadd in self:
             "supp of union is supp of its closure"
+            # ~ self.ctr["found as such"] += 1
+            # ~ if self[itstadd].supp == 0:
+                # ~ self.ctr["null support"] + 1
             return self[itstadd].supp
         if itst in self:
             "itstadd not in self but itst is, intersect support sets"
+            # ~ self.ctr["filtered new item"] += 1
             supp = set(self[itst].supportset) & nitt.supportset
             clos = self.dataset.inters(supp)
         else:
@@ -87,14 +95,18 @@ class ClMiner(dict):
             supp, exact = self.dataset.slow_supp(itstadd)
             if exact:
                 "matched a transaction hence it is closed"
+                # ~ self.ctr["matched a transaction"] += 1
                 clos = itstadd
             else:
                 "intersect support sets"
+                # ~ self.ctr["intersected transactions"] += 1
                 clos = self.dataset.inters(supp)
         clos = ItSet(clos, supp)
         # ~ if clos.supp > 0:
         self[itstadd] = clos
         self.totlen += len(supp)
+        # ~ if clos.supp == 0:
+            # ~ self.ctr["null support"] + 1
         return clos.supp
 
 
@@ -273,8 +285,11 @@ if __name__ == "__main__":
     from hyperparam import HyperParam
     from time import time
 
+    fnm = "../data/markbask"
+
     # ~ fnm = "../data/lenses_recoded"
     # ~ fnm = "../data/toy"
+    # ~ fnm = "../data/ect24.td"
     # ~ fnm = "../data/e24.td"
     # ~ fnm = "../data/e24t.td"
     # ~ fnm = "../data/e13"
@@ -283,12 +298,13 @@ if __name__ == "__main__":
     # ~ fnm = "../data/e13b"
     # ~ fnm = "../data/adultrain"
     # ~ fnm = "../data/cmc-full"
-    # The next work thanks to the limit on the total support set lengths
+    # The next work thanks to the limit on the total support set lengths / NOT IMPLEMENTED ANYMORE
     # ~ fnm = "../data/chess.td"   # Fills memory with small heap size
     # ~ fnm = "../data/connect.td" # Fills memory with ridiculous heap
                                    # size and less than 5000 closures
+    # ~ fnm = "../data/mushroomTr" 
     # ~ fnm = "../data/votesTr" 
-    fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
+    # ~ fnm = "../data/papersTr" # FILLS 15GB MEMORY ANYHOW EVEN WITH THE TOTAL SUPPORT SET LENGTHS LIMIT
 
     IFace.hpar = HyperParam()
     IFace.fn = FileNames(IFace)
@@ -298,16 +314,32 @@ if __name__ == "__main__":
     # ~ miner = ClMiner(d, 0.084)
     # ~ miner = ClMiner(d, 0.75)
     # ~ miner = ClMiner(d, 3/24)
+    # ~ import time
     miner = ClMiner(d, 0)
     # ~ print("Int support:", miner.intsupp)
     lcl = list()
+    # ~ t0 = time.time()
     for cl in miner.mine_closures():
         lcl.append(cl)
         # ~ if miner.card > IFace.hpar.clos_num_limit:
+        # ~ if len(lcl) == 2000:
             # ~ break
         # ~ print(cl)
+    # ~ t1 = time.time()
+    # ~ print(t1 - t0)
     print(f"Number of closures: {len(lcl)} of " + 
           f"support {cl.supp} of more; total lengths {miner.totlen}, {miner.card}.") # or miner.card
+
+# ~ Counter of various classes of closures, uncomment self.ctr in __init__
+    # ~ rrr = 0
+    # ~ for c in miner.ctr:
+        # ~ print(c, miner.ctr[c])
+        # ~ rrr += miner.ctr[c]
+    # ~ print("%:", miner.ctr["intersected transactions"]*100/rrr)
+
+    # ~ for cl in lcl:
+        # ~ print(' '.join(e for e in sorted(cl)))
+        # ~ print(cl)
 
 
 

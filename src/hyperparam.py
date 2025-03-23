@@ -56,6 +56,7 @@ class HyperParam:
         Note: absolute number of transactions will be reduced to 3 if 
         dataset has less than 100 transactions.
         """
+        # ~ print(" ---- in set_mode", mode, self.nrtr)
 
         if mode == "relaaaxed":
             self.genabsupp = 5 # absolute number of transactions
@@ -79,6 +80,7 @@ class HyperParam:
             self.abs_m_impr = 1.25
 
         if self.nrtr < 100:
+            # ~ print(" .. support down to 3")
             self.genabsupp = 3
 
 
